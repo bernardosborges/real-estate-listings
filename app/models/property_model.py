@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, Numeric, Float
-from sqlalchemy.ext.declarative import declarative_base
 from app.core.database import Base
 
 class PropertyModel(Base):
