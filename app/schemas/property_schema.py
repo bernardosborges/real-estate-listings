@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from decimal import Decimal
 
 class PropertyBaseSchema(BaseModel):
@@ -24,6 +24,31 @@ class PropertyBaseSchema(BaseModel):
             }
         }
     }
+
+    # -------- VALIDATORS --------
+    @field_validator('price')
+    def price_must_be_positive(cls, v):
+        if v <= 0:
+            raise ValueError("Price must be greater than 0")
+        return v
+
+    @field_validator('private_area')
+    def private_area_must_be_positive(cls, v):
+        if v <= 0:
+            raise ValueError("Private area must be greater than 0")
+        return v
+
+    @field_validator('latitude')
+    def latitude_must_be_valid(cls, v):
+        if v is not None and not (-90 <= v <= 90):
+            raise ValueError("Latitude must be between -90 and 90")
+        return v
+
+    @field_validator('longitude')
+    def longitude_must_be_valid(cls, v):
+        if v is not None and not (-180 <= v <= 180):
+            raise ValueError("Longitude must be between -180 and 180")
+        return v
 
 class PropertyCreateSchema(PropertyBaseSchema):
     """
