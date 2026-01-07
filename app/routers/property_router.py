@@ -5,7 +5,7 @@ from app.schemas.property_schema import PropertyCreateSchema, PropertyReadSchema
 from app.services.property_service import create_property_service, list_properties_service
 
 
-router = APIRouter(prefix="/properties", tags=["Properties1"])
+router = APIRouter(prefix="/properties", tags=["Properties"])
 
 @router.post("/", response_model=PropertyReadSchema)
 def create_property_endpoint(property: PropertyCreateSchema, db: Session = Depends(get_db)):
