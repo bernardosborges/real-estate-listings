@@ -8,6 +8,7 @@ from app.services.auth_service import authenticate_user_service, generate_token_
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
+# ------------ REGISTER USER ENDPOINT ------------
 @router.post(
         "/register",
         response_model=UserReadSchema,
@@ -15,20 +16,27 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
         description="Register a new user to the database. Requires a valid email and a 8-digit password.",
         status_code=status.HTTP_201_CREATED
 )
-def register_user_endpoint(user_data: UserCreateSchema, db: Session = Depends(get_db)):
+def register_user_endpoint(
+    user_data: UserCreateSchema,
+    db: Session = Depends(get_db)
+):
     try:
         return register_user_service(db, user_data.email, user_data.password)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
+# ------------ LOGIN USER ENDPOINT ------------
 @router.post(
         "/login",
         summary="Login a user",
         description="Login a user. Requires a valid email and a password.",
         status_code=status.HTTP_200_OK
 )
-def login_user_endpoint(user_data: UserLoginSchema, db: Session = Depends(get_db)):
+def login_user_endpoint(
+    user_data: UserLoginSchema,
+    db: Session = Depends(get_db)
+):
     user = authenticate_user_service(db, user_data.email, user_data.password)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
