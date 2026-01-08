@@ -3,7 +3,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.core import exceptions
 from app.routers import property_router
 from app.routers import auth_router
-from app.core.config import settings
 
 
 app = FastAPI(
@@ -11,8 +10,8 @@ app = FastAPI(
     version="0.1.0"
 )
 
-app.include_router(property_router.router, prefix=settings.API_PREFIX)
-app.include_router(auth_router.router, prefix=settings.API_PREFIX)
+app.include_router(property_router.router)
+app.include_router(auth_router.router)
 
 # Register global exceptions handlers
 app.add_exception_handler(HTTPException, exceptions.http_exception_handler)

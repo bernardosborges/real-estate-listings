@@ -3,10 +3,11 @@ from sqlalchemy.orm import Session
 
 from app.schemas.user_schema import UserCreateSchema, UserReadSchema, UserLoginSchema
 from app.core.database import get_db
+from app.core.config import settings
 from app.services.user_service import register_user_service
 from app.services.auth_service import authenticate_user_service, generate_token_for_user_service
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(prefix=f"{settings.API_PREFIX}/auth", tags=["Auth"])
 
 # ------------ REGISTER USER ENDPOINT ------------
 @router.post(

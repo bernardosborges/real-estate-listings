@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.property_model import PropertyModel
-from app.schemas.property_schema import PropertyCreateSchema
+from app.schemas.property_schema import PropertyCreateSchema, PropertyUpdateSchema
 
 
 def create_property(db: Session, schema: PropertyCreateSchema):
@@ -15,12 +15,13 @@ def list_properties(db: Session):
 def get_property(db: Session, property_id: int):
     return db.query(PropertyModel).filter(PropertyModel.id == property_id).first()
 
-def update_property(db: Session, property_id: int, schema: PropertyCreateSchema):
+def update_property(db: Session, property_id: int, schema: PropertyUpdateSchema):
     db_property = db.query(PropertyModel).filter(PropertyModel.id == property_id).first()
     if not db_property:
         return None
     
-    for key, value in schema.model_dump().items():
+    update_data = schema.model_dump(exclude_unset=True) # Exclude empty fields
+    for key, value in update_data.items():
         setattr(db_property, key, value)
     return db_property
 

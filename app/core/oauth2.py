@@ -18,7 +18,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         if payload is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
         
-        user_id = payload.get("sub")
+        user_id = int(payload.get("sub"))
         if user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
         

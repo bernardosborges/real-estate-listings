@@ -2,14 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status, Security
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.config import settings
 from app.core.oauth2 import get_current_user
 from app.models.user_model import UserModel
-from app.schemas.property_schema import PropertyCreateSchema, PropertyReadSchema
+from app.schemas.property_schema import PropertyCreateSchema, PropertyReadSchema, PropertyUpdateSchema
 from app.services.property_service import create_property_service, list_properties_service, update_property_service, delete_property_service, get_property_service
 
 
 
-router = APIRouter(prefix="/properties", tags=["Properties"])
+router = APIRouter(prefix=f"{settings.API_PREFIX}/properties", tags=["Properties"])
 
 # ------------ CREATE PROPERTY ENDPOINT ------------
 @router.post(
@@ -52,15 +53,15 @@ def get_property_endpoint(property_id: int, db: Session = Depends(get_db)):
 
 
 # ------------ UPDATE PROPERTY ENDPOINT ------------
-@router.put(
+@router.patch(
         "/{property_id}", 
-        response_model=PropertyReadSchema,
+        response_model=PropertyUpdateSchema,
         summary="Update a property",
         description="Updates a property to the database."
 )
 def update_property_endpoint(
     property_id: int,
-    property: PropertyCreateSchema,
+    property: PropertyUpdateSchema,
     db: Session = Depends(get_db),
     current_user: UserModel = Security(get_current_user)
 ):
