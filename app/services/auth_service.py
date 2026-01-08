@@ -12,5 +12,5 @@ def authenticate_user_service(db: Session, email: str, password: str):
     return user
 
 def generate_token_for_user_service(user: UserModel):
-    access_token = create_access_token(data={"sub":str(user.id)})
+    access_token = create_access_token(data={"sub":user.id})
     return {"access_token": access_token, "token_type": "bearer"}

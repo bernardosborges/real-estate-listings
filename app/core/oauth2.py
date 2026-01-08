@@ -11,6 +11,7 @@ from app.repositories.user_repository import get_user_by_id
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_PREFIX}/auth/login")
 
+# Dependency
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> UserModel:
     try:
         payload = decode_access_token(token)
@@ -21,7 +22,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         if user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
         
-        user = get_user_by_id(db, user_id)
+        user = get_user_by_id(db, int(user_id))
         if not user:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
         
