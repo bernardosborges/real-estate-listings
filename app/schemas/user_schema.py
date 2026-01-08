@@ -9,7 +9,8 @@ class UserBaseSchema(BaseModel):
         "from_attributes": True,
         "json_schema_extra": {
             "example": {
-                "email": "user@userdomain.com"
+                "email": "user@userdomain.com",
+                "password": "Abc12345"
             }
         }
     }

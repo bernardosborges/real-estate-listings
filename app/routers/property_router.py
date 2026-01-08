@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.schemas.property_schema import PropertyCreateSchema, PropertyReadSchema
@@ -35,7 +35,7 @@ def list_properties_endpoint(db: Session = Depends(get_db)):
 def get_property_endpoint(property_id: int, db: Session = Depends(get_db)):
     property = get_property_service(db, property_id)
     if not property:
-        raise HTTPException(status_code=404, detail="Property not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
     return property
 
 @router.put(
@@ -47,7 +47,7 @@ def get_property_endpoint(property_id: int, db: Session = Depends(get_db)):
 def update_property_endpoint(property_id: int, property: PropertyCreateSchema, db: Session = Depends(get_db)):
     updated = update_property_service(db, property_id, property)
     if not updated:
-        raise HTTPException(status_code=404, detail="Property not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
     return updated
 
 @router.delete(
@@ -59,5 +59,5 @@ def update_property_endpoint(property_id: int, property: PropertyCreateSchema, d
 def delete_property_endpoint(property_id: int, db: Session = Depends(get_db)):
     deleted = delete_property_service(db, property_id)
     if not deleted:
-        raise HTTPException(status_code=404, detail="Property not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
     return deleted
