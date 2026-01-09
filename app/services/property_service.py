@@ -1,9 +1,15 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
+from decimal import Decimal
 
-from app.repositories.property_repository import create_property, list_properties, update_property, soft_delete_property, get_property
+from app.repositories.property_repository import create_property, list_properties, list_properties_by_user, update_property, soft_delete_property, get_property
 from app.models.user_model import UserModel
 from app.schemas.property_schema import PropertyCreateSchema, PropertyUpdateSchema
+
+
+# -----------------------------------------------
+# CRUD - CREATE
+# -----------------------------------------------
 
 def create_property_service(db: Session, property_data: PropertyCreateSchema, user: UserModel):
     property = create_property(db, property_data, user)
@@ -11,11 +17,37 @@ def create_property_service(db: Session, property_data: PropertyCreateSchema, us
     db.refresh(property)
     return property
 
-def list_properties_service(db: Session):
-    return list_properties(db)
+
+# -----------------------------------------------
+# CRUD - READ
+# -----------------------------------------------
+
+def list_properties_service(
+        db: Session,
+        price_min: Decimal | None,
+        price_max: Decimal | None,
+        limit: int,
+        offset: int
+    ):
+    return list_properties(db, price_min, price_max, limit, offset)
+
+def list_properties_by_user_service(
+        db: Session,
+        user_id: int,
+        price_min: Decimal | None,
+        price_max: Decimal | None,
+        limit: int,
+        offset: int
+    ):
+    return list_properties_by_user(db, user_id, price_min, price_max, limit, offset)
 
 def get_property_service(db: Session, property_id: int):
     return get_property(db, property_id)
+
+
+# -----------------------------------------------
+# CRUD - UPDATE
+# -----------------------------------------------
 
 def update_property_service(db: Session, property_id: int, property_data: PropertyUpdateSchema, user: UserModel):
     property = get_property(db, property_id)
@@ -29,6 +61,11 @@ def update_property_service(db: Session, property_id: int, property_data: Proper
     db.commit()
     db.refresh(updated)
     return updated
+
+
+# -----------------------------------------------
+# CRUD - DELETE
+# -----------------------------------------------
 
 def delete_property_service(db: Session, property_id: int, user: UserModel):
     property = get_property(db, property_id)
