@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.repositories.property_repository import create_property, list_properties, update_property, delete_property, get_property
+from app.repositories.property_repository import create_property, list_properties, update_property, soft_delete_property, get_property
 from app.models.user_model import UserModel
 from app.schemas.property_schema import PropertyCreateSchema, PropertyUpdateSchema
 
@@ -38,6 +38,6 @@ def delete_property_service(db: Session, property_id: int, user: UserModel):
     if property.user_id != user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You do not own this property")
 
-    delete_property(db, property_id)
+    deleted = soft_delete_property(db, property_id)
     db.commit()
-    return property
+    return deleted
