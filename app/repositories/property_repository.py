@@ -1,11 +1,12 @@
 from sqlalchemy.orm import Session
 from app.models.property_model import PropertyModel
+from app.models.user_model import UserModel
 from app.schemas.property_schema import PropertyCreateSchema, PropertyUpdateSchema
 
 
-def create_property(db: Session, schema: PropertyCreateSchema):
+def create_property(db: Session, schema: PropertyCreateSchema, user: UserModel):
     data = schema.model_dump() # exclude={"tags_ids"}
-    db_property = PropertyModel(**data)
+    db_property = PropertyModel(**data, user_id=user.id)
     db.add(db_property)
     return db_property
 
@@ -16,7 +17,7 @@ def get_property(db: Session, property_id: int):
     return db.query(PropertyModel).filter(PropertyModel.id == property_id).first()
 
 def update_property(db: Session, property_id: int, schema: PropertyUpdateSchema):
-    db_property = db.query(PropertyModel).filter(PropertyModel.id == property_id).first()
+    db_property = get_property(db, property_id)
     if not db_property:
         return None
     
@@ -26,7 +27,7 @@ def update_property(db: Session, property_id: int, schema: PropertyUpdateSchema)
     return db_property
 
 def delete_property(db: Session, property_id: int):
-    db_property = db.query(PropertyModel).filter(PropertyModel.id == property_id).first()
+    db_property = get_property(db, property_id)
     if not db_property:
         return None
     

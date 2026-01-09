@@ -24,7 +24,7 @@ def create_property_endpoint(
     db: Session = Depends(get_db),
     current_user: UserModel = Security(get_current_user)
 ):
-    return create_property_service(db, property)
+    return create_property_service(db, property, current_user)
 
 
 # ------------ LIST PROPERTIES ENDPOINT ------------
@@ -65,7 +65,7 @@ def update_property_endpoint(
     db: Session = Depends(get_db),
     current_user: UserModel = Security(get_current_user)
 ):
-    updated = update_property_service(db, property_id, property)
+    updated = update_property_service(db, property_id, property, current_user)
     if not updated:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
     return updated
@@ -83,7 +83,7 @@ def delete_property_endpoint(
     db: Session = Depends(get_db),
     current_user: UserModel = Security(get_current_user)
 ):
-    deleted = delete_property_service(db, property_id)
+    deleted = delete_property_service(db, property_id, current_user)
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
     return deleted
