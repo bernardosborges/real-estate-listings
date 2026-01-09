@@ -7,7 +7,7 @@ from app.core.config import settings
 from app.core.oauth2 import get_current_user
 from app.models.user_model import UserModel
 from app.schemas.property_schema import PropertyCreateSchema, PropertyReadSchema, PropertyUpdateSchema
-from app.services.property_service import create_property_service, list_properties_service, list_properties_by_user_service, update_property_service, delete_property_service, get_property_service
+from app.services.property_service import create_property_service, list_properties_service, list_properties_by_user_service, list_properties_for_map_service, update_property_service, delete_property_service, get_property_service
 
 
 
@@ -71,6 +71,29 @@ def list_properties_by_user_endpoint(
     offset: int = Query(0, ge=0, description="Number of results do skip")
 ):
     return list_properties_by_user_service(db, user_id, price_min, price_max, limit, offset)
+
+# -----------------------------------------------
+# ENDPOINT - LIST PROPERTIES IN MAP
+# -----------------------------------------------
+
+@router.get(
+        "/map",
+        response_model=list[PropertyReadSchema],
+        summary="List properties in map viewport",
+        description="Retrieves a paginated list of all active properties in a viewport. You can filter or paginate results."
+)
+def list_properties_for_map_endpoint(
+    db: Session = Depends(get_db),
+    min_lat: float = Query(..., ge=-90, le=90, description="Minimum latitude"),
+    max_lat: float = Query(..., ge=-90, le=90, description="Maximum latitude"),
+    min_lng: float = Query(..., ge=-180, le=180, description="Minumum longitude"),
+    max_lng: float = Query(..., ge=-180, le=180, description="Maximum longitude"),
+    price_min: Decimal | None = Query(None, ge=0, description="Minimum price"),
+    price_max: Decimal | None = Query(None, ge=0, description="Maximum price"),
+    limit: int = Query(10, ge=1, le=100, description="Maximum number of results"),
+    offset: int = Query(0, ge=0, description="Number of results do skip")
+):
+    return list_properties_for_map_service(db, min_lat, max_lat, min_lng, max_lng, price_min, price_max, limit, offset)
 
 
 # -----------------------------------------------

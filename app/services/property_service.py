@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from decimal import Decimal
 
-from app.repositories.property_repository import create_property, list_properties, list_properties_by_user, update_property, soft_delete_property, get_property
+from app.repositories.property_repository import create_property, list_properties, list_properties_by_user, list_properties_in_rectangle, update_property, soft_delete_property, get_property
 from app.models.user_model import UserModel
 from app.schemas.property_schema import PropertyCreateSchema, PropertyUpdateSchema
 
@@ -43,6 +43,19 @@ def list_properties_by_user_service(
 
 def get_property_service(db: Session, property_id: int):
     return get_property(db, property_id)
+
+def list_properties_for_map_service(
+        db: Session,
+        min_lat: float,
+        max_lat: float,
+        min_lng: float,
+        max_lng: float,
+        price_min: Decimal | None,
+        price_max: Decimal | None,
+        limit: int = 50,
+        offset: int = 0
+):
+    return list_properties_in_rectangle(db, min_lat, max_lat, min_lng, max_lng, price_min, price_max, limit, offset)
 
 
 # -----------------------------------------------
