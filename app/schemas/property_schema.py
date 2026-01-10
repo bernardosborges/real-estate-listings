@@ -2,14 +2,16 @@ from pydantic import BaseModel, field_validator
 from decimal import Decimal
 from typing import Optional
 
+from app.schemas.address_schema import AddressCreateSchema, AddressReadSchema
+
+# -----------------------------------------------
+# BASE
+# -----------------------------------------------
+
 class PropertyBaseSchema(BaseModel):
     description: str
     price: Decimal
     private_area: Decimal
-    address: str
-    latitude: Decimal | None = None
-    longitude: Decimal | None = None
-
 
     model_config = {
         "title": "PropertyBaseSchema",
@@ -19,14 +21,22 @@ class PropertyBaseSchema(BaseModel):
                 "description": "Apartamento padrão",
                 "price": 250000.00,
                 "private_area": 80.00,
-                "address": "Rua das Flores, 80",
-                "latitude": -30.0346,
-                "longitude": -51.2177
+                "address": {
+                    "zip_code": "90000000",
+                    "country": "BR",
+                    "state": "RS",
+                    "city": "Porto Alegre",
+                    "neighborhood": "Centro",
+                    "street": "Rua das Flores",
+                    "number": "80",
+                    "complement": "Apto 301",
+                    "latitude": -30.0346,
+                    "longitude": -51.2177
+                }
             }
         }
     }
 
-    # -------- VALIDATORS --------
     @field_validator('price')
     def price_must_be_positive(cls, v):
         if v <= 0:
@@ -39,27 +49,27 @@ class PropertyBaseSchema(BaseModel):
             raise ValueError("Private area must be greater than 0")
         return v
 
-    @field_validator('latitude')
-    def latitude_must_be_valid(cls, v):
-        if v is not None and not (-90 <= v <= 90):
-            raise ValueError("Latitude must be between -90 and 90")
-        return v
 
-    @field_validator('longitude')
-    def longitude_must_be_valid(cls, v):
-        if v is not None and not (-180 <= v <= 180):
-            raise ValueError("Longitude must be between -180 and 180")
-        return v
+# -----------------------------------------------
+# CREATE
+# -----------------------------------------------
 
 class PropertyCreateSchema(PropertyBaseSchema):
     """
     Schema used to create a new property.
     Inherits all fields from PropertyBaseSchema
     """
+
+    address: AddressCreateSchema
+
     model_config = {
         **PropertyBaseSchema.model_config,
         "title": "PropertyCreateSchema"
     }
+
+# -----------------------------------------------
+# READ
+# -----------------------------------------------
 
 class PropertyReadSchema(PropertyBaseSchema):
     """
@@ -67,25 +77,32 @@ class PropertyReadSchema(PropertyBaseSchema):
     Adds the 'id' field returned by the database.
     """
     id: int
+    is_active: bool
+    address: AddressReadSchema
 
     model_config = {
         **PropertyBaseSchema.model_config,
         "title": "PropertyReadSchema",
         "json_schema_extra": {
             "example": {
-                **PropertyBaseSchema.model_config["json_schema_extra"]["example"],
-                "id": 1
+                "id": 1,
+                "is_active": True,
+                **PropertyBaseSchema.model_config["json_schema_extra"]["example"]
             }
         }
     }
 
+# -----------------------------------------------
+# UPDATE
+# -----------------------------------------------
+
 class PropertyUpdateSchema(BaseModel):
-    description: Optional[str] = None
-    price: Optional[Decimal] = None
-    private_area: Optional[Decimal] = None
-    address: Optional[str] = None
-    latitude: Optional[Decimal] = None
-    longitude: Optional[Decimal] = None
+    description: str | None = None
+    price: Decimal | None = None
+    private_area: Decimal | None = None
+    is_active: bool | None = None
+
+    address: AddressCreateSchema | None = None
 
     # -------- VALIDATORS --------
     @field_validator('price')
@@ -98,16 +115,4 @@ class PropertyUpdateSchema(BaseModel):
     def private_area_must_be_positive(cls, v):
         if v is not None and v <= 0:
             raise ValueError("Private area must be greater than 0")
-        return v
-    
-    @field_validator('latitude')
-    def latitude_must_be_valid(cls, v):
-        if v is not None and not (-90 <= v <= 90):
-            raise ValueError("Latitude must be between -90 and 90")
-        return v
-
-    @field_validator('longitude')
-    def longitude_must_be_valid(cls, v):
-        if v is not None and not (-180 <= v <= 180):
-            raise ValueError("Longitude must be between -180 and 180")
         return v

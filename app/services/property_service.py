@@ -5,6 +5,7 @@ from decimal import Decimal
 from app.repositories.property_repository import create_property, list_properties, list_properties_by_user, list_properties_in_rectangle, update_property, soft_delete_property, get_property
 from app.models.user_model import UserModel
 from app.schemas.property_schema import PropertyCreateSchema, PropertyUpdateSchema
+from app.services.address_service import get_or_create_address
 
 
 # -----------------------------------------------
@@ -12,7 +13,15 @@ from app.schemas.property_schema import PropertyCreateSchema, PropertyUpdateSche
 # -----------------------------------------------
 
 def create_property_service(db: Session, property_data: PropertyCreateSchema, user: UserModel):
-    property = create_property(db, property_data, user)
+    address = get_or_create_address(db, property_data.address)
+    
+    property = create_property(
+        db,
+        description=property_data.description,
+        price=property_data.price,
+        private_area=property_data.private_area,
+        user_id=user.id,
+        address_id=address.id)
     db.commit()
     db.refresh(property)
     return property
@@ -63,17 +72,26 @@ def list_properties_for_map_service(
 # -----------------------------------------------
 
 def update_property_service(db: Session, property_id: int, property_data: PropertyUpdateSchema, user: UserModel):
-    property = get_property(db, property_id)
-    if not property:
+    db_property = get_property(db, property_id)
+    if not db_property:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
     
-    if property.user_id != user.id:
+    if db_property.user_id != user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You do not own this property")
 
-    updated = update_property(db, property_id, property_data)
+    update_data = property_data.model_dump(exclude_unset=True)
+    
+    address_data = update_data.pop("address", None)
+    if address_data:
+        address = get_or_create_address(db, address_data)
+        update_data["address_id"] = address.id
+
+    for key, value in update_data.items():
+        setattr(db_property, key, value)
+
     db.commit()
-    db.refresh(updated)
-    return updated
+    db.refresh(db_property)
+    return db_property
 
 
 # -----------------------------------------------

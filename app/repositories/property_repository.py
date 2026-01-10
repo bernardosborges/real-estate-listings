@@ -11,10 +11,18 @@ from app.schemas.property_schema import PropertyCreateSchema, PropertyUpdateSche
 # CRUD - CREATE
 # -----------------------------------------------
 
-def create_property(db: Session, schema: PropertyCreateSchema, user: UserModel):
-    data = schema.model_dump() # exclude={"tags_ids"}
-    db_property = PropertyModel(**data, user_id=user.id)
+def create_property(db: Session, description: str, price: Decimal, private_area: Decimal, user_id: int, address_id: int):
+    #data = schema.model_dump() # exclude={"tags_ids"}
+    #db_property = PropertyModel(**data, user_id=user_id)
+    db_property = PropertyModel(
+        description=description,
+        price=price,
+        private_area=private_area,
+        user_id=user_id,
+        address_id=address_id
+    )
     db.add(db_property)
+    db.flush()
     return db_property
 
 

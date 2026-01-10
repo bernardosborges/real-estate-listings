@@ -11,15 +11,14 @@ class PropertyModel(Base):
     description = Column(String(500), nullable=False)
     price = Column(Numeric(12,2), nullable=False)
     private_area = Column(Numeric(10,2), nullable=False)
-    address = Column(String(255), nullable=False)
-
-    latitude = Column(Numeric(9,6), nullable=True)
-    longitude = Column(Numeric(9,6), nullable=True)
 
     is_active = Column(Boolean, default=True, nullable=False)
 
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     user = relationship("UserModel", backref="properties")
+
+    address_id = Column(Integer, ForeignKey("addresses.id", name="fk_properties_address_id", ondelete="RESTRICT"), nullable=False, index=True) 
+    address = relationship("AddressModel", back_populates="properties")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
