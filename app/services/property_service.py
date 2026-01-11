@@ -1,3 +1,5 @@
+import httpx
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from decimal import Decimal
@@ -6,14 +8,17 @@ from app.repositories.property_repository import create_property, list_propertie
 from app.models.user_model import UserModel
 from app.schemas.property_schema import PropertyCreateSchema, PropertyUpdateSchema
 from app.services.address_service import get_or_create_address
+from app.services.cep_service import resolve_address_input_async
 
 
 # -----------------------------------------------
 # CRUD - CREATE
 # -----------------------------------------------
 
-def create_property_service(db: Session, property_data: PropertyCreateSchema, user: UserModel):
-    address = get_or_create_address(db, property_data.address)
+async def create_property_service(db: Session, property_data: PropertyCreateSchema, user: UserModel):
+    
+    resolved_address = await resolve_address_input_async(property_data.address)
+    address = get_or_create_address(db, resolved_address)
     
     property = create_property(
         db,
@@ -22,6 +27,8 @@ def create_property_service(db: Session, property_data: PropertyCreateSchema, us
         private_area=property_data.private_area,
         user_id=user.id,
         address_id=address.id)
+    
+    db.add(property)
     db.commit()
     db.refresh(property)
     return property

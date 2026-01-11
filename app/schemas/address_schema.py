@@ -14,7 +14,7 @@ class AddressBaseSchema(BaseModel):
     neighborhood: str
     street: str
     number: str
-    complement: str
+    complement: str | None = None
 
     latitude: Decimal | None = None
     longitude: Decimal | None = None
@@ -37,12 +37,6 @@ class AddressBaseSchema(BaseModel):
             }
         }
     }
-
-    @field_validator('zip_code')
-    def zip_code_must_be_valid(cls, v):
-        if not v.isdigit() or len(v) != 8:
-            raise ValueError("Invaliz zip code. It must contain exactly 8 digits")
-        return v
     
     @field_validator('latitude')
     def latitude_must_be_valid(cls, v):
@@ -62,11 +56,33 @@ class AddressBaseSchema(BaseModel):
 # -----------------------------------------------
 
 class AddressCreateSchema(AddressBaseSchema):
+    zip_code: str
+    country: str = "BR"
+    state: str | None = None
+    city: str | None = None
+    neighborhood: str | None = None
+    street: str | None = None
+    number: str | None = None
+    complement: str | None = None
+
+    latitude: Decimal | None = None
+    longitude: Decimal | None = None
+
+
 
     model_config = {
         **AddressBaseSchema.model_config,
         "title": "AddressCreateSchema"
     }
+
+    @field_validator("zip_code", mode="before")
+    def normalize_and_validate_zip_code(cls, v):
+        if v is None:
+            raise ValueError("Zip code is required.")
+        digits = re.sub(r"\D", "", v)
+        if len(digits) != 8:
+            raise ValueError("Invalid zip code. It must contains exactly 8 digits")
+        return digits
 
 
 # -----------------------------------------------

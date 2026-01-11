@@ -22,5 +22,3 @@ def get_or_create_address(db: Session, address_data: AddressCreateSchema) -> Add
     
     new_address = create_address(db, address_data)
     return new_address
-
-    
