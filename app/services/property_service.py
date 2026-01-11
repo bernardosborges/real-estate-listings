@@ -15,10 +15,8 @@ from app.services.cep_service import resolve_address_input_async
 # CRUD - CREATE
 # -----------------------------------------------
 
-async def create_property_service(db: Session, property_data: PropertyCreateSchema, user: UserModel):
-    
-    resolved_address = await resolve_address_input_async(property_data.address)
-    address = get_or_create_address(db, resolved_address)
+def create_property_service(db: Session, property_data: PropertyCreateSchema, user: UserModel):
+    address = get_or_create_address(db, property_data.address)
     
     property = create_property(
         db,
@@ -28,7 +26,6 @@ async def create_property_service(db: Session, property_data: PropertyCreateSche
         user_id=user.id,
         address_id=address.id)
     
-    db.add(property)
     db.commit()
     db.refresh(property)
     return property

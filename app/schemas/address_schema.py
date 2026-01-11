@@ -58,11 +58,11 @@ class AddressBaseSchema(BaseModel):
 class AddressCreateSchema(AddressBaseSchema):
     zip_code: str
     country: str = "BR"
-    state: str | None = None
-    city: str | None = None
-    neighborhood: str | None = None
-    street: str | None = None
-    number: str | None = None
+    state: str
+    city: str
+    neighborhood: str
+    street: str
+    number: str
     complement: str | None = None
 
     latitude: Decimal | None = None
@@ -102,6 +102,14 @@ class AddressReadSchema(AddressBaseSchema):
             }
         }
     }
+
+class AddressLookupSchema(BaseModel):
+    zip_code: str
+    country: str = "BR"
+    state: str | None = None
+    city: str | None = None
+    neighborhood: str | None = None
+    street: str | None = None
 
 # -----------------------------------------------
 # UPDATE

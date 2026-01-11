@@ -24,12 +24,12 @@ router = APIRouter(prefix=f"{settings.API_PREFIX}/properties", tags=["Properties
         summary="Create a new property",
         description="Adds a new property to the database. Requires description, price, private area, address, latitude and longitude."
 )
-async def create_property_endpoint(
+def create_property_endpoint(
     property: PropertyCreateSchema,
     db: Session = Depends(get_db),
     current_user: UserModel = Security(get_current_user)
 ):
-    return await create_property_service(db, property, current_user)
+    return create_property_service(db, property, current_user)
 
 
 # -----------------------------------------------
