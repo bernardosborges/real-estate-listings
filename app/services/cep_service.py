@@ -26,7 +26,7 @@ def _build_address(address: AddressCreateSchema, cep_data: Optional[dict]) -> Ad
         "number": address.number,
         "complement": address.complement,
         "latitude": address.latitude,
-        "longitute": address.longitude
+        "longitude": address.longitude
     }
     if cep_data:
         data.update({
