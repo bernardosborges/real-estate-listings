@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
+    GOOGLE_CODING_API_KEY: str
+
     API_PREFIX: str  = "/api/v0"
 
     model_config = SettingsConfigDict(

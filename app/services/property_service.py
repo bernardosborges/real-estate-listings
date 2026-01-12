@@ -1,4 +1,6 @@
 import httpx
+import asyncio
+import logging
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -9,14 +11,35 @@ from app.models.user_model import UserModel
 from app.schemas.property_schema import PropertyCreateSchema, PropertyUpdateSchema
 from app.services.address_service import get_or_create_address
 from app.services.cep_service import resolve_address_input_async
+from app.services.geocoding_service import geocode_address
+from app.schemas.address_schema import AddressCreateSchema
 
+logger = logging.getLogger(__name__)
 
 # -----------------------------------------------
 # CRUD - CREATE
 # -----------------------------------------------
 
 def create_property_service(db: Session, property_data: PropertyCreateSchema, user: UserModel):
-    address = get_or_create_address(db, property_data.address)
+    
+    address_data = property_data.address
+
+    lat = None
+    lng = None
+
+    try:
+        lat, lng = asyncio.run(geocode_address(address_data))
+    except Exception as e:
+        logger.warning("Geocoding failed during property creation", extra={"zip_code": address_data.zip_code}, exc_info=e)
+        #raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="Unable to determine property location")
+
+    address_payload = address_data.model_dump()
+    address_payload.pop("latitude", None)
+    address_payload.pop("longitude", None)
+
+    address_schema = AddressCreateSchema(**address_payload, latitude=lat, longitude=lng)
+
+    address = get_or_create_address(db, address_schema)
     
     property = create_property(
         db,
