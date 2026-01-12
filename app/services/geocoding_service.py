@@ -6,6 +6,7 @@ from decimal import Decimal
 
 from app.core.config import settings
 from app.schemas.address_schema import AddressCreateSchema
+from app.core.exceptions.geocoding_exceptions import GeocodingFailed, GeocodingUnavailable
 
 GOOGLE_GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 logger = logging.getLogger(__name__)
@@ -24,17 +25,22 @@ async def geocode_address (address: AddressCreateSchema) -> tuple[Decimal, Decim
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
             response = await client.get(GOOGLE_GEOCODE_URL, params=params)
-            response.raise_for_status()
-    except httpx.RequestError:
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Geocoding service unavailable")
+    except httpx.RequestError as exc:
+        logger.warning("Geocoding service unavailable", extra={"address": full_address, "error": str(exc)})
+        raise GeocodingUnavailable()
     except httpx.HTTPStatusError:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Error communicating with geocoding service")
     
+    if response.status_code != 200:
+        logger.error("Invalid response from geocoding provider", extra={"status_code": response.status_code, "body": response.text})
+        raise GeocodingUnavailable()
+
     data = response.json()
-    #print("GOOGLE GEOCODING RESPONSE:", data)
+    print("GOOGLE GEOCODING RESPONSE:", data)
 
     if data.get("status") != "OK" or not data.get("results"):
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="Unable to geocode address")
+        logger.info("Geocoding failed", extra={"address": full_address, "provider_status": data.get("status")})
+        raise GeocodingFailed()
 
     location = data["results"][0]["geometry"]["location"]
 

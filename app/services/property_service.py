@@ -13,6 +13,7 @@ from app.services.address_service import get_or_create_address
 from app.services.cep_service import resolve_address_input_async
 from app.services.geocoding_service import geocode_address
 from app.schemas.address_schema import AddressCreateSchema
+from app.core.exceptions.domain_exception import PropertyForbidden, PropertyNotFound
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +79,10 @@ def list_properties_by_user_service(
     return list_properties_by_user(db, user_id, price_min, price_max, limit, offset)
 
 def get_property_service(db: Session, property_id: int):
-    return get_property(db, property_id)
+    property = get_property(db, property_id)
+    if not property:
+         raise PropertyNotFound()
+    return property
 
 def list_properties_for_map_service(
         db: Session,
@@ -99,22 +103,18 @@ def list_properties_for_map_service(
 # -----------------------------------------------
 
 def update_property_service(db: Session, property_id: int, property_data: PropertyUpdateSchema, user: UserModel):
-    db_property = get_property(db, property_id)
+    db_property = update_property(db, property_id, property_data)
+    
     if not db_property:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
+        raise PropertyNotFound()
     
     if db_property.user_id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You do not own this property")
+        raise PropertyForbidden()
 
-    update_data = property_data.model_dump(exclude_unset=True)
-    
-    address_data = update_data.pop("address", None)
+    address_data = property_data.address
     if address_data:
         address = get_or_create_address(db, address_data)
-        update_data["address_id"] = address.id
-
-    for key, value in update_data.items():
-        setattr(db_property, key, value)
+        db_property.address_id = address.id
 
     db.commit()
     db.refresh(db_property)

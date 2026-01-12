@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
+from app.core.exceptions.domain_exception import EmailAlreadyRegistered
 from app.models.user_model import UserModel
 
 
@@ -8,8 +10,13 @@ from app.models.user_model import UserModel
 # -----------------------------------------------
 
 def add_user(db: Session, user: UserModel) -> UserModel:
-    db.add(user)
-    return user
+    try:
+        db.add(user)
+        db.flush()
+        return user
+    except IntegrityError:
+        db.rollback()
+        raise EmailAlreadyRegistered()
 
 
 # -----------------------------------------------

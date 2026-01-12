@@ -2,13 +2,9 @@ import requests
 import re
 import httpx
 from typing import Optional
-from fastapi import HTTPException, status
 
 from app.schemas.address_schema import AddressBaseSchema, AddressCreateSchema
-
-
-class CEPNotFoundError(Exception):
-    pass
+from app.core.exceptions.address_exceptions import CEPInvalid, CEPNotFound, AddressIncomplete
 
 REQUIRED_FIELDS = [
     "state",
@@ -42,7 +38,7 @@ def _build_address(address: AddressCreateSchema, cep_data: Optional[dict]) -> Ad
  
     missing = [f for f in REQUIRED_FIELDS if not data.get(f)]
     if missing:
-        raise ValueError(
+        raise AddressIncomplete(
             f"Incomplete address. Missing fields. {', '.join(missing)}"
         )
 
@@ -55,7 +51,7 @@ async def resolve_address_input_async(address: AddressCreateSchema) -> AddressBa
 
     try:
         cep_data = await get_address_from_cep_async(address.zip_code)
-    except CEPNotFoundError:
+    except CEPNotFound:
         pass
     return _build_address(address, cep_data)
 
@@ -64,7 +60,7 @@ def resolve_address_input(address: AddressCreateSchema) -> AddressBaseSchema:
 
     try:
         cep_data = get_address_from_cep(address.zip_code)
-    except Exception:
+    except CEPNotFound:
         cep_data = None
 
     return _build_address(address, cep_data)
@@ -73,18 +69,21 @@ def resolve_address_input(address: AddressCreateSchema) -> AddressBaseSchema:
 def get_address_from_cep(cep: str) -> dict:
     cep = normalize_cep(cep)
 
-    response = requests.get(
-        f"https://viacep.com.br/ws/{cep}/json/",
-        timeout = 5
-    )
+    try:
+        response = requests.get(
+            f"https://viacep.com.br/ws/{cep}/json/",
+            timeout = 5
+        )
+    except requests.RequestException:
+        raise CEPNotFound()
 
-    if response.status_code != status.HTTP_200_OK:
-        raise CEPNotFoundError("Error consulting zip code")
+    if response.status_code != 200:
+        raise CEPNotFound()
 
     data = response.json()
 
     if data.get("erro"):
-        raise CEPNotFoundError("Zip code not found")
+        raise CEPNotFound()
 
     return {
         "zip_code": cep,
@@ -98,16 +97,21 @@ def get_address_from_cep(cep: str) -> dict:
 async def get_address_from_cep_async(cep: str) -> dict:
     cep = normalize_cep(cep)
 
-    async with httpx.AsyncClient(timeout=5) as client:
-        response = await client.get(
-            f"https://viacep.com.br/ws/{cep}/json/"
-        )
-    response.raise_for_status()
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            response = await client.get(
+                f"https://viacep.com.br/ws/{cep}/json/"
+            )
+    except httpx.RequestError:
+        raise CEPNotFound()
+
+    if response.status_code != 200:
+        raise CEPNotFound()
 
     data = response.json()
 
     if data.get("erro"):
-        raise CEPNotFoundError("Zip code not found")
+        raise CEPNotFound()
 
     return {
         "zip_code": cep,
@@ -120,12 +124,12 @@ async def get_address_from_cep_async(cep: str) -> dict:
 
 def normalize_cep(cep: str) -> str:
     if not cep:
-        raise CEPNotFoundError("Invalid BR zip-code 'CEP'")
+        raise CEPInvalid("CEP is required")
     
     digits = re.sub(r"\D","",cep)
 
     if len(digits) != 8:
-        raise CEPNotFoundError("Invalid BR zip-code 'CEP'")
+        raise CEPInvalid("CEP must have 8 digits")
     
     return digits
 

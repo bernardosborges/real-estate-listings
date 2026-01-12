@@ -107,10 +107,7 @@ def list_properties_for_map_endpoint(
         description="Retrieves a property from the database."
 )
 def get_property_endpoint(property_id: int, db: Session = Depends(get_db)):
-    property = get_property_service(db, property_id)
-    if not property:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
-    return property
+    return get_property_service(db, property_id)
 
 
 
@@ -120,7 +117,7 @@ def get_property_endpoint(property_id: int, db: Session = Depends(get_db)):
 
 @router.patch(
         "/{property_id}", 
-        response_model=PropertyUpdateSchema,
+        response_model=PropertyReadSchema,
         summary="Update a property",
         description="Updates a property to the database."
 )
@@ -130,10 +127,7 @@ def update_property_endpoint(
     db: Session = Depends(get_db),
     current_user: UserModel = Security(get_current_user)
 ):
-    updated = update_property_service(db, property_id, property, current_user)
-    if not updated:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
-    return updated
+    return update_property_service(db, property_id, property, current_user)
 
 
 # -----------------------------------------------

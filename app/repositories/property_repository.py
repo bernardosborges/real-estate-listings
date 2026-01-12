@@ -97,14 +97,18 @@ def list_properties_in_rectangle(
 # CRUD - UPDATE
 # -----------------------------------------------
 
-def update_property(db: Session, property_id: int, schema: PropertyUpdateSchema):
+def update_property(db: Session, property_id: int, property_data: PropertyUpdateSchema):
     db_property = get_property(db, property_id)
     if not db_property:
         return None
     
-    update_data = schema.model_dump(exclude_unset=True) # Exclude empty fields
+    update_data = property_data.model_dump(exclude_unset=True) # Exclude empty fields
+
+    update_data.pop("address", None)
+
     for key, value in update_data.items():
         setattr(db_property, key, value)
+    
     return db_property
 
 
