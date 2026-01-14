@@ -69,3 +69,58 @@ class EmailAlreadyRegistered(DomainException):
     status_code = status.HTTP_409_CONFLICT
     error_code = "EMAIL_ALREADY_REGISTERED"
     message = "Email already registered"
+
+# -----------------------------------------------
+# PROPERTY TAG
+# -----------------------------------------------
+
+class PropertyTagNotFound(DomainException):
+    status_code = status.HTTP_404_NOT_FOUND
+    error_code = "PROPERTY_TAG_NOT_FOUND"
+    message = "Property tag not found"
+
+# -----------------------------------------------
+# TAGS
+# -----------------------------------------------
+
+class TagAlreadyExists(DomainException):
+    status_code = status.HTTP_404_NOT_FOUND
+    error_code = "TAG_ALREADY_EXISTS"
+    message = "Tag already exists"
+
+class TagNotFound(DomainException):
+    status_code = status.HTTP_404_NOT_FOUND
+    error_code = "TAG_NOT_FOUND"
+    message = "Tag not found"
+
+    def __init__(self, id: int | None = None, slug: str | None = None):
+        self.id = id
+        self.slug = slug
+        super().__init__(f"Tag {id}{slug} not found")
+
+# -----------------------------------------------
+# TAGS GROUP
+# -----------------------------------------------
+
+class TagGroupAlreadyExists(DomainException):
+    status_code = status.HTTP_404_NOT_FOUND
+    error_code = "TAG_GROUP_ALREADY_EXISTS"
+    message = "Tag group already exists"
+
+class TagGroupNotFound(DomainException):
+    status_code = status.HTTP_404_NOT_FOUND
+    error_code = "TAG_GROUP_NOT_FOUND"
+    message = "Tag group not found"
+
+    def __init__(self, id: int | None = None, slug: str | None = None):
+        self.id = id
+        self.slug = slug
+
+        if id is not None:
+            message = f"TagGroup with id={id} not found"
+        elif slug is not None:
+            message = f"TagGroup with slug='{slug}' not found"
+        else:
+            message = "TagGroup not found"
+
+        super().__init__(message)

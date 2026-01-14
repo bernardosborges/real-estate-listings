@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Security, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from jose import JWTError
@@ -30,3 +30,8 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials")
+    
+def superuser_required(current_user: UserModel = Security(get_current_user)) -> UserModel:
+    if not current_user.is_superuser:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You do not have permission to access this resource")
+    return current_user
