@@ -81,21 +81,27 @@ class PropertyTagRepository:
 # -----------------------------------------------
 
     @staticmethod
-    def delete(db: Session, property_id: int, tag_id: int) -> PropertyTagModel | None:
-        db_property_tag = PropertyTagRepository.get_by_property_and_tag(db, property_id, tag_id)
-        if not db_property_tag:
-            return None
-        
-        db.delete(db_property_tag)
-
-        return db_property_tag
+    def soft_delete(db: Session, property_id: int, tag_id: int) -> PropertyTagModel | None:
+        return PropertyTagRepository.delete(db, property_id, tag_id, hard=False)
+    
+    @staticmethod
+    def hard_delete(db: Session, property_id: int, tag_id: int) -> PropertyTagModel | None:
+        return PropertyTagRepository.delete(db, property_id, tag_id, hard=True)
 
     @staticmethod
-    def soft_delete(db: Session, property_id: int, tag_id: int) -> PropertyTagModel | None:
+    def delete(db: Session, property_id: int, tag_id: int, hard: bool = True) -> PropertyTagModel | None:
         db_property_tag = PropertyTagRepository.get_by_property_and_tag(db, property_id, tag_id)
         if not db_property_tag:
             return None
         
-        db_property_tag.deleted_at = datetime.now(timezone.utc)
+        if hard:
+            db.delete(db_property_tag)
+        else:
+            db_property_tag.deleted_at = datetime.now(timezone.utc)
 
         return db_property_tag
+    
+    @staticmethod
+    def hard_delete_exclusive_group(db: Session, property_id: int, group_id: int) -> int:
+        query = db.query(PropertyTagModel).filter(PropertyTagModel.property_id == property_id, PropertyTagModel.group_id == group_id).delete(synchronize_session=False)
+        return query

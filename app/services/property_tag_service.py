@@ -6,7 +6,7 @@ from app.repositories.tag_repository import TagRepository
 from app.models.property_tag_model import PropertyTagModel
 from app.models.property_model import PropertyModel
 from app.models.tag_model import TagModel
-from app.repositories.property_repository import get_property
+from app.repositories.property_repository import PropertyRepository
 from app.core.exceptions.domain_exception import PropertyNotFound, TagNotFound, TagGroupNotFound, PropertyTagNotFound
 from app.services.tag_service import TagService
 from app.services.tag_group_service import TagGroupService
@@ -19,9 +19,7 @@ class PropertyTagService:
 
     @staticmethod
     def add_tags_to_property(db: Session, property_id: int, tags_slug: List[str]) -> dict:
-        db_property = get_property(db, property_id)
-        if not db_property:
-            raise PropertyNotFound(f"Property {property_id} not found")
+        PropertyTagService.validate_property_exists(db, property_id)
         
         db_tags_info = []
         created_slugs = []
@@ -30,6 +28,9 @@ class PropertyTagService:
             if not db_tag:
                 raise TagNotFound(f"Tag {tag_slug} not found")
             
+            if db_tag.group and db_tag.group.is_exclusive:
+                PropertyTagRepository.hard_delete_exclusive_group(db, property_id, db_tag.group_id)
+
             existing = PropertyTagRepository.get_by_property_and_tag(db, property_id, db_tag.id)
             if existing:
                 continue
@@ -37,13 +38,14 @@ class PropertyTagService:
             db_tags_info.append({"tag_id": db_tag.id, "group_id": db_tag.group_id})
             created_slugs.append(tag_slug)
 
-        db_property_tags = PropertyTagRepository.create(db, property_id, db_tags_info)
+        if db_tags_info:
+            db_property_tags = PropertyTagRepository.create(db, property_id, db_tags_info)
+            for db_property_tag in db_property_tags:
+                db.refresh(db_property_tag)
 
         db.commit()
-        for db_property_tag in db_property_tags:
-            db.refresh(db_property_tag)
 
-        return PropertyTagService.list_tags_for_property(db, property_id) #db_property_tags #{"property_id": property_id, "tags_slug": created_slugs}
+        return PropertyTagService.list_tags_for_property(db, property_id)
 
 
 # -----------------------------------------------
@@ -52,9 +54,7 @@ class PropertyTagService:
         
     @staticmethod
     def list_tags_for_property(db: Session, property_id: int) -> dict:
-        db_property = get_property(db, property_id)
-        if not db_property:
-            raise PropertyNotFound(f"Property {property_id} not found") 
+        PropertyTagService.validate_property_exists(db, property_id) 
 
         db_property_tags = PropertyTagRepository.list_all_by_property(db, property_id)
 
@@ -98,9 +98,7 @@ class PropertyTagService:
 
     @staticmethod
     def restore(db: Session, property_id: int, tags_slug: List[str]) -> dict:
-        db_property = get_property(db, property_id)
-        if not db_property:
-            raise PropertyNotFound(f"Property {property_id} not found")
+        PropertyTagService.validate_property_exists(db, property_id)
         
         db_restored_tags = []
         for tag_slug in tags_slug:
@@ -134,15 +132,13 @@ class PropertyTagService:
 
     @staticmethod
     def remove_tags_from_property(db: Session, property_id: int, tags_slug: List[str]) -> dict:
-        db_property = get_property(db, property_id)
-        if not db_property:
-            raise PropertyNotFound(f"Property {property_id} not found")
+        db_property = PropertyTagService.validate_property_exists(db, property_id)
 
         for tag_slug in tags_slug:
             db_tag = TagService.get_by_slug(db, tag_slug)
             db_property_tag = PropertyTagRepository.get_by_property_and_tag(db, property_id, db_tag.id)
             if db_property_tag is not None:
-                PropertyTagRepository.delete(db, property_id, db_tag.id)
+                PropertyTagRepository.hard_delete(db, property_id, db_tag.id)
 
         db.commit()
         db.refresh(db_property)
@@ -157,3 +153,15 @@ class PropertyTagService:
         db.refresh(db_property_tag)
 
         return db_property_tag
+    
+
+# -----------------------------------------------
+# UTILS
+# -----------------------------------------------
+
+    @staticmethod
+    def validate_property_exists(db: Session, property_id) -> PropertyModel:
+        db_property = PropertyRepository.get_property(db, property_id)
+        if not db_property:
+            raise PropertyNotFound(f"Property {property_id} not found")
+        return db_property
