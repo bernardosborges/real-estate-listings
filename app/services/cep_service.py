@@ -75,15 +75,15 @@ def get_address_from_cep(cep: str) -> dict:
             timeout = 5
         )
     except requests.RequestException:
-        raise CEPNotFound()
+        raise CEPNotFound(cep)
 
     if response.status_code != 200:
-        raise CEPNotFound()
+        raise CEPNotFound(cep)
 
     data = response.json()
 
     if data.get("erro"):
-        raise CEPNotFound()
+        raise CEPNotFound(cep)
 
     return {
         "zip_code": cep,
@@ -103,15 +103,15 @@ async def get_address_from_cep_async(cep: str) -> dict:
                 f"https://viacep.com.br/ws/{cep}/json/"
             )
     except httpx.RequestError:
-        raise CEPNotFound()
+        raise CEPNotFound(cep)
 
     if response.status_code != 200:
-        raise CEPNotFound()
+        raise CEPNotFound(cep)
 
     data = response.json()
 
     if data.get("erro"):
-        raise CEPNotFound()
+        raise CEPNotFound(cep)
 
     return {
         "zip_code": cep,

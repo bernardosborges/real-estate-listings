@@ -13,6 +13,11 @@ class Settings(BaseSettings):
 
     GOOGLE_CODING_API_KEY: str
 
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    AWS_REGION: str
+    AWS_S3_BUCKET: str
+
     API_PREFIX: str  = "/api/v0"
 
     model_config = SettingsConfigDict(

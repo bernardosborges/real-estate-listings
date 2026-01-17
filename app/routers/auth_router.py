@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 from app.schemas.user_schema import UserCreateSchema, UserReadSchema, UserLoginSchema
 from app.core.database import get_db
 from app.core.config import settings
-from app.services.user_service import register_user_service
-from app.services.auth_service import authenticate_user_service, generate_token_for_user_service
+from app.services.user_service import UserService
+from app.services.auth_service import AuthService
 
 router = APIRouter(prefix=f"{settings.API_PREFIX}/auth", tags=["Auth"])
 
@@ -25,7 +25,7 @@ def register_user_endpoint(
     db: Session = Depends(get_db)
 ):
     try:
-        return register_user_service(db, user_data.email, user_data.password)
+        return UserService.register_user_service(db, user_data.email, user_data.password)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -44,8 +44,8 @@ def login_user_endpoint(
     user_data: UserLoginSchema,
     db: Session = Depends(get_db)
 ):
-    user = authenticate_user_service(db, user_data.email, user_data.password)
+    user = AuthService.authenticate_user_service(db, user_data.email, user_data.password)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
 
-    return generate_token_for_user_service(user)
+    return AuthService.generate_token_for_user_service(user)

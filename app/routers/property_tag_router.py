@@ -41,7 +41,7 @@ def create_property_tag_endpoint(
         summary="List all tags added to a property",
         description="Retrieves a list of tags added to a specific property."
 )
-def list_tags_for_property_endponit(
+def list_tags_for_property_endpoint(
     property_id: int,
     db: Session = Depends(get_db),
     current_user: UserModel = Security(get_current_user)

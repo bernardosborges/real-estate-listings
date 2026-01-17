@@ -21,7 +21,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from app.core.database import Base
-from app.models import property_tag_model, user_model, property_model, address_model, tag_group_model, tag_model
+from app.models import property_tag_model, user_model, property_model, address_model, tag_group_model, tag_model, photo_model, user_profile_model
 
 target_metadata = Base.metadata
 

@@ -11,7 +11,11 @@ class CEPInvalid(DomainException):
 class CEPNotFound(DomainException):
     status_code = status.HTTP_404_NOT_FOUND
     error_code = "ADDRESS_CEP_NOT_FROUND"
-    message = "CEP not found"
+    message = "CEP was not found"
+
+    def __init__(self, cep: str | None = None):
+        self.cep = cep
+        super().__init__(f"CEP {cep} was not found")
 
 class AddressIncomplete(DomainException):
     status_code = status.HTTP_422_UNPROCESSABLE_CONTENT

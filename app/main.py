@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 from app.core.exceptions import domain_exception
-from app.routers import property_router, auth_router, zipcode_router, tag_group_router, tag_router, property_tag_router
+from app.routers import property_router, auth_router, zipcode_router, tag_group_router, tag_router, property_tag_router, photo_router, user_profile_router
 from app.core.exceptions.domain_exception import DomainException
 from app.core.exceptions import exception_handlers
 from app.core.exceptions.domain_exception import PropertyForbidden, PropertyNotFound
@@ -18,6 +18,8 @@ app.include_router(zipcode_router.router)
 app.include_router(tag_group_router.router)
 app.include_router(tag_router.router)
 app.include_router(property_tag_router.router)
+app.include_router(photo_router.router)
+app.include_router(user_profile_router.router)
 
 # # Register global exceptions handlers
 # app.add_exception_handler(HTTPException, exception.http_exception_handler)

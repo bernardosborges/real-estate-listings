@@ -45,6 +45,15 @@ class InvalidCredentials(DomainException):
     error_code = "INVALID_CREDENTIALS"
     message = "Invalid user credentials"
 
+class ForbiddenAction(DomainException):
+    status_code = status.HTTP_403_FORBIDDEN
+    error_code = "PERMISSION_DENIED"
+    message = "You are not allowed to perform this action."
+
+    def __init__(self, action: str, resource: str):
+        self.message = f"You are not allowed to {action} this {resource}."
+
+
 
 # -----------------------------------------------
 # PROPERTY
@@ -69,6 +78,40 @@ class EmailAlreadyRegistered(DomainException):
     status_code = status.HTTP_409_CONFLICT
     error_code = "EMAIL_ALREADY_REGISTERED"
     message = "Email already registered"
+
+class UserNotFound(DomainException):
+    status_code = status.HTTP_404_NOT_FOUND
+    error_code = "USER_NOT_FOUND"
+    message = "User not found"
+
+# -----------------------------------------------
+# USER PROFILE
+# -----------------------------------------------
+
+class UserProfileNotFound(DomainException):
+    status_code = status.HTTP_404_NOT_FOUND
+    error_code = "USER_PROFILE_NOT_FOUND"
+    message = "User profile not found"
+
+class UserProfileAlreadyRegistered(DomainException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    error_code = "USER_PROFILE_ALREADY_REGISTERED"
+    message = "User profile already registered"
+
+class InvalidPublicId(DomainException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    error_code = "INVALID_PUBLIC_ID"
+    message = "Invalid public id"
+
+class PublicIdNotAvailable(DomainException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    error_code = "PUBLIC_ID_NOT_AVAILABLE"
+    message = "Public id not available"
+
+class InvalidWorkPhone(DomainException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    error_code = "INVALID_WORK_PHONE"
+    message = "Invalid work phone"
 
 # -----------------------------------------------
 # PROPERTY TAG
@@ -103,7 +146,7 @@ class TagNotFound(DomainException):
 # -----------------------------------------------
 
 class TagGroupAlreadyExists(DomainException):
-    status_code = status.HTTP_404_NOT_FOUND
+    status_code = status.HTTP_409_CONFLICT
     error_code = "TAG_GROUP_ALREADY_EXISTS"
     message = "Tag group already exists"
 
@@ -124,3 +167,12 @@ class TagGroupNotFound(DomainException):
             message = "TagGroup not found"
 
         super().__init__(message)
+
+# -----------------------------------------------
+# PHOTO
+# -----------------------------------------------
+
+class PhotoNotFound(DomainException):
+    status_code = status.HTTP_404_NOT_FOUND
+    error_code = "PHOTO_NOT_FOUND"
+    message = "Photo not found"

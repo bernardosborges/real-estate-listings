@@ -47,6 +47,48 @@ class PropertyTagService:
 
         return PropertyTagService.list_tags_for_property(db, property_id)
 
+    ###### SHORT VERSION
+
+    # @staticmethod
+    # def add_tags_to_property(db: Session, property_id: int, tags_slug: List[str]) -> dict:
+    #     PropertyTagService.validate_property_exists(db, property_id)
+
+    #     tags_to_create = PropertyTagService.prepare_property_tags(db, property_id, tags_slug)
+
+    #     if tags_to_create:
+    #         PropertyTagService.create_property_tags(db, property_id, tags_slug)
+
+    #     db.commit()
+    #     return PropertyTagService.list_tags_for_property(db, property_id)
+
+
+    # def prepare_property_tags(db: Session, property_id: int, tags_slug: List[str]) -> List[dict]:
+    #     db_tags_info = []
+    #     for tag_slug in tags_slug:
+    #         db_tag = PropertyTagService.get_tag_or_fail(db, tag_slug)
+    #         PropertyTagService.apply_exclusive_rule(db, property_id, db_tag)
+
+    #         if PropertyTagService.property_tag_exists(db, property_id, db_tag.id):
+    #             continue
+
+    #         db_tags_info.append({"tag_id": db_tag.id, "group_id": db_tag.group_id})
+
+    # def get_tag_or_fail(db, tag_slug):
+    #         db_tag = TagRepository.get_by_slug(db, tag_slug)
+    #         if not db_tag:
+    #             raise TagNotFound(f"Tag {tag_slug} not found")
+            
+    # def apply_exclusive_rule(db: Session, property_id: int, tag):
+    #         if tag.group and tag.group.is_exclusive:
+    #             PropertyTagRepository.hard_delete_exclusive_group(db, property_id, tag.group_id)
+
+    # def property_tag_exists(db: Session, property_id: int, tag_id: int) -> bool:
+    #     return PropertyTagRepository.get_by_property_and_tag(db, property_id, tag_id) is not None
+    
+    # def create_property_tags(db: Session, property_id: int, tags_info: List[dict]):
+    #     db_property_tags = PropertyTagRepository.create(db, property_id, tags_info)
+    #     for db_property_tag in db_property_tags:
+    #             db.refresh(db_property_tag)
 
 # -----------------------------------------------
 # CRUD - READ
