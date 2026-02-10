@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.exc import SQLAlchemyError
@@ -26,19 +27,21 @@ Base = declarative_base(metadata=metadata)
 logger = logging.getLogger(__name__)
 
 # Dependency
+#@contextmanager
 def get_db():
     db = SessionLocal()
     try:
         yield db
-    except SQLAlchemyError as e:
-        db.rollback()
-        logger.exception("Database error ocurred, rollback executed.")
-        raise
+    # Catching exceptions was moved to UnitOfWork
+    # except SQLAlchemyError as e:
+    #     db.rollback()
+    #     logger.exception("Database error ocurred, rollback executed.")
+    #     raise
     
-    except Exception as e:
-        db.rollback()
-        logger.exception("Unexpected error ocurred, rollback executed.")
-        raise
+    # except Exception as e:
+    #     db.rollback()
+    #     logger.exception("Unexpected error ocurred, rollback executed.")
+    #     raise
 
     finally:
         db.close()

@@ -1,28 +1,3 @@
-# from fastapi import Request, HTTPException
-# from fastapi.responses import JSONResponse
-# from sqlalchemy.exc import SQLAlchemyError
-
-
-
-# async def http_exception_handler(request: Request, exc: HTTPException):
-#     return JSONResponse(
-#         status_code = exc.status_code,
-#         content={"error": exc.detail, "path": str(request.url)}
-#     )
-
-# async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
-#     return JSONResponse(
-#         status_code=500,
-#         content={"error": "Database error", "details": str(exc)}
-#     )
-
-# async def generic_exception_handler(request: Request, exc: Exception):
-#     return JSONResponse(
-#         status_code=500,
-#         content={"error": "Internal server error", "details": str(exc)}
-#     )
-
-
 from fastapi import status
 
 class DomainException(Exception):
@@ -31,27 +6,14 @@ class DomainException(Exception):
     message: str = "Domain error"
 
     def __init__(self, message: str | None = None):
-        if message:
-            self.message = message
-        super().__init__(self.message)
+        super().__init__(message or self.message)
 
 
 # -----------------------------------------------
 # AUTHENTICATION
 # -----------------------------------------------
 
-class InvalidCredentials(DomainException):
-    status_code = status.HTTP_401_UNAUTHORIZED
-    error_code = "INVALID_CREDENTIALS"
-    message = "Invalid user credentials"
 
-class ForbiddenAction(DomainException):
-    status_code = status.HTTP_403_FORBIDDEN
-    error_code = "PERMISSION_DENIED"
-    message = "You are not allowed to perform this action."
-
-    def __init__(self, action: str, resource: str):
-        self.message = f"You are not allowed to {action} this {resource}."
 
 
 
@@ -59,59 +21,9 @@ class ForbiddenAction(DomainException):
 # PROPERTY
 # -----------------------------------------------
 
-class PropertyForbidden(DomainException):
-    status_code = status.HTTP_403_FORBIDDEN
-    error_code = "PROPERTY_FORBIDDEN"
-    message = "You do not have permission to access this property"
-
-class PropertyNotFound(DomainException):
-    status_code = status.HTTP_404_NOT_FOUND
-    error_code = "PROPERTY_NOT_FOUND"
-    message = "Property not found"
 
 
-# -----------------------------------------------
-# USER
-# -----------------------------------------------
 
-class EmailAlreadyRegistered(DomainException):
-    status_code = status.HTTP_409_CONFLICT
-    error_code = "EMAIL_ALREADY_REGISTERED"
-    message = "Email already registered"
-
-class UserNotFound(DomainException):
-    status_code = status.HTTP_404_NOT_FOUND
-    error_code = "USER_NOT_FOUND"
-    message = "User not found"
-
-# -----------------------------------------------
-# USER PROFILE
-# -----------------------------------------------
-
-class UserProfileNotFound(DomainException):
-    status_code = status.HTTP_404_NOT_FOUND
-    error_code = "USER_PROFILE_NOT_FOUND"
-    message = "User profile not found"
-
-class UserProfileAlreadyRegistered(DomainException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    error_code = "USER_PROFILE_ALREADY_REGISTERED"
-    message = "User profile already registered"
-
-class InvalidPublicId(DomainException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    error_code = "INVALID_PUBLIC_ID"
-    message = "Invalid public id"
-
-class PublicIdNotAvailable(DomainException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    error_code = "PUBLIC_ID_NOT_AVAILABLE"
-    message = "Public id not available"
-
-class InvalidWorkPhone(DomainException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    error_code = "INVALID_WORK_PHONE"
-    message = "Invalid work phone"
 
 # -----------------------------------------------
 # PROPERTY TAG
@@ -176,3 +88,72 @@ class PhotoNotFound(DomainException):
     status_code = status.HTTP_404_NOT_FOUND
     error_code = "PHOTO_NOT_FOUND"
     message = "Photo not found"
+
+class InvalidImageType(DomainException):
+    status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+    error_code = "INVALID_IMAGE_TYPE"
+    message = "Unsupported image type."
+
+    def __init__(self, content_type: str):
+        self.message = f"Unsupported image type: {content_type}."
+
+class ImageTooLarge(DomainException):
+    status_code = status.HTTP_413_CONTENT_TOO_LARGE
+    error_code = "IMAGE_TOO_LARGE"
+    message = "Image is too large."
+
+    def __init__(self, content_type: str, max_file_size: int):
+        max_mb = round(max_file_size / (1024 * 1024), 1)
+        self.message = f"Image is too large. For content type {content_type}, the maximum allowed size is {max_file_size} ({max_mb} MB)."
+
+class PhotoProcessConflict(DomainException):
+    status_code = status.HTTP_409_CONFLICT
+    error_code = "PHOTO_PROCESS_CONFLICT"
+    message = "Photo cannot be processed."
+
+
+# -----------------------------------------------
+# S3
+# -----------------------------------------------
+
+class S3PresignedUrlError(DomainException):
+    status_code = status.HTTP_404_NOT_FOUND
+    error_code = "PRESIGNED_URL_ERROR"
+    message = "Presigned url error"
+
+
+# -----------------------------------------------
+# Images
+# -----------------------------------------------
+
+class ImageExtensionError(DomainException):
+    status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+    error_code = "FILE_EXTENSION_ERROR"
+    message = "Invalid file extension."
+
+class ImageMimeError(DomainException):
+    status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+    error_code = "FILE_MIME_ERROR"
+    message = "Unsupported MIME type."
+
+class ImageFileSizeError(DomainException):
+    status_code = status.HTTP_413_CONTENT_TOO_LARGE
+    error_code = "FILE_SIZE_ERROR"
+    message = "File exceeds max size."
+
+class ImageVerificationError(DomainException):
+    status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+    error_code = "IMAGE_VERIFY_ERROR"
+    message = "PIL cannot identify image."
+
+class ImageDimensionsError(DomainException):
+    status_code = status.HTTP_413_CONTENT_TOO_LARGE
+    error_code = "IMAGE_DIMENSION_ERROR"
+    message = "Image dimensions exceed limits."
+
+class ImageLimitsError(DomainException):
+    status_code = status.HTTP_404_NOT_FOUND
+    error_code = "IMAGE_LIMITS_ERROR"
+    message = f"No limits defined for MIME."
+
+    
