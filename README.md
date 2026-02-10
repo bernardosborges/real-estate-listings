@@ -1,5 +1,12 @@
 # 🏡 Real Estate Listings Backend
 
+![Python](https://img.shields.io/badge/Python-3.13-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-v0.99-green)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![Build](https://img.shields.io/badge/Build-Passing-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-PyTest-orange)
+
 ## 📌 Overview
 
 This project is a backend API for property listings, designed for real estate agents and property owners to publish and manage properties for sale.
@@ -18,13 +25,14 @@ Status: **In development**
 
 ## 🎯 Purpose
 
-This project provides a backend foundation that enables the development of user-focused applications. Unlike many existing real estate systems that prioritize internal convenience, it emphasizes **structured, reliable and up-to-date property records**, which are the cornerstone of trustworthy user experience.
+This project provides a backend foundation that enables the development of user-focused applications. Unlike many existing real estate systems that prioritize internal convenience, it emphasizes **structured, reliable, up-to-date and flexible property records**, which are the cornerstone of trustworthy user experience.
 By combining **Clean Architecture** with disciplined domain modeling, the API ensures maintainability, flexibility, and long-term evolution while empowering developers to build client applications that users actually enjoy.
 
 
 
 ## 🧠 Architecture Principles
 
+- **Flexible Domain Modeling**: Property features and amenities are represented through **tags** rather than fixed fields, allowing the system to handle diverse property types and future requirements without schema changes.
 - **Separation of Concerns**: Each layer has a clear responsibility (Domain, Application, Infrastructure, API), allowing business rules to evolve independently of frameworks and databases.
 - **Domain-Centric Design**: Business logic around property listings is the core of the system, decoupled from technology and UI decisions.
 - **Infrastructure as a Detail**: FastAPI, database and third party services are replaceable implementation details, not part of the core domain.
