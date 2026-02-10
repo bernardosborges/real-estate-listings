@@ -1,0 +1,21 @@
+from app.domain.repositories.user_profile_repository import UserProfileRepository
+from app.application.dto.user_profile.user_profile_output import UserProfileOutput
+from app.core.exceptions.domain_exception import UserProfileNotFound
+
+class DeactivateUserProfileUseCase:
+
+    def __init__(self, user_profile_repository: UserProfileRepository):
+        self.user_profile_repository = user_profile_repository
+
+    def execute(self, public_id: str) -> UserProfileOutput:
+        profile = self.user_profile_repository.get_by_public_id(public_id)
+        if not profile:
+            raise UserProfileNotFound(f"User profile not found or already deactivated: {public_id}")
+        
+        # Business rules
+        profile.soft_delete()
+
+        # Persistence
+        self.user_profile_repository.save(profile)
+
+        return UserProfileOutput.from_entity(profile)
