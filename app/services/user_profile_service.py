@@ -4,6 +4,7 @@ import re
 from app.models.user_profile_model import UserProfileModel, generate_handle
 from app.models.user_model import UserModel
 from app.repositories.user_profile_repository import UserProfileRepository
+from app.application.services.auth_service import AuthService
 from app.services.user_service import UserService
 from app.core.exceptions.domain_exception import *
 
@@ -16,26 +17,20 @@ class UserProfileService:
     @staticmethod
     def create(db: Session, user_id: int, public_id: str | None = None, current_user: UserModel | None = None) -> UserProfileModel:
 
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> #1")
         UserService.get_by_id(db, user_id)
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> #2")
+
         if current_user is not None:
-            UserProfileService._ensure_owner_or_admin(user_id, current_user, "create")
+            AuthService.ensure_owner_or_admin(user_id, current_user, "create", "user profile")
             
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> #3")
         db_user_profile = UserProfileService.get_by_user_id_or_none(db, user_id)
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> #3.1")
         if db_user_profile is not None:
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> #3.2")
             raise UserProfileAlreadyRegistered()
 
         if not public_id:
             public_id = generate_handle()
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> #4")
         UserProfileService._is_public_id_available_or_400(db, public_id)
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> #5")
         user_profile = UserProfileRepository.create(db, user_id, public_id)
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> #6")
+
         db.commit()
         db.refresh(user_profile) 
 
@@ -94,7 +89,7 @@ class UserProfileService:
         db_user_profile = UserProfileService.get_by_public_id_or_404(db, public_id)
 
         if current_user is not None:
-            UserProfileService._ensure_owner_or_admin(db_user_profile.user_id, current_user, "edit")
+            AuthService.ensure_owner_or_admin(db_user_profile.user_id, current_user, "edit", "user profile")
 
         update_data = {
             "name": name,
@@ -121,7 +116,7 @@ class UserProfileService:
         db_user_profile = UserProfileService.get_by_public_id_or_404(db, public_id, include_deleted=True)
 
         if current_user is not None:
-            UserProfileService._ensure_owner_or_admin(db_user_profile.user_id, current_user, "restore")
+            AuthService.ensure_owner_or_admin(db_user_profile.user_id, current_user, "restore", "user profile")
         
         if db_user_profile.deleted_at is None:
             return db_user_profile
@@ -142,7 +137,7 @@ class UserProfileService:
         db_user_profile = UserProfileService.get_by_public_id_or_404(db, public_id)
 
         if current_user is not None:
-            UserProfileService._ensure_owner_or_admin(db_user_profile.user_id, current_user, "delete")
+            AuthService.ensure_owner_or_admin(db_user_profile.user_id, current_user, "delete", "user profile")
 
         deleted = UserProfileRepository.soft_delete(db, db_user_profile.id)
 
@@ -168,13 +163,3 @@ class UserProfileService:
         if UserProfileRepository.get_by_public_id(db, public_id, include_deleted=True):
             raise PublicIdNotAvailable()
         return True
-    
-    @staticmethod
-    def _ensure_owner_or_admin(owner_user_id: int, current_user: UserModel, action: str) -> None:
-        if owner_user_id == current_user.id:
-            return
-    
-        if current_user.is_superuser:
-            return
-        
-        raise ForbiddenAction(action, "user profile")

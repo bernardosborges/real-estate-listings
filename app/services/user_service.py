@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.models.user_model import UserModel
-from app.repositories.user_repository import UserRepository
+from app.repositories.user_repository_SQLAlchemy import UserRepository
 from app.core.security import hash_password
 from app.core.exceptions.domain_exception import EmailAlreadyRegistered, UserNotFound
 

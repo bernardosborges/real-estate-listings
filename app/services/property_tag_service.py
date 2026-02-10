@@ -109,6 +109,8 @@ class PropertyTagService:
         return {"property_id": property_id, "tags": tags}
 
 
+
+
 # -----------------------------------------------
 # CRUD - UPDATE
 # -----------------------------------------------     

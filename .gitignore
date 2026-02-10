@@ -139,6 +139,7 @@ celerybeat.pid
 # Environments
 .env
 .env.local
+.env.*
 .envrc
 .venv
 env/
@@ -212,3 +213,14 @@ __marimo__/
 
 # Others
 .information
+manualtests/
+scripts/
+.vscode/
+
+
+# Database
+.db
+*.db
+
+# OS
+.DS_Store
