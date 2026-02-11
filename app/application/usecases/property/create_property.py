@@ -30,7 +30,7 @@ class CreatePropertyUseCase:
         # Check profile
         db_profile = self.uow.profile_repository.get_by_user_id(current_user.id)
         if not db_profile:
-            raise UserProfileNotFound()
+            raise UserProfileNotFound("")
         
         # Conversion
         zipcode_vo = ZipCode.from_raw(data.address.zip_code)
