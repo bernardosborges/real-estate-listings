@@ -6,10 +6,6 @@ from app.domain.enums.address_enum import CountryEnum, StateEnum
 class AddressRepository(ABC):
 
     @abstractmethod
-    def commit(self):
-        pass
-
-    @abstractmethod
     def refresh(self, address: Address) -> Address:
         pass
 

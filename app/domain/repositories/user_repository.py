@@ -5,10 +5,6 @@ from app.domain.value_objects.user. user_email import UserEmail
 class UserRepository(ABC):
 
     @abstractmethod
-    def commit(self):
-        pass
-
-    @abstractmethod
     def refresh(self, user: User) -> User:
         pass
 

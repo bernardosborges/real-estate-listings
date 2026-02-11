@@ -5,10 +5,6 @@ from app.domain.value_objects.user_profile.user_profile_public_id import UserPro
 class UserProfileRepository(ABC):
 
     @abstractmethod
-    def commit(self):
-        pass
-
-    @abstractmethod
     def refresh(self, profile: UserProfile) -> UserProfile:
         pass
 
