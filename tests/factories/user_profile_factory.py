@@ -1,12 +1,9 @@
-import pytest
-
 from app.domain.entities.user_profile import UserProfile
 from app.domain.value_objects.user_profile.user_profile_public_id import UserProfilePublicId
 
 
-@pytest.fixture
-def user_profile_factory():
-    def _create(**overrides):
+def user_profile_factory(**overrides):
+    def _create(**kwargs):
         data = {
             "id": 1,
             "public_id": UserProfilePublicId.from_raw("abc123abc123abc123abc"),
@@ -23,6 +20,7 @@ def user_profile_factory():
         }
 
         data.update(overrides)
+        data.update(kwargs)
 
         return UserProfile(**data)
     return _create

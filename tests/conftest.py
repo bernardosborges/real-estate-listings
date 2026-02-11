@@ -6,9 +6,10 @@ from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.core.database import Base, get_db
 
+
+from tests.factories.address_factory import address_factory
 from tests.factories.user_factory import user_factory
 from tests.factories.user_profile_factory import user_profile_factory
-
 
 # Test DB (SQLite)
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -24,6 +25,28 @@ def override_get_db():
         db.close()
 
 app.dependency_overrides[get_db] = override_get_db
+
+
+# ---------------------- FACTORY FIXTURES ----------------------
+
+@pytest.fixture
+def address_factory_fixture():
+    return address_factory()
+
+
+@pytest.fixture
+def user_factory_fixture():
+    return user_factory()
+
+@pytest.fixture
+def user_profile_factory_fixture():
+    return user_profile_factory()
+
+
+
+
+
+
 
 
 @pytest.fixture(scope="session", autouse=True)

@@ -17,27 +17,11 @@ from app.domain.constants.address_constants import (
     ADDRESS_COMPLEMENT_MAX_LENGTH
 )
 
-@pytest.fixture
-def valid_address_data():
-    return {
-        "id": 1,
-        "zip_code": "90020-000",
-        "country": "BR",
-        "state": "RS",
-        "city": "Porto Alegre",
-        "neighborhood": "Centro Histórico",
-        "street": "Rua dos Andradas",
-        "number": "420",
-        "complement": "1101",
-        "latitude": Decimal("-29.263545"),
-        "longitude": Decimal("-51.736234"),
-        "deleted_at": None
-    }
 
 # -------------------- TEST ADDRESS CREATION --------------------
 
-def test_address_creation(valid_address_data):
-    address = Address(**valid_address_data)
+def test_address_creation(address_factory_fixture):
+    address = address_factory_fixture()
     assert address.zip_code == ZipCode("90020000")
     assert address.country == CountryEnum.BR
     assert address.state == StateEnum.RS
@@ -50,26 +34,16 @@ def test_address_creation(valid_address_data):
     assert address.longitude == Longitude(Decimal("-51.736234"))
     assert address.deleted_at == None
 
-def test_address_creation_none_coordinates(valid_address_data):
-    valid_address_data["latitude"] = None
-    valid_address_data["longitude"] = None
-    address = Address(**valid_address_data)
-    assert address.zip_code == ZipCode("90020000")
-    assert address.country == CountryEnum.BR
-    assert address.state == StateEnum.RS
-    assert address.city == "Porto Alegre"
-    assert address.neighborhood == "Centro Histórico"
-    assert address.street == "Rua dos Andradas"
-    assert address.number == "420"
-    assert address.complement == "1101"
+
+def test_address_creation_none_coordinates(address_factory_fixture):
+    address = address_factory_fixture(latitude=None, longitude=None)
     assert address.latitude == None
     assert address.longitude == None
-    assert address.deleted_at == None
 
-def test_address_creation_invalid_coordinates(valid_address_data):
-    valid_address_data["latitude"] = None
+
+def test_address_creation_invalid_coordinates(address_factory_fixture):
     with pytest.raises(InvalidAddressCoordinates):
-        Address(**valid_address_data)
+        address_factory_fixture(latitude=None)
 
 
 # -------------------- TEST FIELDS --------------------
@@ -78,34 +52,9 @@ def test_address_creation_invalid_coordinates(valid_address_data):
     "field_name",
     ["neighborhood", "complement"]
 )
-def test_optional_fields_can_be_none(valid_address_data, field_name):
-    valid_address_data[field_name] = None
-    address = Address(**valid_address_data)
+def test_optional_fields_can_be_none(address_factory_fixture, field_name):
+    address = address_factory_fixture(**{field_name: None})
     assert getattr(address, field_name) is None
-
-@pytest.mark.parametrize(
-    "field_name",
-    ["city", "street", "number"]
-)
-def test_fields_cannot_be_empty(valid_address_data, field_name):
-    valid_address_data[field_name] = ""
-    with pytest.raises(InvalidAddressField):
-        Address(**valid_address_data)
-
-def test_address_requires_zipcode(valid_address_data):
-    valid_address_data["zip_code"] = None
-    with pytest.raises(InvalidZipCode):
-        Address(**valid_address_data)
-
-def test_address_requires_country(valid_address_data):
-    valid_address_data["country"] = None
-    with pytest.raises(InvalidCountry):
-        Address(**valid_address_data)    
-
-def test_address_requires_state(valid_address_data):
-    valid_address_data["state"] = None
-    with pytest.raises(InvalidState):
-        Address(**valid_address_data)     
 
 
 @pytest.mark.parametrize(
@@ -118,16 +67,37 @@ def test_address_requires_state(valid_address_data):
         ("complement", ADDRESS_COMPLEMENT_MAX_LENGTH)
     ]
 )
-def test_fields_too_long(valid_address_data, field_name, max_length):
-    valid_address_data[field_name] = "A" * (max_length + 1)
+def test_fields_too_long(address_factory_fixture, field_name, max_length):
     with pytest.raises(FieldTooLong):
-        Address(**valid_address_data)
+        address_factory_fixture(**{field_name: "A" * (max_length + 1)})
+
+
+@pytest.mark.parametrize(
+    "field_name",
+    ["city", "street", "number"]
+)
+def test_fields_cannot_be_empty(address_factory_fixture, field_name):
+    with pytest.raises(InvalidAddressField):
+        address_factory_fixture(**{field_name: ""})
+
+def test_address_requires_zipcode(address_factory_fixture):
+    with pytest.raises(InvalidZipCode):
+        address_factory_fixture(zip_code=None)
+
+def test_address_requires_country(address_factory_fixture):
+    with pytest.raises(InvalidCountry):
+        address_factory_fixture(country=None)    
+
+def test_address_requires_state(address_factory_fixture):
+    with pytest.raises(InvalidState):
+        address_factory_fixture(state=None)     
+
 
 
 # -------------------- TEST IS_DELETED  --------------------
 
-def test_is_deleted_reflects_deleted_at(valid_address_data):
-    address = Address(**valid_address_data)
+def test_is_deleted_reflects_deleted_at(address_factory_fixture):
+    address = address_factory_fixture()
     assert address.is_deleted is False
     address.soft_delete()
     assert address.is_deleted is True
@@ -135,14 +105,14 @@ def test_is_deleted_reflects_deleted_at(valid_address_data):
 
 # -------------------- TEST SOFT_DELETE --------------------
 
-def test_soft_delete_sets_deleted_at(valid_address_data):
-    address = Address(**valid_address_data)
+def test_soft_delete_sets_deleted_at(address_factory_fixture):
+    address = address_factory_fixture()
     address.soft_delete()
     assert address.deleted_at is not None
 
 
-def test_soft_deleted_twice_raises_exception(valid_address_data):
-    address = Address(**valid_address_data)
+def test_soft_deleted_twice_raises_exception(address_factory_fixture):
+    address = address_factory_fixture()
     address.soft_delete()
     with pytest.raises(AlreadyDeleted):
         address.soft_delete()
@@ -150,36 +120,36 @@ def test_soft_deleted_twice_raises_exception(valid_address_data):
 
 # -------------------- TEST RESTORE --------------------
 
-def test_restore_clears_deleted_at(valid_address_data):
-    address = Address(**valid_address_data)
+def test_restore_clears_deleted_at(address_factory_fixture):
+    address = address_factory_fixture()
     address.soft_delete()
     address.restore()
     assert address.deleted_at is None
 
 
-def test_restore_without_delete_raises_exception(valid_address_data):
-    address = Address(**valid_address_data)
+def test_restore_without_delete_raises_exception(address_factory_fixture):
+    address = address_factory_fixture()
     with pytest.raises(CannotBeRestored):
         address.restore()
 
 
 # -------------------- TEST UPDATE_BASIC_INFO --------------------
 
-def test_update_basic_info_updates_complement(valid_address_data):
-    address = Address(**valid_address_data)
+def test_update_basic_info_updates_complement(address_factory_fixture):
+    address = address_factory_fixture()
     address.update_basic_info(complement="Apto 202")
     assert address.complement == "Apto 202"
 
 
-def test_update_basic_info_with_none_does_nothing(valid_address_data):
-    address = Address(**valid_address_data)
+def test_update_basic_info_with_none_does_nothing(address_factory_fixture):
+    address = address_factory_fixture()
     original = address.complement
     address.update_basic_info(complement=None)
     assert address.complement == original
 
 
-def test_update_basic_info_complement_too_long(valid_address_data):
-    address = Address(**valid_address_data)
+def test_update_basic_info_complement_too_long(address_factory_fixture):
+    address = address_factory_fixture()
     long_value = "x" * (ADDRESS_COMPLEMENT_MAX_LENGTH + 1)
     with pytest.raises(FieldTooLong):
         address.update_basic_info(complement=long_value)
@@ -187,8 +157,8 @@ def test_update_basic_info_complement_too_long(valid_address_data):
 
 # -------------------- TEST UPDATE_GEOCODING --------------------
 
-def test_update_geocoding_updates_coordinates(valid_address_data):
-    address = Address(**valid_address_data)
+def test_update_geocoding_updates_coordinates(address_factory_fixture):
+    address = address_factory_fixture()
     lat = Latitude.from_raw("-29.0")
     lng = Longitude.from_raw("-51.0")
     address.update_geocoding(latitude=lat, longitude=lng)
@@ -196,19 +166,16 @@ def test_update_geocoding_updates_coordinates(valid_address_data):
     assert address.longitude == lng
 
 
-def test_update_geocoding_can_clear_coordinates(valid_address_data):
-    address = Address(**valid_address_data)
+def test_update_geocoding_can_clear_coordinates(address_factory_fixture):
+    address = address_factory_fixture()
     address.update_geocoding(latitude=None, longitude=None)
     assert address.latitude is None
     assert address.longitude is None
 
 
-def test_update_geocoding_partial_coordinates_is_invalid(valid_address_data):
-    address = Address(**valid_address_data)
+def test_update_geocoding_partial_coordinates_is_invalid(address_factory_fixture):
+    address = address_factory_fixture()
     lat = Latitude.from_raw("-29.0")
     with pytest.raises(InvalidAddressCoordinates):
         address.update_geocoding(latitude=lat, longitude=None)
-
-
-# -------------------- TEST  --------------------
 

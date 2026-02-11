@@ -1,11 +1,8 @@
-import pytest
-
 from app.domain.entities.user import User
 
 
-@pytest.fixture
-def user_factory():
-    def _create(**overrides):
+def user_factory(**overrides):
+    def _create(**kwargs):
         data = {
             "id": 1,
             "email": "user@test.com",
@@ -17,6 +14,7 @@ def user_factory():
         }
 
         data.update(overrides)
+        data.update(kwargs)
 
         return User(**data)
     return _create
