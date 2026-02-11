@@ -8,6 +8,7 @@ from app.core.database import Base, get_db
 
 
 from tests.factories.address_factory import address_factory
+from tests.factories.property_factory import property_factory
 from tests.factories.user_factory import user_factory
 from tests.factories.user_profile_factory import user_profile_factory
 
@@ -33,6 +34,9 @@ app.dependency_overrides[get_db] = override_get_db
 def address_factory_fixture():
     return address_factory()
 
+@pytest.fixture
+def property_factory_fixture():
+    return property_factory()
 
 @pytest.fixture
 def user_factory_fixture():
