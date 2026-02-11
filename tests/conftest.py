@@ -7,6 +7,7 @@ from app.main import app
 from app.core.database import Base, get_db
 
 from tests.factories.user_factory import user_factory
+from tests.factories.user_profile_factory import user_profile_factory
 
 
 # Test DB (SQLite)
