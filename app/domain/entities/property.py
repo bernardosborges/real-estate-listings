@@ -8,7 +8,7 @@ from app.domain.value_objects.property.private_area import PrivateArea
 from app.domain.constants.property_constants import PROPERTY_DESCRIPTION_MAX_LENGHT
 from app.domain.entities.address import Address
 from app.domain.exceptions.property_exceptions import PropertyAlreadyActive, PropertyAlreadyDeactivated, PropertyCannotBeRestored, PropertyAlreadyDeleted
-
+from app.domain.exceptions.domain_exception import AlreadyDeleted, CannotBeRestored, AlreadyActive, AlreadyDeactivated, FieldTooLong
 
 class Property:
 
@@ -47,22 +47,24 @@ class Property:
 
     def soft_delete(self) -> None:
         if self.is_deleted:
-            raise PropertyAlreadyDeleted()
+            raise AlreadyDeleted("property")
         self.deleted_at = datetime.now(timezone.utc)
+        self.is_active = False
 
     def restore(self) -> None:
         if self.deleted_at is None:
-            raise PropertyCannotBeRestored()
+            raise CannotBeRestored("property")
         self.deleted_at = None
+        self.is_active = True
 
     def activate(self) -> None:
         if self.is_active:
-            raise PropertyAlreadyActive()
+            raise AlreadyActive("property")
         self.is_active = True
 
     def deactivate(self) -> None:
         if not self.is_active:
-            raise PropertyAlreadyDeactivated()
+            raise AlreadyDeactivated("property")
         self.is_active = False
             
 
@@ -81,7 +83,7 @@ class Property:
         
         if description is not None:
             if len(description) > PROPERTY_DESCRIPTION_MAX_LENGHT:
-                raise ValueError("Description too long")
+                raise FieldTooLong("description")
             self.description = description
 
         if price is not None:
