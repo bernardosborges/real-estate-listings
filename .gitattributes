@@ -3,6 +3,7 @@
 
 # Python
 *.py text eol=lf
+*.sh text eol=lf
 
 # Config
 *.yml text eol=lf

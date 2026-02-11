@@ -124,7 +124,7 @@ def test_fields_too_long(valid_address_data, field_name, max_length):
         Address(**valid_address_data)
 
 
-# -------------------- TEST DELETED_AT --------------------
+# -------------------- TEST IS_DELETED  --------------------
 
 def test_is_deleted_reflects_deleted_at(valid_address_data):
     address = Address(**valid_address_data)
