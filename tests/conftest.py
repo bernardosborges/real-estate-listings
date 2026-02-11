@@ -6,6 +6,8 @@ from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.core.database import Base, get_db
 
+from tests.factories.user_factory import user_factory
+
 
 # Test DB (SQLite)
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"

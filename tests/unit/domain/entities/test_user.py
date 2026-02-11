@@ -1,25 +1,8 @@
-import pytest
 from unittest.mock import Mock
 
-from app.domain.entities.user import User
 
-
-@pytest.fixture
-def user():
-    return User(
-        id=1,
-        email="user@test.com",
-        password_hash="hashed-password",
-        is_active=True
-    )
-
-def test_create_user_with_required_fields():
-    user = User(
-        id=1,
-        email="user@test.com",
-        password_hash="hashed-password",
-        is_active=True
-    )
+def test_create_user_with_required_fields(user_factory):
+    user = user_factory()
 
     assert user.id == 1
     assert user.email == "user@test.com"
@@ -30,16 +13,19 @@ def test_create_user_with_required_fields():
     assert user.profile is None
 
 
-def test_activate_user(user):
+def test_activate_user(user_factory):
+    user = user_factory(is_active=False)
     user.activate()
     assert user.is_active is True
 
 
-def test_deactivate_user(user):
+def test_deactivate_user(user_factory):
+    user = user_factory(is_active=True)
     user.deactivate()
     assert user.is_active is False
 
-def test_attach_profile_to_user(user):
+def test_attach_profile_to_user(user_factory):
+    user = user_factory()
     profile = Mock()
     user.attach_profile(profile)
     assert user.profile is profile
