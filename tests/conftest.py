@@ -6,11 +6,11 @@ from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.core.database import Base, get_db
 
-
 from tests.factories.address_factory import address_factory
 from tests.factories.property_factory import property_factory
 from tests.factories.user_factory import user_factory
 from tests.factories.user_profile_factory import user_profile_factory
+from tests.unit.application.fakes.fake_unit_of_work import FakeUnitOfWork
 
 # Test DB (SQLite)
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -27,8 +27,11 @@ def override_get_db():
 
 app.dependency_overrides[get_db] = override_get_db
 
+# -----------------------------------------------
+# FACTORY FIXTURES
+# -----------------------------------------------
 
-# ---------------------- FACTORY FIXTURES ----------------------
+# ---------------------- ENTITIES ----------------------
 
 @pytest.fixture
 def address_factory_fixture():
@@ -48,10 +51,12 @@ def user_profile_factory_fixture():
 
 
 
+# ---------------------- DEPENDENCIES ----------------------
 
-
-
-
+@pytest.fixture
+def fake_uow():
+    uow = FakeUnitOfWork()
+    yield uow
 
 @pytest.fixture(scope="session", autouse=True)
 def create_test_db():
