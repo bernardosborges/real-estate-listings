@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import Dict, Any
 
 from app.domain.value_objects.user_profile.user_profile_public_id import UserProfilePublicId
+from app.domain.exceptions.domain_exception import FieldTooLong, AlreadyDeleted, CannotBeRestored
 from app.domain.constants.user_profile_constants import (
     PROFILE_NAME_MAX_LENGHT,
     PROFILE_BIO_MAX_LENGHT,
@@ -52,13 +53,14 @@ class UserProfile:
 
     def soft_delete(self) -> None:
         if self.is_deleted:
-            return
+            raise AlreadyDeleted("user_profile")
         self.deleted_at = datetime.now(timezone.utc)
 
     def restore(self) -> None:
         if self.deleted_at is None:
-            return
+            raise CannotBeRestored("user_profile")
         self.deleted_at = None
+
 
 # -----------------------------------------------
 # ?????
@@ -75,23 +77,23 @@ class UserProfile:
     ) -> None:
         if name is not None:
             if len(name) > PROFILE_NAME_MAX_LENGHT:
-                raise ValueError("Name too long")
+                raise FieldTooLong("name")
             self.name = name
         if bio is not None:
             if len(bio) > PROFILE_BIO_MAX_LENGHT:
-                raise ValueError("Bio too long")
+                raise FieldTooLong("bio")
             self.bio = bio
         if work_phone is not None:
             if len(work_phone) > PROFILE_WORK_PHONE_MAX_LENGHT:
-                raise ValueError("Work phone too long")
+                raise FieldTooLong("work_phone")
             self.work_phone = work_phone
         if work_city is not None:
             if len(work_city) > PROFILE_WORK_CITY_MAX_LENGHT:
-                raise ValueError("Work city too long")
+                raise FieldTooLong("work_city")
             self.work_city = work_city
         if license_number is not None:
             if len(license_number) > PROFILE_LICENSE_NUMBER_MAX_LENGHT:
-                raise ValueError("License number too long")
+                raise FieldTooLong("license_number")
             self.license_number = license_number
 
     def update_preferences(self, preferences: Dict[str, Any]) -> None:
