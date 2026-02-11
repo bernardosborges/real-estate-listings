@@ -15,8 +15,8 @@ from app.domain.constants.user_profile_constants import (
 
 # -------------------- TEST USER_PROFILE CREATION --------------------
 
-def test_create_user_profile_defaults(user_profile_factory):
-    user_profile = user_profile_factory()
+def test_create_user_profile_defaults(user_profile_factory_fixture):
+    user_profile = user_profile_factory_fixture()
     assert user_profile.name is None
     assert user_profile.bio is None
     assert user_profile.preferences == {}
@@ -25,8 +25,8 @@ def test_create_user_profile_defaults(user_profile_factory):
 
 # -------------------- TEST IS_DELETED  --------------------
 
-def test_is_deleted_reflects_deleted_at(user_profile_factory):
-    user_profile = user_profile_factory()
+def test_is_deleted_reflects_deleted_at(user_profile_factory_fixture):
+    user_profile = user_profile_factory_fixture()
     assert user_profile.is_deleted is False
     user_profile.soft_delete()
     assert user_profile.is_deleted is True
@@ -34,15 +34,15 @@ def test_is_deleted_reflects_deleted_at(user_profile_factory):
 
 # -------------------- TEST SOFT_DELETE --------------------
 
-def test_soft_delete_sets_deleted_at(user_profile_factory):
-    user_profile = user_profile_factory()
+def test_soft_delete_sets_deleted_at(user_profile_factory_fixture):
+    user_profile = user_profile_factory_fixture()
     user_profile.soft_delete()
     assert user_profile.deleted_at is not None
     assert user_profile.is_deleted is True
 
 
-def test_soft_deleted_twice_raises_exception(user_profile_factory):
-    user_profile = user_profile_factory()
+def test_soft_deleted_twice_raises_exception(user_profile_factory_fixture):
+    user_profile = user_profile_factory_fixture()
     user_profile.soft_delete()
     with pytest.raises(AlreadyDeleted):
         user_profile.soft_delete()
@@ -50,23 +50,23 @@ def test_soft_deleted_twice_raises_exception(user_profile_factory):
 
 # -------------------- TEST RESTORE --------------------
 
-def test_restore_clears_deleted_at(user_profile_factory):
-    user_profile = user_profile_factory()
+def test_restore_clears_deleted_at(user_profile_factory_fixture):
+    user_profile = user_profile_factory_fixture()
     user_profile.soft_delete()
     user_profile.restore()
     assert user_profile.deleted_at is None
     assert user_profile.is_deleted is False
 
-def test_restore_without_delete_raises_exception(user_profile_factory):
-    user_profile = user_profile_factory()
+def test_restore_without_delete_raises_exception(user_profile_factory_fixture):
+    user_profile = user_profile_factory_fixture()
     with pytest.raises(CannotBeRestored):
         user_profile.restore()
 
 
 # -------------------- TEST UPDATE_BASIC_INFO --------------------
 
-def test_update_basic_info_updates_fields(user_profile_factory):
-    user_profile = user_profile_factory()
+def test_update_basic_info_updates_fields(user_profile_factory_fixture):
+    user_profile = user_profile_factory_fixture()
     user_profile.update_basic_info(
         name="John Doe",
         bio="Real estate agent",
@@ -77,8 +77,8 @@ def test_update_basic_info_updates_fields(user_profile_factory):
     assert user_profile.work_city == "Porto Alegre"
 
 
-def test_update_basic_info_partial_update(user_profile_factory):
-    user_profile = user_profile_factory(name="Old name")
+def test_update_basic_info_partial_update(user_profile_factory_fixture):
+    user_profile = user_profile_factory_fixture(name="Old name")
     user_profile.update_basic_info(name="New name")
     assert user_profile.name == "New name"
     assert user_profile.bio is None
@@ -96,8 +96,8 @@ def test_update_basic_info_partial_update(user_profile_factory):
         ("license_number", PROFILE_LICENSE_NUMBER_MAX_LENGHT)
     ]
 )
-def test_fields_too_long(user_profile_factory, field_name, max_length):
-    user_profile = user_profile_factory()
+def test_fields_too_long(user_profile_factory_fixture, field_name, max_length):
+    user_profile = user_profile_factory_fixture()
     invalid_value = "A" * (max_length + 1)
     with pytest.raises(FieldTooLong):
         user_profile.update_basic_info(**{field_name: invalid_value})
