@@ -3,6 +3,8 @@
 
 # Python
 *.py text eol=lf
+
+# Shell
 *.sh text eol=lf
 
 # Config
@@ -12,9 +14,6 @@
 
 # Alembic migrations
 alembic/versions/*.py text eol=lf
-
-# Shell
-*.sh text eol=lf
 
 # Binary files
 *.png binary
