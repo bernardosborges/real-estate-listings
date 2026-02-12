@@ -1,5 +1,6 @@
 from __future__ import annotations
 from datetime import datetime
+from decimal import Decimal
 
 from app.application.dto.address.address_output import AddressOutput
 
@@ -10,8 +11,8 @@ class PropertyOutput:
             public_id: str,
             profile_public_id: str,
             description: str,
-            price: float,
-            private_area: float,
+            price: Decimal,
+            private_area: Decimal,
             address: AddressOutput,
             is_active: bool,
             deleted_at: datetime | None = None,

@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 
 class AddressOutput:
 
@@ -11,8 +13,8 @@ class AddressOutput:
             street: str,
             number: str,
             complement: str | None = None,
-            latitude: str | None = None,
-            longitude: str | None = None,
+            latitude: Decimal | None = None,
+            longitude: Decimal | None = None,
     ):
         self.zip_code = zip_code
         self.country = country
