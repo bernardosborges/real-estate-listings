@@ -1,6 +1,17 @@
 {
     "python-envs.pythonProjects": [],
+    "terminal.integrated.env.windows": {
+        "PYTHONPATH": "${workspaceFolder}"
+    },
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
-    "python.linting.pylintArgs": ["--rcfile=.pylintrc"]
+    "python.linting.pylintArgs": [
+        "--rcfile=.pylintrc",
+        "import sys; sys.path.append('${workspaceFolder}')"
+    ],
+    "pylint.args": [
+        "--disable=C0114",
+        "--disable=C0115",
+        "--disable=C0116"
+    ]
 }
