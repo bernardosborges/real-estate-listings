@@ -3,7 +3,7 @@ services:
   backend:
     build: 
       context: . # Dockerfile is in the root of the project
-      dockerfile: Dockerfile
+      target: prod
     container_name: relist-backend-prod
     env_file:
       - .env

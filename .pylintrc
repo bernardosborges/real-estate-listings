@@ -6,7 +6,7 @@ jobs=1
 disable=C0114, C0115, C0116, R0903
 
 [FORMAT]
-max-line-length=100
+max-line-length=120
 
 [REPORTS]
 reports=no
