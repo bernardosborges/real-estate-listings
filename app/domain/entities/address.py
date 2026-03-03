@@ -34,7 +34,7 @@ class Address:
             longitude: Decimal | None,
             deleted_at: datetime | None,
     ):
-        
+
         self.id = id
         self.zip_code = ZipCode.from_raw(zip_code)
         self.country = CountryEnum.from_raw(country)
@@ -54,7 +54,7 @@ class Address:
             self.longitude = Longitude.from_raw(longitude)
         else:
             raise InvalidAddressCoordinates()
-        
+
 
 
 # -----------------------------------------------
@@ -97,12 +97,12 @@ class Address:
             latitude: Latitude | None,
             longitude: Longitude | None
     ) -> None:
-           
-            if (latitude is None) != (longitude is None):
-                raise InvalidAddressCoordinates()
-            
-            self.latitude = latitude
-            self.longitude =  longitude
+
+        if (latitude is None) != (longitude is None):
+            raise InvalidAddressCoordinates()
+
+        self.latitude = latitude
+        self.longitude =  longitude
 
 
     @staticmethod
@@ -114,9 +114,9 @@ class Address:
 
         if len(value) > max_length:
             raise FieldTooLong(field)
-        
+
         return value
-    
+
 
     @staticmethod
     def _validate_optional_text(value: str, max_length: int, field: str) -> str:
@@ -127,5 +127,5 @@ class Address:
 
         if len(value) > max_length:
             raise FieldTooLong(field)
-        
+
         return value

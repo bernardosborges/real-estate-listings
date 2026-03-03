@@ -39,7 +39,7 @@ class InvalidAddressField(DomainException):
             message = f"Invalid address field: '{value}'.",
             value = value
         )
-    
+
 class InvalidAddressCoordinates(DomainException):
     error_code = "INVALID_ADDRESS_COORDINATES"
     message = "Invalid address coordinates."

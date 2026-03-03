@@ -11,14 +11,14 @@ class UserProfilePublicId(str):
     def from_raw(cls, value: str) -> str:
         normalized = cls._normalize(value)
         cls._validate(normalized)
-        
+
         return cls(normalized)
 
 
     @staticmethod
     def _normalize(value: str) -> str:
         return value.strip().lower().replace("-", "_")
-    
+
 
     @staticmethod
     def _validate(value: str) -> None:

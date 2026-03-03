@@ -7,7 +7,6 @@ from app.domain.value_objects.property.price import Price
 from app.domain.value_objects.property.private_area import PrivateArea
 from app.domain.constants.property_constants import PROPERTY_DESCRIPTION_MAX_LENGHT
 from app.domain.entities.address import Address
-from app.domain.exceptions.property_exceptions import PropertyAlreadyActive, PropertyAlreadyDeactivated, PropertyCannotBeRestored, PropertyAlreadyDeleted
 from app.domain.exceptions.domain_exception import AlreadyDeleted, CannotBeRestored, AlreadyActive, AlreadyDeactivated, FieldTooLong
 
 class Property:
@@ -24,7 +23,7 @@ class Property:
             is_active: bool,
             deleted_at: datetime | None,
     ):
-        
+
         self.id = id
         self.profile_id = profile_id
         self.address = address
@@ -66,7 +65,7 @@ class Property:
         if not self.is_active:
             raise AlreadyDeactivated("property")
         self.is_active = False
-            
+
 
 
 # -----------------------------------------------
@@ -80,7 +79,7 @@ class Property:
             price: Decimal | None = None,
             private_area: Decimal | None = None
     ) -> None:
-        
+
         if description is not None:
             if len(description) > PROPERTY_DESCRIPTION_MAX_LENGHT:
                 raise FieldTooLong("description")

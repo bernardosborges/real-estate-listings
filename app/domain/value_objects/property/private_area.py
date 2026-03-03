@@ -18,7 +18,7 @@ class PrivateArea:
                 value = Decimal(value)
             except Exception:
                 raise InvalidPrivateArea(f"Cannot convert {value} to Decimal")
-        
+
         value = value.quantize(
             Decimal("0.01"),
             rounding = ROUND_HALF_UP
@@ -26,10 +26,10 @@ class PrivateArea:
 
         if value < 0:
             raise InvalidPrivateArea("Private area cannot be negative")
-        
+
         if value > cls.MAX_VALUE:
             raise InvalidPrivateArea("Private area exceeds maximum allowed")
-        
+
         return cls(value)
 
     @property
@@ -39,6 +39,6 @@ class PrivateArea:
 
     def __eq__(self, other):
         return isinstance(other, PrivateArea) and self.value == other.value
-    
+
     def __repr__(self):
         return f"PrivateArea({self.value})"

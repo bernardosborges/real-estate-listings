@@ -40,7 +40,7 @@ class PhotoCategoryEnum(str, enum.Enum):
     def from_str(cls, str: str) -> PhotoCategoryEnum:
         if not isinstance(str, str):
             raise InvalidPhotoCategory()
-        
+
         try:
             return cls(str.upper())
         except ValueError:

@@ -12,7 +12,7 @@ class PropertyPublicId(str):
     def from_raw(cls, value: str) -> "PropertyPublicId":
         normalized = cls._normalize(value)
         cls._validate(normalized)
-        
+
         return cls(normalized)
 
 
@@ -21,7 +21,7 @@ class PropertyPublicId(str):
         if not isinstance(value, str):
             raise InvalidPropertyPublicId(value)
         return value.strip().lower()
-    
+
 
     @staticmethod
     def _validate(value: str) -> None:

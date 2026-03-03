@@ -15,7 +15,7 @@ class Longitude:
 
     @classmethod
     def from_raw(cls, value: str | int | float | Decimal) -> Longitude:
-    
+
         try:
             decimal_value = Decimal(str(value))
         except (InvalidOperation, ValueError, TypeError):
@@ -38,6 +38,6 @@ class Longitude:
 
     def __eq__(self, other):
         return isinstance(other, Longitude) and self.value == other.value
-    
+
     def __repr__(self):
         return f"Longitude({self.value})"

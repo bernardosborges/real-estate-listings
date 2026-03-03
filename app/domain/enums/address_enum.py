@@ -50,7 +50,7 @@ class StateEnum(str, enum.Enum):
     def from_raw(cls, uf: str) -> StateEnum:
         if not isinstance(uf, str):
             raise InvalidState(f"Invalid UF value: {uf}")
-        
+
         try:
             return cls(uf.strip().upper())
         except ValueError:

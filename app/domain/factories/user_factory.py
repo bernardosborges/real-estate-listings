@@ -5,7 +5,7 @@ from app.domain.value_objects.user.user_email import UserEmail
 
 
 class UserFactory:
-    
+
     @staticmethod
     def create(
         *,
@@ -22,5 +22,3 @@ class UserFactory:
             is_verified = False,
             is_superuser = is_superuser
         )
-    
-    

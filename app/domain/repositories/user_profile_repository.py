@@ -31,5 +31,3 @@ class UserProfileRepository(ABC):
     @abstractmethod
     def exists_by_public_id(self, public_id: UserProfilePublicId) -> bool:
         pass
-
-  

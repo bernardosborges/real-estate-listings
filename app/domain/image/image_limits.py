@@ -64,7 +64,7 @@ class ImageLimits:
             return "image/heic"
         if normalized.startswith("image/heif"):
             return "image/heif"
-        
+
         return normalized
 
     @staticmethod
