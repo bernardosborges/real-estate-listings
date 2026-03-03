@@ -1,0 +1,12 @@
+-r requirements.txt
+
+# Tests
+pytest
+httpx
+
+# Lint & Formatting
+pylint
+black
+pre-commit
+ruff
+mypy
