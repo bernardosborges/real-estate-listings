@@ -1,0 +1,13 @@
+services:
+
+  backend:
+    build: 
+      context: . # Dockerfile is in the root of the project
+      dockerfile: Dockerfile
+    container_name: relist-backend-prod
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    restart: always
+  
