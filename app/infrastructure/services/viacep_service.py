@@ -6,6 +6,7 @@ from app.domain.enums.address_enum import CountryEnum, StateEnum
 from app.application.services.address_lookup_result import AddressLookupResult
 from app.domain.exceptions.address_exceptions import CEPNotFound, AddressLookUpFailed
 
+
 class ViaCEPService(AddressLookupService):
 
     BASE_URL = "https://viacep.com.br/ws/"
@@ -28,10 +29,10 @@ class ViaCEPService(AddressLookupService):
             raise CEPNotFound(f"Zip code not found: {zip_code}")
 
         return AddressLookupResult(
-            zip_code = zip_code,
-            country = CountryEnum.BR,
-            state = StateEnum.from_raw(data["uf"]),
-            city = data.get("localidade"),
-            neighborhood = data.get("bairro"),
-            street = data.get("logradouro"),
+            zip_code=zip_code,
+            country=CountryEnum.BR,
+            state=StateEnum.from_raw(data["uf"]),
+            city=data.get("localidade"),
+            neighborhood=data.get("bairro"),
+            street=data.get("logradouro"),
         )

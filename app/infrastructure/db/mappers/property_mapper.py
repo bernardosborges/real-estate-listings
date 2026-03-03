@@ -1,10 +1,6 @@
 from app.domain.entities.property import Property
 from app.infrastructure.db.models.property_model import PropertyModel
 from app.infrastructure.db.mappers.address_mapper import AddressMapper
-from app.domain.value_objects.property.price import Price
-from app.domain.value_objects.property.private_area import PrivateArea
-from app.domain.value_objects.property.property_public_id import PropertyPublicId
-
 
 
 class PropertyMapper:
@@ -17,33 +13,32 @@ class PropertyMapper:
             address_entity = AddressMapper.to_entity(model.address)
 
         return Property(
-            id = model.id,
-            public_id = model.public_id,
-            profile_id = model.profile_id,
-            address = address_entity,
-            description = model.description,
-            price = model.price,
-            private_area = model.private_area,
-            is_active = model.is_active,
-            deleted_at = model.deleted_at,
+            id=model.id,
+            public_id=model.public_id,
+            profile_id=model.profile_id,
+            address=address_entity,
+            description=model.description,
+            price=model.price,
+            private_area=model.private_area,
+            is_active=model.is_active,
+            deleted_at=model.deleted_at,
         )
-
 
     @staticmethod
     def to_model(entity: Property) -> PropertyModel:
         model = PropertyModel(
-            id = entity.id,
-            public_id = entity.public_id,
-            profile_id = entity.profile_id,
-            description = entity.description,
-            price = entity.price.value,
-            private_area = entity.private_area.value,
-            is_active = entity.is_active,
-            deleted_at = entity.deleted_at,
+            id=entity.id,
+            public_id=entity.public_id,
+            profile_id=entity.profile_id,
+            description=entity.description,
+            price=entity.price.value,
+            private_area=entity.private_area.value,
+            is_active=entity.is_active,
+            deleted_at=entity.deleted_at,
         )
         if entity.address and entity.address.id:
             model.address_id = entity.address.id
-            #model.address = AddressMapper.to_model(entity.address)
+            # model.address = AddressMapper.to_model(entity.address)
 
         return model
 
@@ -64,7 +59,6 @@ class PropertyMapper:
                 AddressMapper.update_model(model.address, entity.address)
             else:
                 model.address = AddressMapper.to_model(entity.address)
-
 
     @staticmethod
     def update_entity(target: Property, source: Property) -> Property:

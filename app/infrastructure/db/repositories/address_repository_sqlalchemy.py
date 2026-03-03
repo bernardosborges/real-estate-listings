@@ -14,36 +14,31 @@ from app.infrastructure.db.mappers.address_mapper import AddressMapper
 from app.domain.exceptions.address_exceptions import AddressNotFound
 
 
-
 class AddressRepositorySQLAlchemy(AddressRepository):
 
-# -----------------------------------------------
-# INIT
-# -----------------------------------------------
+    # -----------------------------------------------
+    # INIT
+    # -----------------------------------------------
 
     def __init__(self, db: Session):
         self.db = db
 
-
-# -----------------------------------------------
-# METHODS
-# -----------------------------------------------
-
+    # -----------------------------------------------
+    # METHODS
+    # -----------------------------------------------
 
     def commit(self):
         self.db.commit()
-
 
     def refresh(self, address: Address) -> Address:
         model = self.db.get(AddressModel, address.id)
         if not model or model.deleted_at:
             return None
-        
+
         self.db.refresh(model)
         refreshed_address = AddressMapper.to_entity(model)
 
         return AddressMapper.update_entity(address, refreshed_address)
-
 
     def save(self, address: Address) -> Address:
         if address.id is None:
@@ -52,7 +47,9 @@ class AddressRepositorySQLAlchemy(AddressRepository):
         else:
             model = self.db.get(AddressModel, address.id)
             if not model or model.deleted_at is not None:
-                raise AddressNotFound(f"Address not found or deleted: public id {address.id}.")
+                raise AddressNotFound(
+                    f"Address not found or deleted: public id {address.id}."
+                )
             AddressMapper.update_model(model, address)
 
         try:
@@ -60,27 +57,18 @@ class AddressRepositorySQLAlchemy(AddressRepository):
             return AddressMapper.update_entity(address, AddressMapper.to_entity(model))
         except IntegrityError as exc:
             self.db.rollback()
-           
+
             raise
-        
-
-
-        
-
 
     def get_by_id(self, id: int) -> Address | None:
-        stmt = (
-            select(AddressModel)
-            .where(
-                AddressModel.id == id,
-                AddressModel.deleted_at.is_(None),
-            )
+        stmt = select(AddressModel).where(
+            AddressModel.id == id,
+            AddressModel.deleted_at.is_(None),
         )
 
         result = self.db.execute(stmt).scalar_one_or_none()
 
         return AddressMapper.to_entity(result) if result else None
-
 
     def get_by_property_id(self, id: int) -> Address | None:
         stmt = (
@@ -89,25 +77,25 @@ class AddressRepositorySQLAlchemy(AddressRepository):
             .where(
                 PropertyModel.id == id,
                 PropertyModel.deleted_at.is_(None),
-                AddressModel.deleted_at.is_(None)
+                AddressModel.deleted_at.is_(None),
             )
         )
 
         result = self.db.execute(stmt).scalar_one_or_none()
 
         return AddressMapper.to_entity(result) if result else None
-    
+
     def get_by_full_address(
-            self,
-            zip_code: ZipCode,
-            country: CountryEnum,
-            state: StateEnum,
-            city: str,
-            neighborhood: str,
-            street: str,
-            number: str,
-            complement: str | None = None
-        ) -> Address | None:
+        self,
+        zip_code: ZipCode,
+        country: CountryEnum,
+        state: StateEnum,
+        city: str,
+        neighborhood: str,
+        street: str,
+        number: str,
+        complement: str | None = None,
+    ) -> Address | None:
 
         conditions = [
             AddressModel.zip_code == zip_code.value,

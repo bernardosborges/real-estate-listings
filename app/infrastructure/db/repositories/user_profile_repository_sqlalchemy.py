@@ -4,7 +4,9 @@ from sqlalchemy.exc import IntegrityError
 
 from app.domain.entities.user_profile import UserProfile
 from app.domain.repositories.user_profile_repository import UserProfileRepository
-from app.domain.value_objects.user_profile.user_profile_public_id import UserProfilePublicId
+from app.domain.value_objects.user_profile.user_profile_public_id import (
+    UserProfilePublicId,
+)
 from app.infrastructure.db.models.user_profile_model import UserProfileModel
 from app.infrastructure.db.mappers.user_profile_mapper import UserProfileMapper
 from app.domain.exceptions.user_profile_exceptions import UserProfileNotFound
@@ -12,21 +14,19 @@ from app.domain.exceptions.user_profile_exceptions import UserProfileNotFound
 
 class UserProfileRepositorySQLAlchemy(UserProfileRepository):
 
-# -----------------------------------------------
-# INIT
-# -----------------------------------------------
+    # -----------------------------------------------
+    # INIT
+    # -----------------------------------------------
 
     def __init__(self, db: Session):
         self.db = db
 
-
-# -----------------------------------------------
-# METHODS
-# -----------------------------------------------
+    # -----------------------------------------------
+    # METHODS
+    # -----------------------------------------------
 
     def commit(self):
         self.db.commit()
-
 
     def refresh(self, user_profile: UserProfile) -> UserProfile:
         model = self.db.get(UserProfile, user_profile.id)
@@ -36,7 +36,6 @@ class UserProfileRepositorySQLAlchemy(UserProfileRepository):
 
         refreshed_profile = UserProfileMapper.to_entity(model)
         return UserProfileMapper.update_entity(user_profile, refreshed_profile)
-        
 
     def save(self, profile: UserProfile) -> UserProfile:
         if profile.id is None:
@@ -45,7 +44,9 @@ class UserProfileRepositorySQLAlchemy(UserProfileRepository):
         else:
             model = self.db.get(UserProfileModel, profile.id)
             if not model or model.deleted_at is not None:
-                raise UserProfileNotFound(f"User profile not found or deleted: public id {profile.public_id}.")
+                raise UserProfileNotFound(
+                    f"User profile not found or deleted: public id {profile.public_id}."
+                )
             UserProfileMapper.update_model(model, profile)
 
         try:
@@ -56,57 +57,50 @@ class UserProfileRepositorySQLAlchemy(UserProfileRepository):
 
         return UserProfileMapper.to_entity(model)
 
-
     def get_by_id(self, id: int) -> UserProfile | None:
         model = self.db.get(UserProfileModel, id)
         if not model or model.deleted_at is not None:
             return None
         return UserProfileMapper.to_entity(model)
-    
 
     def get_by_public_id(self, public_id: str) -> UserProfile | None:
         model = (
             self.db.query(UserProfileModel)
             .filter(
                 UserProfileModel.public_id == public_id,
-                UserProfileModel.deleted_at.is_(None)
+                UserProfileModel.deleted_at.is_(None),
             )
             .one_or_none()
         )
 
         return UserProfileMapper.to_entity(model) if model else None
-    
 
     def get_deleted_by_public_id(self, public_id: str) -> UserProfile | None:
         model = (
             self.db.query(UserProfileModel)
             .filter(
                 UserProfileModel.public_id == public_id,
-                UserProfileModel.deleted_at.isnot(None)
+                UserProfileModel.deleted_at.isnot(None),
             )
             .one_or_none()
         )
 
         return UserProfileMapper.to_entity(model) if model else None
-    
 
     def get_by_user_id(self, user_id: int) -> UserProfile | None:
         model = (
             self.db.query(UserProfileModel)
             .filter(
                 UserProfileModel.user_id == user_id,
-                UserProfileModel.deleted_at.is_(None)
+                UserProfileModel.deleted_at.is_(None),
             )
             .one_or_none()
         )
 
         return UserProfileMapper.to_entity(model) if model else None
 
-
     def exists_by_public_id(self, public_id: UserProfilePublicId) -> bool:
-        stmt = select(
-            exists().where(UserProfileModel.public_id == public_id)
-        )
+        stmt = select(exists().where(UserProfileModel.public_id == public_id))
         return self.db.execute(stmt).scalar()
 
 
@@ -116,9 +110,9 @@ class UserProfileRepositorySQLAlchemy(UserProfileRepository):
 
 #     @staticmethod
 #     def create(db: Session, user_id: int, public_id: str) -> UserProfileModel:
-        
+
 #         db_user_profile = UserProfileModel(user_id=user_id, public_id=public_id)
-        
+
 #         try:
 #             db.add(db_user_profile)
 #             db.flush()
@@ -147,7 +141,7 @@ class UserProfileRepositorySQLAlchemy(UserProfileRepository):
 #             query = query.filter(UserProfileModel.deleted_at.is_(None))
 
 #         return query.first()
-    
+
 #     @staticmethod
 #     def get_by_user_id(db: Session, user_id: int, include_deleted: bool = False) -> UserProfileModel | None:
 #         query = db.query(UserProfileModel).filter(UserProfileModel.user_id == user_id)
@@ -189,7 +183,7 @@ class UserProfileRepositorySQLAlchemy(UserProfileRepository):
 #     @staticmethod
 #     def soft_delete(db: Session, id: int) -> UserProfileModel | None:
 #         return UserProfileRepository._delete(db, id, hard=False)
-    
+
 #     @staticmethod
 #     def hard_delete(db: Session, id: int) -> UserProfileModel | None:
 #         return UserProfileRepository._delete(db, id, hard=True)
@@ -199,7 +193,7 @@ class UserProfileRepositorySQLAlchemy(UserProfileRepository):
 #         db_user_profile = UserProfileRepository.get_by_id(db, id)
 #         if not db_user_profile:
 #             return None
-        
+
 #         if hard:
 #             db.delete(db_user_profile)
 #         else:
