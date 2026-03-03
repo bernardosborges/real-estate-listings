@@ -1,10 +1,9 @@
-from contextlib import contextmanager
+import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy.exc import SQLAlchemyError
-from app.core.config import settings
 from sqlalchemy import MetaData
-import logging
+from app.core.config import settings
+
 
 
 # URL do db (psycopg v3)
@@ -37,7 +36,7 @@ def get_db():
     #     db.rollback()
     #     logger.exception("Database error ocurred, rollback executed.")
     #     raise
-    
+
     # except Exception as e:
     #     db.rollback()
     #     logger.exception("Unexpected error ocurred, rollback executed.")

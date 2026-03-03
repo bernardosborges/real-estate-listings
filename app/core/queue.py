@@ -15,5 +15,3 @@ photo_dlq = Queue(
     name = "photo-dlq",
     connection = redis,
 )
-
-
