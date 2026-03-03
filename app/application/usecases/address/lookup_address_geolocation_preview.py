@@ -13,7 +13,7 @@ class LookupAddressGeolocationPreviewUseCase:
             self,
             data: AddressGeolocationPreviewInput
     ) -> AddressGeolocationPreviewOutput:
-        
+
         result = await self.geocoding_service.geocode(
                     zip_code = data.zip_code,
                     country = data.country,
@@ -23,10 +23,10 @@ class LookupAddressGeolocationPreviewUseCase:
                     street = data.street,
                     number = data.number
                 )
-        
+
         if result is None:
             raise AddressNotFound()
-        
+
         return AddressGeolocationPreviewOutput(
             latitude = result.latitude,
             longitude = result.longitude,

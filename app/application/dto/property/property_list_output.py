@@ -44,4 +44,3 @@ class PropertyListOutput:
             is_active = property.is_active,
             deleted_at = property.deleted_at
         )
-            

@@ -12,11 +12,8 @@ class UpdatePropertyInput:
         private_area: Decimal | None = None,
         address: UpdateAddressInput | None = None,
     ):
-        
+
         self.description = description
         self.price = price
         self.private_area = private_area
         self.address = address
-
-
-            

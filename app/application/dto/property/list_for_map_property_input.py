@@ -11,7 +11,7 @@ class ListForMapPropertyInput:
         lng_west: Decimal,
         profile_public_id: str | None = None
     ):
-        
+
         self.lat_north = lat_north
         self.lat_south = lat_south
         self.lng_east = lng_east

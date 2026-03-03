@@ -13,4 +13,4 @@ class GeocodingFailed(ApplicationException):
 
 class AddressNotFound(ApplicationException):
     error_code = "ADDRESS_NOT_FOUND"
-    message = "Unable to find geocode for this address."   
+    message = "Unable to find geocode for this address."

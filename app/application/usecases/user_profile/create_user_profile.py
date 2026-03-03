@@ -15,7 +15,7 @@ class CreateUserProfileUseCase:
 
     def execute(self, user_id: int) -> UserProfile:
         public_id = IDGenerator.generate_profile_public_id()
-        
+
         # Create the User Profile entity
         profile = UserProfile(id=None, public_id=public_id, user_id=user_id)
 

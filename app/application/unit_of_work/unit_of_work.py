@@ -14,8 +14,7 @@ class UnitOfWork(Protocol):
 
 
     def commit(self) -> None: ...
-    
+
     def rollback(self) -> None: ...
 
     def flush(self) -> None: ...
-    

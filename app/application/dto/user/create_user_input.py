@@ -3,7 +3,7 @@ from __future__ import annotations
 class CreateUserInput:
 
     def __init__(
-            self, 
+            self,
             *,
             email: str,
             password: str,

@@ -1,7 +1,7 @@
 from app.domain.repositories.user_profile_repository import UserProfileRepository
+from app.domain.exceptions.user_profile_exceptions import UserProfileNotFound
 from app.application.dto.user_profile.update_user_profile_input import UpdateUserProfileInput
 from app.application.dto.user_profile.user_profile_output import UserProfileOutput
-from app.core.exceptions.domain_exception import UserProfileNotFound
 
 class UpdateUserProfileUseCase:
 
