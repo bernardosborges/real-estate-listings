@@ -1,6 +1,6 @@
 from app.domain.repositories.user_profile_repository import UserProfileRepository
+from app.domain.exceptions.user_profile_exceptions import UserProfileNotFound
 from app.application.dto.user_profile.user_profile_output import UserProfileOutput
-from app.core.exceptions.domain_exception import UserProfileNotFound
 
 class RestoreUserProfileUseCase:
 
@@ -11,7 +11,7 @@ class RestoreUserProfileUseCase:
         profile = self.user_profile_repository.get_deleted_by_public_id(public_id)
         if not profile:
             raise UserProfileNotFound(f"Deleted user profile not found: {public_id}")
-        
+
         # Business rules
         profile.restore()
 
@@ -19,4 +19,3 @@ class RestoreUserProfileUseCase:
         self.user_profile_repository.save(profile)
 
         return UserProfileOutput.from_entity(profile)
-        

@@ -27,15 +27,15 @@ class SoftDeletePropertyUseCase:
         # Check profile
         db_profile = self.uow.profile_repository.get_by_user_id(current_user.id)
         if not db_profile:
-            raise UserProfileNotFound()
-        
+            raise UserProfileNotFound(property_public_id)
+
         # Check ownership
         if db_property.profile_id != db_profile.id:
             raise PropertyForbidden()
-        
+
         # Check restore
         db_property.soft_delete()
-        
+
         # Soft delete and persist all changes
         self.uow.property_repository.soft_delete(db_property.id)
         self.uow.commit()

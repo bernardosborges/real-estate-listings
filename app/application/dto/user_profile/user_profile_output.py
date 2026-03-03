@@ -15,7 +15,7 @@ class UserProfileOutput:
             preferences: dict,
             deleted_at: datetime | None
     ):
-        
+
         self.public_id = public_id
         self.name = name
         self.bio = bio

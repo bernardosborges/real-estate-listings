@@ -11,7 +11,7 @@ class UpdateUserProfileInput:
         background_image_url: str | None = None,
         preferences: dict | None = None,
     ):
-        
+
         self.name = name
         self.bio = bio
         self.work_phone = work_phone

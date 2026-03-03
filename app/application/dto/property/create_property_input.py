@@ -12,11 +12,8 @@ class CreatePropertyInput:
         private_area: Decimal,
         address: AddressInput,
     ):
-        
+
         self.description = description
         self.price = price
         self.private_area = private_area
         self.address = address
-
-
-            

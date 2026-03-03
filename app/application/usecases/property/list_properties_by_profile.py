@@ -20,13 +20,21 @@ class ListPropertiesByProfileUseCase:
         self.uow = uow
 
 
-    def execute(self, profile_public_id: str, current_user: User, limit: int = 20, offset: int = 0, price_min: Decimal | None = None, price_max: Decimal | None = None) -> list[PropertyListOutput]:
+    def execute(
+            self,
+            profile_public_id: str,
+            current_user: User,
+            limit: int = 20,
+            offset: int = 0,
+            price_min: Decimal | None = None,
+            price_max: Decimal | None = None
+    ) -> list[PropertyListOutput]:
 
         # Check profile
         db_profile = self.uow.profile_repository.get_by_public_id(profile_public_id)
         if not db_profile:
             raise UserProfileNotFound()
-        
+
         # Check if user is owner of profile
         include_inactive = current_user is not None and db_profile.user_id == current_user.id
 

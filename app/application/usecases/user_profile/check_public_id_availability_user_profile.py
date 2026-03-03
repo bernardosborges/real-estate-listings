@@ -8,7 +8,7 @@ class CheckProfilePublicIdAvailabilityUseCase:
     def __init__(self, repository: UserProfileRepository):
         self.repository = repository
 
-    
+
     def execute(self, raw_public_id: str) -> bool:
         public_id = UserProfilePublicId.from_raw(raw_public_id)
 

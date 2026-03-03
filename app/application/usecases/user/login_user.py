@@ -20,7 +20,7 @@ class LoginUserUseCase:
         self.password_hasher = password_hasher
         self.token_service = token_service
 
-    
+
     def execute(self, data: LoginUserInput) -> LoginUserOutput:
 
         # Validate & check email and password
@@ -28,17 +28,17 @@ class LoginUserUseCase:
         db_user = self.user_repository.get_by_email(email)
         if not db_user:
             raise InvalidCredentials()
-        
+
         is_authenticated = self.password_hasher.verify(data.password, db_user.password_hash)
         if not is_authenticated:
             raise InvalidCredentials()
-        
+
         # if not db_user.is_active:
         #     raise USER NÃO TEM ATIVO OU NÃO APENAS PROFILE
-        
+
         access_token = self.token_service.generate(subject=str(db_user.id))
-        
+
         return LoginUserOutput(
-            access_token = access_token, 
+            access_token = access_token,
             user = UserOutput.from_entity(db_user)
         )

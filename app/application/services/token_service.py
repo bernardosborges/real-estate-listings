@@ -10,4 +10,3 @@ class TokenService(ABC):
     @abstractmethod
     def decode(self, token: str) -> dict:
         pass
-

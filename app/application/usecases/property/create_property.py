@@ -31,7 +31,7 @@ class CreatePropertyUseCase:
         db_profile = self.uow.profile_repository.get_by_user_id(current_user.id)
         if not db_profile:
             raise UserProfileNotFound("")
-        
+
         # Conversion
         zipcode_vo = ZipCode.from_raw(data.address.zip_code)
         country_enum = CountryEnum.from_raw(data.address.country)
@@ -59,7 +59,7 @@ class CreatePropertyUseCase:
                 street = data.address.street,
                 number = data.address.number,
                 complement = data.address.complement,
-                latitude = data.address.latitude, 
+                latitude = data.address.latitude,
                 longitude = data.address.longitude
             )
             self.uow.address_repository.save(db_address)

@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from decimal import Decimal
 
 from app.application.services.geocoding_result import GeocodingResult
 

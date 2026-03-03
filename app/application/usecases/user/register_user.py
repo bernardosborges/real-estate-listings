@@ -1,4 +1,3 @@
-from app.core.security import hash_password
 from app.domain.entities.user import User
 from app.domain.factories.user_factory import UserFactory
 from app.domain.factories.user_profile_factory import UserProfileFactory
@@ -33,26 +32,26 @@ class RegisterUserUseCase:
 
 
     def execute(self, data: CreateUserInput, current_user: User | None = None) -> UserOutput:
-        
+
         # Validate & check profile public id
         public_id = UserProfilePublicId.from_raw(data.public_id)
         exists_profile = self.profile_repository.exists_by_public_id(public_id)
         if exists_profile:
             raise ProfilePublicIdNotAvailable(public_id)
-       
+
         # Validate & check email
         email = UserEmail.from_raw(data.email)
         exists_user = self.user_repository.exists_by_email(email)
         if exists_user:
             raise EmailAlreadyRegistered(email)
-        
+
         # Validate superuser permission
         if data.is_superuser:
             if not current_user or not current_user.is_superuser:
                 raise ForbiddenAction("create", "superuser")
 
         # Create the user entity & save to get id from db
-        password_hash = self.password_hasher.hash(data.password) 
+        password_hash = self.password_hasher.hash(data.password)
         user = UserFactory.create(
             email = email,
             password_hash = password_hash,
