@@ -193,6 +193,55 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
+## ▶️ Running with Docker
+
+For development, the backend and database can run fully in containers, no local setup required:
+```
+# Build and start the containers forcing env.local
+docker-compose --env-file .env.local -f docker-compose.dev.yml up --build -d
+
+# The backend applies all Alembic migrations automatically when starting.
+
+# Access the backend
+https://localhost:8000
+
+# To stop and remove containers
+docker-compose -f docker-compose.dev.yml down
+
+# Database persistence is configured via Docker volumes, data is kept even if the containers stop.
+```
+
+If you want to reset the database, you can run scripts inside the database container or simply remove the volume:
+```
+docker volume rm realestatelistings-backend_postgres_data
+```
+
+- Use **.env.local** for development environment variables.
+- Use **.env** for production.
+
+The following environment variables are required:
+```
+# ==== POSTGRES DATABASE ====
+DB_HOST=                            # Hostname of the database (e.g. "db" for development)
+DB_PORT=                            # Database port (default: 5432)
+DB_NAME=                            # Database name 
+DB_USER=                            # Database username
+DB_PASSWORD=                        # Database password
+
+# ==== AWS S3 STORAGE ====
+AWS_ACCESS_KEY_ID=""                # Your AWS access key
+AWS_SECRET_ACCESS_KEY=""            # Your AWS secret key
+AWS_REGION=""                       # AWS region (e.g. "us-east-1")
+AWS_S3_BUCKET=""                    # AWS S3 bucket name
+
+# === AUTH ===
+SECRET_KEY=""                       # Secret key for JWT tokens
+ALGORITHM=""                        # Algorithm for JWT (default: "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES=        # Token expiration in minutes (default: 60)
+
+# === GEOCODING ===
+GOOGLE_CODING_API_KEY=""            # Your API key for Google Maps / Geocoding services
+```
 
 
 ## 🔥 Next Steps
