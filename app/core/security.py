@@ -32,6 +32,5 @@ def decode_access_token(token: str):
         # JWT validates if is expired, valid and generate payload
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except JWTError as e:
+    except JWTError:
         raise
-    
