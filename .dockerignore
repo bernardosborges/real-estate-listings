@@ -1,0 +1,58 @@
+# Byte-compiles / cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Local environment files
+.env
+.env.local
+
+# Git
+.git
+.gitignore
+
+# Docker / Compose
+docker-compose*.yml
+
+# Logs
+*.log
+
+# Editor / IDE
+.vscode/
+.idea/
+.spyderproject
+.spyproject
+
+# Test / Coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+nosetests.xml
+coverage.xml
+
+# Docs / Build artifacts
+docs/_build/
+site/
+
+# Database local files
+*.db
+.db
+
+# Misc
+.DS_Store
+.information
+manualtests/
+scripts/
