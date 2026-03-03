@@ -1,48 +1,41 @@
 from app.domain.entities.address import Address
 from app.infrastructure.db.models.address_model import AddressModel
 
-from app.domain.value_objects.address.zipcode import ZipCode
-from app.domain.value_objects.address.latitude import Latitude
-from app.domain.value_objects.address.longitude import Longitude
-from app.domain.enums.address_enum import CountryEnum, StateEnum
-
 class AddressMapper:
 
     @staticmethod
     def to_entity(model: AddressModel) -> Address:
         return Address(
-            id = model.id,
-            zip_code = model.zip_code,
-            country = model.country,
-            state = model.state,
-            city = model.city,
-            neighborhood = model.neighborhood,
-            street = model.street,
-            number = model.number,
-            complement = model.complement,
-            latitude = model.latitude,
-            longitude = model.longitude,
-            deleted_at = model.deleted_at,
+            id=model.id,
+            zip_code=model.zip_code,
+            country=model.country,
+            state=model.state,
+            city=model.city,
+            neighborhood=model.neighborhood,
+            street=model.street,
+            number=model.number,
+            complement=model.complement,
+            latitude=model.latitude,
+            longitude=model.longitude,
+            deleted_at=model.deleted_at,
         )
-
 
     @staticmethod
     def to_model(entity: Address) -> AddressModel:
         return AddressModel(
-            id = entity.id,
-            zip_code = entity.zip_code.value,
-            country = entity.country.value,
-            state = entity.state.value,
-            city = entity.city,
-            neighborhood = entity.neighborhood,
-            street = entity.street,
-            number = entity.number,
-            complement = entity.complement,
-            latitude = entity.latitude.value if entity.latitude else None,
-            longitude = entity.longitude.value if entity.longitude else None,
-            deleted_at = entity.deleted_at,
+            id=entity.id,
+            zip_code=entity.zip_code.value,
+            country=entity.country.value,
+            state=entity.state.value,
+            city=entity.city,
+            neighborhood=entity.neighborhood,
+            street=entity.street,
+            number=entity.number,
+            complement=entity.complement,
+            latitude=entity.latitude.value if entity.latitude else None,
+            longitude=entity.longitude.value if entity.longitude else None,
+            deleted_at=entity.deleted_at,
         )
-    
 
     @staticmethod
     def update_model(model: AddressModel, entity: Address):
@@ -58,7 +51,6 @@ class AddressMapper:
         model.latitude = entity.latitude.value if entity.latitude else None
         model.longitude = entity.longitude.value if entity.longitude else None
         model.deleted_at = entity.deleted_at
-
 
     @staticmethod
     def update_entity(target: Address, source: Address) -> Address:

@@ -8,11 +8,20 @@ from app.core.database import Base
 class PropertyTagModel(Base):
     __tablename__ = "property_tags"
 
-    property_id = Column(Integer, ForeignKey("properties.id", ondelete="CASCADE"), primary_key=True, index=True)
-    tag_id = Column(Integer, ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True, index=True)
+    property_id = Column(
+        Integer,
+        ForeignKey("properties.id", ondelete="CASCADE"),
+        primary_key=True,
+        index=True,
+    )
+    tag_id = Column(
+        Integer, ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True, index=True
+    )
     group_id = Column(Integer, ForeignKey("tag_groups.id"), nullable=False, index=True)
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True, default=None)
 

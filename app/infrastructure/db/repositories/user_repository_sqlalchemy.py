@@ -12,9 +12,9 @@ from app.domain.exceptions.user_exceptions import UserNotFound
 
 class UserRepositorySQLAlchemy(UserRepository):
 
-# -----------------------------------------------
-# INIT
-# -----------------------------------------------
+    # -----------------------------------------------
+    # INIT
+    # -----------------------------------------------
 
     def __init__(self, db: Session):
         self.db = db
@@ -30,11 +30,10 @@ class UserRepositorySQLAlchemy(UserRepository):
 
         refreshed_user = UserMapper.to_entity(model)
         return UserMapper.update_entity(user, refreshed_user)
-        
 
-# -----------------------------------------------
-# CRUD - CREATE/UPDATE
-# -----------------------------------------------
+    # -----------------------------------------------
+    # CRUD - CREATE/UPDATE
+    # -----------------------------------------------
 
     def save(self, user: User):
         if user.id is None:
@@ -51,54 +50,51 @@ class UserRepositorySQLAlchemy(UserRepository):
             user.id = model.id
         except IntegrityError as exc:
             self.db.rollback()
-            raise exc # Tech exception
-    
-# -----------------------------------------------
-# CRUD - READ
-# -----------------------------------------------
-    
+            raise exc  # Tech exception
+
+    # -----------------------------------------------
+    # CRUD - READ
+    # -----------------------------------------------
+
     def get_by_id(self, user_id: int) -> User | None:
         model = self.db.get(UserModel, user_id)
         return UserMapper.to_entity(model)
 
-
     def get_by_email(self, email: str) -> User | None:
         model = self.db.query(UserModel).filter(UserModel.email == email).first()
         return UserMapper.to_entity(model)
-    
 
     def exists_by_email(self, email: UserEmail) -> bool:
-        stmt = select(
-            exists().where(UserModel.email == email)
-        )
+        stmt = select(exists().where(UserModel.email == email))
         return self.db.execute(stmt).scalar()
+
 
 # -----------------------------------------------
 # CRUD - CREATE
 # -----------------------------------------------
 
-    # @staticmethod
-    # def add_user(db: Session, user: UserModel) -> UserModel:
-    #     try:
-    #         db.add(user)
-    #         db.flush()
-    #         return user
-    #     except IntegrityError:
-    #         db.rollback()
-    #         raise EmailAlreadyRegistered()
+# @staticmethod
+# def add_user(db: Session, user: UserModel) -> UserModel:
+#     try:
+#         db.add(user)
+#         db.flush()
+#         return user
+#     except IntegrityError:
+#         db.rollback()
+#         raise EmailAlreadyRegistered()
 
 
 # -----------------------------------------------
 # CRUD - READ
 # -----------------------------------------------
 
-    # @staticmethod
-    # def get_by_email(db: Session, email: str) -> UserModel | None:
-    #     return db.query(UserModel).filter(UserModel.email == email).first()
+# @staticmethod
+# def get_by_email(db: Session, email: str) -> UserModel | None:
+#     return db.query(UserModel).filter(UserModel.email == email).first()
 
-    # @staticmethod
-    # def get_by_id(db: Session, user_id: str) -> UserModel | None:
-    #     return db.query(UserModel).filter(UserModel.id == user_id).first()
+# @staticmethod
+# def get_by_id(db: Session, user_id: str) -> UserModel | None:
+#     return db.query(UserModel).filter(UserModel.id == user_id).first()
 
 
 # -----------------------------------------------

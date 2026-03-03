@@ -4,6 +4,7 @@ from sqlalchemy.sql import func
 
 from app.core.database import Base
 
+
 class TagGroupModel(Base):
     __tablename__ = "tag_groups"
 
@@ -16,7 +17,8 @@ class TagGroupModel(Base):
 
     tags = relationship("TagModel", back_populates="group")
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True, default=None)
-
