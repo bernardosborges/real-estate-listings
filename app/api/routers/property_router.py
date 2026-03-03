@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, Query, status
 from decimal import Decimal
+from fastapi import APIRouter, Depends, Query, status
+
 
 from app.core.config import settings
 from app.api.deps.oauth2 import get_current_user, get_current_user_optional
@@ -54,14 +55,17 @@ router = APIRouter(prefix=f"{settings.API_PREFIX}/properties", tags=["Properties
         "/", 
         response_model=PropertyCreateResponseSchema,
         summary="Create a new property",
-        description="Adds a new property to the database. Requires description, price, private area, address, latitude and longitude."
+        description=(
+            "Adds a new property to the database. "
+            "Requires description, price, private area, address, latitude and longitude."
+        )
 )
 def create_property_endpoint(
     payload: PropertyCreateRequestSchema,
     usecase: CreatePropertyUseCase = Depends(get_create_property_usecase),
     current_user: User = Depends(get_current_user)
 ):
-    
+
     address_dto = AddressInput(
         zip_code = payload.address.zip_code,
         country = payload.address.country,
@@ -103,7 +107,10 @@ def create_property_endpoint(
         "/profile/{profile_public_id}",
         response_model=list[PropertyListResponseSchema],
         summary="List all properties from a profile with filters",
-        description="Retrieves a paginated list of all active properties created by a specific profile in the database. You can filter or paginate results."
+        description=(
+            "Retrieves a paginated list of all active properties created by a specific profile in the database. "
+            "You can filter or paginate results."
+        )
 )
 def list_properties_by_profile_endpoint(
     profile_public_id: str,
@@ -111,7 +118,7 @@ def list_properties_by_profile_endpoint(
     current_user: User | None = Depends(get_current_user_optional),
     filters: PropertyFiltersSchema = Depends()
 ):
-    
+
     results = usecase.execute(
         profile_public_id = profile_public_id,
         current_user = current_user,
@@ -143,7 +150,10 @@ def list_properties_by_profile_endpoint(
         "/map",
         response_model=list[PropertyListForMapResponseSchema],
         summary="List properties in map viewport",
-        description="Retrieves a paginated list of all active properties in a viewport. You can filter or paginate results."
+        description=(
+            "Retrieves a paginated list of all active properties in a viewport. "
+            "You can filter or paginate results."
+        )
 )
 def list_properties_for_map_endpoint(
     payload: PropertyListForMapRequestSchema,
@@ -151,7 +161,7 @@ def list_properties_for_map_endpoint(
     current_user: User | None = Depends(get_current_user_optional),
     filters: PropertyFiltersSchema = Depends()
 ):
-    
+
     usecase_input = ListForMapPropertyInput(
         lat_north = payload.lat_north,
         lat_south = payload.lat_south,
@@ -159,7 +169,7 @@ def list_properties_for_map_endpoint(
         lng_west = payload.lng_west,
         profile_public_id = payload.profile_public_id
     )
-    
+
     results = usecase.execute(
         data = usecase_input,
         current_user = current_user,
@@ -315,7 +325,10 @@ def delete_property_endpoint(
 #         "/",
 #         response_model=list[PropertyReadSchema],
 #         summary="List all properties",
-#         description="Retrieves a paginated list of all active properties in the database. You can filter or paginate results"
+#         description=(
+#               "Retrieves a paginated list of all active properties in the database. "
+#               "You can filter or paginate results"
+#         )
 # )
 # def list_properties_endpoint(
 #     db: Session = Depends(get_db_session),
@@ -335,7 +348,10 @@ def delete_property_endpoint(
 #         "/user/{user_profile_public_id}",
 #         response_model=list[PropertyReadSchema],
 #         summary="List all properties from a user with filters",
-#         description="Retrieves a paginated list of all active properties created by a specific user in the database. You can filter or paginate results."
+#         description=(
+#               "Retrieves a paginated list of all active properties created by a specific user in the database. "
+#               "You can filter or paginate results."
+#         )
 # )
 # def list_properties_by_user_endpoint(
 #     user_profile_public_id: str,
@@ -355,7 +371,9 @@ def delete_property_endpoint(
 #         "/map",
 #         response_model=list[PropertyReadSchema],
 #         summary="List properties in map viewport",
-#         description="Retrieves a paginated list of all active properties in a viewport. You can filter or paginate results."
+#         description=(
+#         "Retrieves a paginated list of all active properties in a viewport. You can filter or paginate results."
+#         )
 # )
 # def list_properties_for_map_endpoint(
 #     db: Session = Depends(get_db_session),
@@ -376,7 +394,7 @@ def delete_property_endpoint(
 # # -----------------------------------------------
 
 # @router.get(
-#          "/{property_id}", 
+#          "/{property_id}",
 #         response_model=PropertyReadSchema,
 #         summary="Get a property",
 #         description="Retrieves a property from the database."
@@ -384,7 +402,7 @@ def delete_property_endpoint(
 # def get_property_endpoint(
 #     property_id: str,
 #     db: Session = Depends(get_db_session),
-#     storage: S3Service = Depends(get_storage_service)    
+#     storage: S3Service = Depends(get_storage_service)
 # ):
 #     return PropertyService.get_with_details_by_public_id(db, storage, property_id)
 
@@ -394,7 +412,7 @@ def delete_property_endpoint(
 # # -----------------------------------------------
 
 # @router.patch(
-#         "/{property_id}", 
+#         "/{property_id}",
 #         response_model=PropertyReadSchema,
 #         summary="Update a property",
 #         description="Updates a property to the database."
@@ -412,7 +430,7 @@ def delete_property_endpoint(
 # # -----------------------------------------------
 
 # @router.patch(
-#         "/{property_id}/restore", 
+#         "/{property_id}/restore",
 #         response_model=PropertyReadSchema,
 #         summary="Restore a property",
 #         description="Restores a property to the database."
@@ -430,7 +448,7 @@ def delete_property_endpoint(
 # # -----------------------------------------------
 
 # @router.delete(
-#         "/{property_id}", 
+#         "/{property_id}",
 #         response_model=PropertyReadSchema,
 #         summary="Delete a property",
 #         description="Delete a property from the database."

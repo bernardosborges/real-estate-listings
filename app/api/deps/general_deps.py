@@ -2,8 +2,6 @@ from functools import lru_cache
 
 from app.core.database import get_db
 from app.infrastructure.storage.s3_service import S3Service
-from app.application.unit_of_work.unit_of_work import UnitOfWork
-from app.infrastructure.db.unit_of_work.unit_of_work_sqlalchemy import SQLAlchemyUnitOfWork
 
 # -----------------------------------------------
 # DATABASE

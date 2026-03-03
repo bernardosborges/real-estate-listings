@@ -27,4 +27,3 @@ async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
             }
         }
     )
-

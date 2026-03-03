@@ -35,6 +35,3 @@ def get_restore_property_usecase(uow: UnitOfWork = Depends(get_uow)) -> RestoreP
 
 def get_soft_delete_property_usecase(uow: UnitOfWork = Depends(get_uow)) -> SoftDeletePropertyUseCase:
     return SoftDeletePropertyUseCase(uow = uow)
-
-
-
