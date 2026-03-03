@@ -219,8 +219,11 @@ __marimo__/
 .information
 manualtests/
 scripts/
-.vscode/
 
+
+# Editor
+.vscode/
+!.vscode/settings.json 
 
 # Database
 .db
