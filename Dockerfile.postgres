@@ -1,0 +1,15 @@
+# Use official postgres image as base
+FROM postgres:15
+
+# System dependencys
+RUN apt-get update && \
+    apt-get install -y locales gettext && \
+    sed -i '/pt_BR.UTF-8/s/^# //g' /etc/locale.gen &&\
+    locale-gen && \
+    update-locale LANG=pt_BR.UTF-8 && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV LANG=pt_BR.UTF-8
+ENV LANGUAGE=pt_BR:pt
+ENV LC_ALL=pt_BR.UTF-8
+

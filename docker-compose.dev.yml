@@ -1,0 +1,72 @@
+services:
+
+  # Local database for development
+      
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    container_name: relist-db-dev
+    restart: always
+    env_file:
+      - .env.local # load environment variables from .env.local
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=pt_BR.UTF-8"
+    ports:
+      - "5434:5432" # <host_port>:<container_port> (for acessing DB from host, e.g., pgAdmin)
+    volumes:
+      - ./db-init:/docker-entrypoint-initdb.d # Map project folder to docker entrypoint
+      - ./db-templates:/db-templates # Map templates folder to docker
+      - postgres_data:/var/lib/postgresql/data # persist DB data
+
+  backend:
+    build: 
+      context: . # Dockerfile is in the root of the project
+      dockerfile: Dockerfile
+    container_name: relist-backend-dev
+    env_file:
+      - .env.local
+    depends_on:
+      - db # Ensure DB starts before backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app # mount current folder inside container for development (live reload)
+    command: >
+      sh -c "
+      alembic upgrade head &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+    restart: always
+  
+volumes:
+  postgres_data:
+
+
+# ==============================================================
+# PostgreSQL Container Initialization Flow
+#
+# 1. Docker Compose starts the container for the first time.
+# 2. The container mounts the data volume and maps the local
+#    folder `./db-init` to `/docker-entrypoint-initdb.d/` inside the container.
+# 3. The PostgreSQL entrypoint scans all files in `/docker-entrypoint-initdb.d/`.
+# 4. It executes the files in **alphabetical order**:
+#    - First, 01-setup-env.sh replaces environment variables provided to the 
+#    container (via env_file) into SQL templates.
+#    - Then, 02-create-db.sql to create the database using pt_BR.utf8
+#
+# Notes:
+# - This initialization **only happens on the first container startup**.
+#   If the volume already exists, these scripts are ignored.
+# - Files are executed in alphabetical order, so numbering them helps control
+#   the initialization sequence.
+# - Shell scripts need to be executable (chmod +x db-init/*sh) to run inside 
+#   the container.
+#   
+#   docker exec -it relist-db-dev bash
+#   chmod +x /docker-entrypoint-initdb.d/01-setup-db.sh
+#   exit
+# ==============================================================
