@@ -25,7 +25,7 @@ services:
   backend:
     build: 
       context: . # Dockerfile is in the root of the project
-      dockerfile: Dockerfile
+      target: dev
     container_name: relist-backend-dev
     env_file:
       - .env.local
