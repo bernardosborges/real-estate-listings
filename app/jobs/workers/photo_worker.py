@@ -12,17 +12,16 @@ def run_worker():
     redis: Redis = redis_client
 
     worker = Worker(
-        queues = [photo_queue],
-        connection = redis,
-        name = f"photo-worker-{os.getpid()}",
-        exception_handlers = [move_to_dlq],
+        queues=[photo_queue],
+        connection=redis,
+        name=f"photo-worker-{os.getpid()}",
+        exception_handlers=[move_to_dlq],
     )
     worker.work(
-        with_scheduler = True,
-        logging_level = logging.INFO,
+        with_scheduler=True,
+        logging_level=logging.INFO,
     )
+
 
 if __name__ == "__main__":
     run_worker()
-    
-    

@@ -9,20 +9,21 @@ from app.services.photo_processing_service import PhotoProcessingService
 
 logger = logging.getLogger(__name__)
 
-LOCK_TIMEOUT = 300 # seconds
+LOCK_TIMEOUT = 300  # seconds
 
 # -----------------------------------------------
 # JOB
 # -----------------------------------------------
+
 
 def process_uploaded_photo_job(photo_public_id: str) -> None:
     logger.info("Starting photo processing job...", extra={"photo": photo_public_id})
     redis: Redis = redis_client
 
     lock = redis.lock(
-        name = f"photo:lock:{photo_public_id}",
-        timeout = LOCK_TIMEOUT,
-        blocking = False,
+        name=f"photo:lock:{photo_public_id}",
+        timeout=LOCK_TIMEOUT,
+        blocking=False,
     )
 
     if not lock.acquire():
@@ -37,14 +38,16 @@ def process_uploaded_photo_job(photo_public_id: str) -> None:
             storage: S3Service = get_storage_service()
             service = PhotoProcessingService(db=db, storage=storage, redis=redis)
             service.process(photo_public_id)
-        
+
         redis.incr("metrics:photo.jobs.success")
 
     except:
         redis.incr("metrics:photo.jobs.failed")
-        logger.exception("Photo processing job failed.", extra={"photo": photo_public_id})
+        logger.exception(
+            "Photo processing job failed.", extra={"photo": photo_public_id}
+        )
         raise
-    
+
     finally:
         if lock.locked():
             lock.release()

@@ -8,20 +8,28 @@ from app.application.services.auth_service import AuthService
 from app.services.user_service import UserService
 from app.core.exceptions.domain_exception import *
 
+
 class UserProfileService:
 
-# -----------------------------------------------
-# CRUD - CREATE
-# -----------------------------------------------
+    # -----------------------------------------------
+    # CRUD - CREATE
+    # -----------------------------------------------
 
     @staticmethod
-    def create(db: Session, user_id: int, public_id: str | None = None, current_user: UserModel | None = None) -> UserProfileModel:
+    def create(
+        db: Session,
+        user_id: int,
+        public_id: str | None = None,
+        current_user: UserModel | None = None,
+    ) -> UserProfileModel:
 
         UserService.get_by_id(db, user_id)
 
         if current_user is not None:
-            AuthService.ensure_owner_or_admin(user_id, current_user, "create", "user profile")
-            
+            AuthService.ensure_owner_or_admin(
+                user_id, current_user, "create", "user profile"
+            )
+
         db_user_profile = UserProfileService.get_by_user_id_or_none(db, user_id)
         if db_user_profile is not None:
             raise UserProfileAlreadyRegistered()
@@ -32,44 +40,54 @@ class UserProfileService:
         user_profile = UserProfileRepository.create(db, user_id, public_id)
 
         db.commit()
-        db.refresh(user_profile) 
+        db.refresh(user_profile)
 
         return user_profile
 
-
-# -----------------------------------------------
-# CRUD - READ
-# -----------------------------------------------
+    # -----------------------------------------------
+    # CRUD - READ
+    # -----------------------------------------------
 
     @staticmethod
-    def get_by_user_id_or_none(db: Session, user_id: int, include_deleted: bool = False) -> UserProfileModel | None:
+    def get_by_user_id_or_none(
+        db: Session, user_id: int, include_deleted: bool = False
+    ) -> UserProfileModel | None:
         return UserProfileRepository.get_by_user_id(db, user_id, include_deleted)
 
     @staticmethod
-    def get_by_id_or_404(db: Session, id: int, include_deleted: bool = False) -> UserProfileModel:
+    def get_by_id_or_404(
+        db: Session, id: int, include_deleted: bool = False
+    ) -> UserProfileModel:
         db_user_profile = UserProfileRepository.get_by_id(db, id, include_deleted)
         if not db_user_profile:
             raise UserProfileNotFound()
         return db_user_profile
-    
-    @staticmethod
-    def get_by_public_id_or_404(db: Session, public_id: str, include_deleted: bool = False) -> UserProfileModel:
-        db_user_profile = UserProfileRepository.get_by_public_id(db, public_id, include_deleted)
-        if not db_user_profile:
-            raise UserProfileNotFound()
-        return db_user_profile
-    
-    @staticmethod
-    def get_by_user_id_or_404(db: Session, user_id: int, include_deleted: bool = False) -> UserProfileModel:
-        db_user_profile = UserProfileRepository.get_by_user_id(db, user_id, include_deleted)
-        if not db_user_profile:
-            raise UserProfileNotFound()
-        return db_user_profile
-        
 
-# -----------------------------------------------
-# CRUD - UPDATE
-# -----------------------------------------------
+    @staticmethod
+    def get_by_public_id_or_404(
+        db: Session, public_id: str, include_deleted: bool = False
+    ) -> UserProfileModel:
+        db_user_profile = UserProfileRepository.get_by_public_id(
+            db, public_id, include_deleted
+        )
+        if not db_user_profile:
+            raise UserProfileNotFound()
+        return db_user_profile
+
+    @staticmethod
+    def get_by_user_id_or_404(
+        db: Session, user_id: int, include_deleted: bool = False
+    ) -> UserProfileModel:
+        db_user_profile = UserProfileRepository.get_by_user_id(
+            db, user_id, include_deleted
+        )
+        if not db_user_profile:
+            raise UserProfileNotFound()
+        return db_user_profile
+
+    # -----------------------------------------------
+    # CRUD - UPDATE
+    # -----------------------------------------------
 
     @staticmethod
     def update(
@@ -83,13 +101,15 @@ class UserProfileService:
         license_number: str | None = None,
         profile_picture_url: str | None = None,
         background_image_url: str | None = None,
-        preferences: dict | None = None
+        preferences: dict | None = None,
     ) -> UserProfileModel:
-        
+
         db_user_profile = UserProfileService.get_by_public_id_or_404(db, public_id)
 
         if current_user is not None:
-            AuthService.ensure_owner_or_admin(db_user_profile.user_id, current_user, "edit", "user profile")
+            AuthService.ensure_owner_or_admin(
+                db_user_profile.user_id, current_user, "edit", "user profile"
+            )
 
         update_data = {
             "name": name,
@@ -99,45 +119,55 @@ class UserProfileService:
             "license_number": license_number,
             "profile_picture_url": profile_picture_url,
             "background_image_url": background_image_url,
-            "preferences": preferences
+            "preferences": preferences,
         }
 
         update_data = {k: v for k, v in update_data.items() if v is not None}
 
-        updated_user_profile = UserProfileRepository.update(db, db_user_profile.id, **update_data)
+        updated_user_profile = UserProfileRepository.update(
+            db, db_user_profile.id, **update_data
+        )
         db.commit()
         db.refresh(updated_user_profile)
 
         return updated_user_profile
 
-
     @staticmethod
-    def restore(db: Session, public_id: str, current_user: UserModel | None = None) -> UserProfileModel:
-        db_user_profile = UserProfileService.get_by_public_id_or_404(db, public_id, include_deleted=True)
+    def restore(
+        db: Session, public_id: str, current_user: UserModel | None = None
+    ) -> UserProfileModel:
+        db_user_profile = UserProfileService.get_by_public_id_or_404(
+            db, public_id, include_deleted=True
+        )
 
         if current_user is not None:
-            AuthService.ensure_owner_or_admin(db_user_profile.user_id, current_user, "restore", "user profile")
-        
+            AuthService.ensure_owner_or_admin(
+                db_user_profile.user_id, current_user, "restore", "user profile"
+            )
+
         if db_user_profile.deleted_at is None:
             return db_user_profile
-        
+
         restored_user_profile = UserProfileRepository.restore(db, db_user_profile.id)
         db.commit()
         db.refresh(restored_user_profile)
 
         return restored_user_profile
 
-
-# -----------------------------------------------
-# CRUD - DELETE
-# -----------------------------------------------
+    # -----------------------------------------------
+    # CRUD - DELETE
+    # -----------------------------------------------
 
     @staticmethod
-    def soft_delete(db: Session, public_id: str, current_user: UserModel | None = None) -> UserProfileModel:
+    def soft_delete(
+        db: Session, public_id: str, current_user: UserModel | None = None
+    ) -> UserProfileModel:
         db_user_profile = UserProfileService.get_by_public_id_or_404(db, public_id)
 
         if current_user is not None:
-            AuthService.ensure_owner_or_admin(db_user_profile.user_id, current_user, "delete", "user profile")
+            AuthService.ensure_owner_or_admin(
+                db_user_profile.user_id, current_user, "delete", "user profile"
+            )
 
         deleted = UserProfileRepository.soft_delete(db, db_user_profile.id)
 
@@ -146,16 +176,15 @@ class UserProfileService:
 
         return deleted
 
+    # -----------------------------------------------
+    # UTILS
+    # -----------------------------------------------
 
-# -----------------------------------------------
-# UTILS
-# -----------------------------------------------
-    
     @staticmethod
     def _is_public_id_valid(public_id: str) -> bool:
-        pattern = re.compile(r'^[a-z0-9_.]{4,30}$')
+        pattern = re.compile(r"^[a-z0-9_.]{4,30}$")
         return bool(pattern.fullmatch(public_id))
-        
+
     @staticmethod
     def _is_public_id_available_or_400(db: Session, public_id: str) -> bool:
         if not UserProfileService._is_public_id_valid(public_id):

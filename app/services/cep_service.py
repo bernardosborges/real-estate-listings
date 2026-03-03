@@ -4,18 +4,18 @@ import httpx
 from typing import Optional
 
 from app.schemas.address_schema import AddressBaseSchema, AddressCreateSchema
-from app.core.exceptions.address_exceptions import CEPInvalid, CEPNotFound, AddressIncomplete
+from app.core.exceptions.address_exceptions import (
+    CEPInvalid,
+    CEPNotFound,
+    AddressIncomplete,
+)
 
-REQUIRED_FIELDS = [
-    "state",
-    "city",
-    "neighborhood",
-    "street",
-    "number"
-]
+REQUIRED_FIELDS = ["state", "city", "neighborhood", "street", "number"]
 
 
-def _build_address(address: AddressCreateSchema, cep_data: Optional[dict]) -> AddressBaseSchema:
+def _build_address(
+    address: AddressCreateSchema, cep_data: Optional[dict]
+) -> AddressBaseSchema:
     data = {
         "zip_code": address.zip_code,
         "country": address.country,
@@ -26,16 +26,18 @@ def _build_address(address: AddressCreateSchema, cep_data: Optional[dict]) -> Ad
         "number": address.number,
         "complement": address.complement,
         "latitude": address.latitude,
-        "longitude": address.longitude
+        "longitude": address.longitude,
     }
     if cep_data:
-        data.update({
-            "state": cep_data.get("state") or data["state"],
-            "city": cep_data.get("city") or data["city"],
-            "neighborhood": cep_data.get("neighborhood") or data["neighborhood"],
-            "street": cep_data.get("street") or data["street"]
-        })
- 
+        data.update(
+            {
+                "state": cep_data.get("state") or data["state"],
+                "city": cep_data.get("city") or data["city"],
+                "neighborhood": cep_data.get("neighborhood") or data["neighborhood"],
+                "street": cep_data.get("street") or data["street"],
+            }
+        )
+
     missing = [f for f in REQUIRED_FIELDS if not data.get(f)]
     if missing:
         raise AddressIncomplete(
@@ -43,10 +45,11 @@ def _build_address(address: AddressCreateSchema, cep_data: Optional[dict]) -> Ad
         )
 
     return AddressBaseSchema(**data)
-     
 
 
-async def resolve_address_input_async(address: AddressCreateSchema) -> AddressBaseSchema:
+async def resolve_address_input_async(
+    address: AddressCreateSchema,
+) -> AddressBaseSchema:
     cep_data = None
 
     try:
@@ -54,6 +57,7 @@ async def resolve_address_input_async(address: AddressCreateSchema) -> AddressBa
     except CEPNotFound:
         pass
     return _build_address(address, cep_data)
+
 
 def resolve_address_input(address: AddressCreateSchema) -> AddressBaseSchema:
     cep_data = None
@@ -70,10 +74,7 @@ def get_address_from_cep(cep: str) -> dict:
     cep = normalize_cep(cep)
 
     try:
-        response = requests.get(
-            f"https://viacep.com.br/ws/{cep}/json/",
-            timeout = 5
-        )
+        response = requests.get(f"https://viacep.com.br/ws/{cep}/json/", timeout=5)
     except requests.RequestException:
         raise CEPNotFound(cep)
 
@@ -91,17 +92,16 @@ def get_address_from_cep(cep: str) -> dict:
         "neighborhood": data.get("bairro"),
         "city": data.get("localidade"),
         "state": data.get("uf"),
-        "country": "BR"
+        "country": "BR",
     }
+
 
 async def get_address_from_cep_async(cep: str) -> dict:
     cep = normalize_cep(cep)
 
     try:
         async with httpx.AsyncClient(timeout=5) as client:
-            response = await client.get(
-                f"https://viacep.com.br/ws/{cep}/json/"
-            )
+            response = await client.get(f"https://viacep.com.br/ws/{cep}/json/")
     except httpx.RequestError:
         raise CEPNotFound(cep)
 
@@ -119,17 +119,17 @@ async def get_address_from_cep_async(cep: str) -> dict:
         "neighborhood": data.get("bairro"),
         "city": data.get("localidade"),
         "state": data.get("uf"),
-        "country": "BR"
+        "country": "BR",
     }
+
 
 def normalize_cep(cep: str) -> str:
     if not cep:
         raise CEPInvalid("CEP is required")
-    
-    digits = re.sub(r"\D","",cep)
+
+    digits = re.sub(r"\D", "", cep)
 
     if len(digits) != 8:
         raise CEPInvalid("CEP must have 8 digits")
-    
-    return digits
 
+    return digits
