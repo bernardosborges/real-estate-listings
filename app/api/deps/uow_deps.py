@@ -10,6 +10,6 @@ def get_uow(db: Session = Depends(get_db_session)):
     try:
         yield uow
 
-    except Exception as e:
+    except Exception:
         uow.rollback()
         raise

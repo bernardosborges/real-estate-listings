@@ -1,6 +1,7 @@
+import logging
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
-import logging
+
 
 from app.api.exceptions.api_exception import APIException
 from app.api.exception_handlers.error_mapping import API_ERROR_HTTP_MAP
@@ -13,7 +14,7 @@ async def api_exception_handler(request: Request, exc: APIException):
     status_code = API_ERROR_HTTP_MAP.get(
         exc.error_code,
         status.HTTP_400_BAD_REQUEST,
-    ) 
+    )
 
     logger.warning(
         "API error",
@@ -35,8 +36,3 @@ async def api_exception_handler(request: Request, exc: APIException):
             }
         }
     )
-
-    
-
-
-

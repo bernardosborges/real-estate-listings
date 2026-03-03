@@ -25,21 +25,21 @@ def get_current_user(token: str = Security(oauth2_scheme), db: Session = Depends
         payload = decode_access_token(token)
         if payload is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-        
+
         user_id = int(payload.get("sub"))
         if user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
-        
+
         user_repository: UserRepository = UserRepositorySQLAlchemy(db)
         user = user_repository.get_by_id(int(user_id))
         if not user:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
-        
+
         return user
-    
+
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials")
-    
+
 def superuser_required(current_user: User = Security(get_current_user)) -> User:
     if not current_user.is_superuser:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You do not have permission to access this resource")
