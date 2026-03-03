@@ -28,7 +28,7 @@ class UserProfile:
             preferences: Dict[str, Any] | None = None,
             deleted_at: datetime | None = None,
     ):
-        
+
         self.id = id
         self.public_id = public_id
         self.user_id = user_id
@@ -100,4 +100,3 @@ class UserProfile:
         if not isinstance(preferences, dict):
             raise ValueError("Preferences must be a dictionary.")
         self.preferences = preferences
- 

@@ -55,5 +55,3 @@ class PropertyRepository(ABC):
     @abstractmethod
     def restore(self, id: int) -> None:
         pass
-
-  

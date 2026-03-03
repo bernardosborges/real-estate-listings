@@ -1,6 +1,7 @@
-import magic
 from io import BytesIO
 from typing import Set, Tuple
+
+import magic
 from PIL import Image, UnidentifiedImageError
 
 from app.domain.image.image_limits import ImageLimits
@@ -16,13 +17,13 @@ class ImageValidator:
         if ext not in ALLOWED_EXTENSIONS:
             raise ImageExtensionError(f"Invalid file extension: {ext}")
 
-    @staticmethod   
+    @staticmethod
     def validate_file_size(raw_bytes: bytes, max_file_size: int) -> None:
         max_mb = round(max_file_size / (1024 * 1024), 1)
         if len(raw_bytes) > max_file_size:
             raise ImageFileSizeError(f"File exceeds max size: {max_file_size} ({max_mb} MB).")
 
-    @staticmethod         
+    @staticmethod
     def validate_and_detect_mime(raw_bytes: bytes, valid_types: dict) -> str:
         raw_mime = magic.from_buffer(raw_bytes, mime=True)
         mime = ImageLimits.normalize_mime(raw_mime)
@@ -30,7 +31,7 @@ class ImageValidator:
             raise ImageMimeError(f"Unsupported MIME type: {mime}")
         return mime
 
-    @staticmethod        
+    @staticmethod
     def validate_and_normalize_image_with_pil(raw_bytes: bytes) -> Image.Image:
         try:
             with BytesIO(raw_bytes) as bio:
@@ -41,11 +42,11 @@ class ImageValidator:
             if image.mode not in ("RGB",):
                     image = image.convert("RGB")
             return image
-        
+
         except UnidentifiedImageError as exc:
             raise ImageVerificationError(f"Invalid image file.") from exc
-    
-    @staticmethod    
+
+    @staticmethod
     def validate_and_extract_image_dimensions(image: Image.Image, max_width: int, max_height: int) -> Tuple[int, int]:
         width, height = image.size
         if width > max_width or height > max_height:

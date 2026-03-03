@@ -16,7 +16,7 @@ class UserProfileFactory:
         user_id: int,
         public_id: str | None = None
     ) -> UserProfile:
-        
+
         if public_id is None:
             public_id = IDGenerator.generate_profile_public_id(PROFILE_PUBLIC_ID_SIZE)
 
@@ -36,7 +36,3 @@ class UserProfileFactory:
             preferences = {},
             deleted_at = None,
         )
-    
-
-
-    

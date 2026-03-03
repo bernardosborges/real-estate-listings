@@ -5,8 +5,6 @@ from app.core.utils.id_generator import IDGenerator
 from app.domain.entities.property import Property
 from app.domain.entities.address import Address
 from app.domain.value_objects.property.property_public_id import PropertyPublicId
-from app.domain.value_objects.property.price import Price
-from app.domain.value_objects.property.private_area import PrivateArea
 from app.domain.constants.property_constants import PROPERTY_PUBLIC_ID_SIZE
 
 
@@ -22,7 +20,7 @@ class PropertyFactory:
         price: Decimal,
         private_area: Decimal,
     ) -> Property:
-        
+
         raw_public_id = IDGenerator.generate_property_public_id(PROPERTY_PUBLIC_ID_SIZE)
         public_id = PropertyPublicId.from_raw(raw_public_id)
 
@@ -37,7 +35,3 @@ class PropertyFactory:
             is_active = True,
             deleted_at = None
         )
-    
-
-
-    

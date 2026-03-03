@@ -1,5 +1,4 @@
 from __future__ import annotations
-from decimal import Decimal
 from datetime import datetime
 
 from app.domain.entities.address import Address
