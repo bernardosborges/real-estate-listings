@@ -1,10 +1,10 @@
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, HTTPException
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.logging import setup_logging
 from app.api.routers import addresses_router, auth_router, property_router
-#from app.api.routers import property_router, auth_router, zipcode_router, tag_group_router, tag_router, property_tag_router, photo_router, user_profile_router
+# from app.api.routers import property_router, auth_router, zipcode_router,
+# tag_group_router, tag_router, property_tag_router, photo_router, user_profile_router
 
 from app.api.exception_handlers.domain_exception_handler import domain_exception_handler
 from app.api.exception_handlers.api_exception_handler import api_exception_handler
