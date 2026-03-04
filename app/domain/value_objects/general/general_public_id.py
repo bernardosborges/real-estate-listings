@@ -1,8 +1,8 @@
 import re
 from app.domain.exceptions.user_profile_exceptions import InvalidProfilePublicId
 
+PUBLIC_ID_REGEX = re.compile(r"^[a-z0-9_.]{4,30}$")
 
-PUBLIC_ID_REGEX = re.compile(r'^[a-z0-9_.]{4,30}$')
 
 class UserProfilePublicId(str):
 
@@ -13,11 +13,9 @@ class UserProfilePublicId(str):
 
         return cls(normalized)
 
-
     @staticmethod
     def _normalize(value: str) -> str:
         return value.strip().lower().replace("-", "_")
-
 
     @staticmethod
     def _validate(value: str) -> None:

@@ -21,10 +21,7 @@ class Longitude:
         except (InvalidOperation, ValueError, TypeError):
             raise InvalidLongitude(f"Invalid longitude value: '{value}'.")
 
-        decimal_value = decimal_value.quantize(
-            Decimal("0.000001"),
-            rounding = ROUND_HALF_UP
-        )
+        decimal_value = decimal_value.quantize(Decimal("0.000001"), rounding=ROUND_HALF_UP)
 
         if decimal_value < cls.MIN or decimal_value > cls.MAX:
             raise InvalidLongitude("Longitude must be between -180 and 180. Value: '{value}'")
@@ -34,7 +31,6 @@ class Longitude:
     @property
     def value(self) -> Decimal:
         return self._value
-
 
     def __eq__(self, other):
         return isinstance(other, Longitude) and self.value == other.value

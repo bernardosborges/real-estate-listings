@@ -7,7 +7,6 @@ from app.domain.exceptions.address_exceptions import InvalidLatitude
 class Latitude:
     __slots__ = ("_value",)
 
-
     MIN = Decimal("-90.0")
     MAX = Decimal("90.0")
 
@@ -22,21 +21,16 @@ class Latitude:
         except (InvalidOperation, ValueError, TypeError):
             raise InvalidLatitude(f"Invalid latitude value: '{value}'.")
 
-        decimal_value = decimal_value.quantize(
-            Decimal("0.000001"),
-            rounding = ROUND_HALF_UP
-        )
+        decimal_value = decimal_value.quantize(Decimal("0.000001"), rounding=ROUND_HALF_UP)
 
         if decimal_value < cls.MIN or decimal_value > cls.MAX:
             raise InvalidLatitude("Latitude must be between -90 and 90. Value: '{value}'")
 
         return cls(decimal_value)
 
-
     @property
     def value(self) -> Decimal:
         return self._value
-
 
     def __eq__(self, other):
         return isinstance(other, Latitude) and self.value == other.value

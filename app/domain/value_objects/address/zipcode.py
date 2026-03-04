@@ -4,6 +4,7 @@ import re
 from app.domain.exceptions.address_exceptions import InvalidZipCode
 from app.domain.constants.address_constants import ADDRESS_ZIPCODE_LENGTH
 
+
 class ZipCode:
 
     __slots__ = ("_value",)
@@ -18,13 +19,12 @@ class ZipCode:
         if not isinstance(value, str):
             raise InvalidZipCode("ZipCode must be a string")
 
-        normalized = re.sub(r"\D", "", value) #cls._normalize(value)
+        normalized = re.sub(r"\D", "", value)  # cls._normalize(value)
         if not cls._REGEX.fullmatch(normalized):
             raise InvalidZipCode(f"ZipCode must have exaclty {ADDRESS_ZIPCODE_LENGTH} numeric digits. Value: '{value}'")
-        #cls._validate(normalized)
+        # cls._validate(normalized)
 
         return cls(normalized)
-
 
     @property
     def value(self) -> str:
@@ -42,7 +42,6 @@ class ZipCode:
 
     def __str__(self) -> str:
         return self.value
-
 
     @staticmethod
     def _normalize(value: str) -> str:
