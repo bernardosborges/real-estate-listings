@@ -3,6 +3,7 @@ import enum
 
 from app.domain.exceptions.address_exceptions import InvalidState, InvalidCountry
 
+
 class CountryEnum(str, enum.Enum):
     BR = "BR"
 
