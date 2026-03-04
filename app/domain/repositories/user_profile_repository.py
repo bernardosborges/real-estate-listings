@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from app.domain.entities.user_profile import UserProfile
 from app.domain.value_objects.user_profile.user_profile_public_id import UserProfilePublicId
 
+
 class UserProfileRepository(ABC):
 
     @abstractmethod
