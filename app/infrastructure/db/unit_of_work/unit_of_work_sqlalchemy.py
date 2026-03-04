@@ -19,7 +19,7 @@ class SQLAlchemyUnitOfWork(UnitOfWork):
 
     def __init__(self, session: Session):
         self.session = session
-        self.ser_repository = UserRepositorySQLAlchemy(session)
+        self.user_repository = UserRepositorySQLAlchemy(session)
         self.profile_repository = UserProfileRepositorySQLAlchemy(session)
         self.property_repository = PropertyRepositorySQLAlchemy(session)
         self.address_repository = AddressRepositorySQLAlchemy(session)
