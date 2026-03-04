@@ -3,6 +3,7 @@ from app.domain.entities.address import Address
 from app.domain.value_objects.address.zipcode import ZipCode
 from app.domain.enums.address_enum import CountryEnum, StateEnum
 
+
 class AddressRepository(ABC):
 
     @abstractmethod
@@ -22,5 +23,15 @@ class AddressRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_full_address(self, zip_code: ZipCode, country: CountryEnum, state: StateEnum, city: str, neighborhood: str, street: str, number: str, complement: str | None = None) -> Address | None:
+    def get_by_full_address(
+        self,
+        zip_code: ZipCode,
+        country: CountryEnum,
+        state: StateEnum,
+        city: str,
+        neighborhood: str,
+        street: str,
+        number: str,
+        complement: str | None = None,
+    ) -> Address | None:
         pass

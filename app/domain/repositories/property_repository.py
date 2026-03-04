@@ -2,9 +2,9 @@ from decimal import Decimal
 from abc import ABC, abstractmethod
 from app.domain.entities.property import Property
 from app.domain.value_objects.property.property_public_id import PropertyPublicId
-from app.domain.value_objects.user_profile.user_profile_public_id import UserProfilePublicId
 from app.domain.value_objects.address.latitude import Latitude
 from app.domain.value_objects.address.longitude import Longitude
+
 
 class PropertyRepository(ABC):
 
@@ -29,11 +29,31 @@ class PropertyRepository(ABC):
         pass
 
     @abstractmethod
-    def list_by_profile_id(self, profile_id: int, limit: int, offset: int, include_inactive: bool = False, price_min: Decimal | None = None, price_max: Decimal | None = None) -> list[Property]:
+    def list_by_profile_id(
+        self,
+        profile_id: int,
+        limit: int,
+        offset: int,
+        include_inactive: bool = False,
+        price_min: Decimal | None = None,
+        price_max: Decimal | None = None,
+    ) -> list[Property]:
         pass
 
     @abstractmethod
-    def list_for_map(self, lat_north: Latitude, lat_south: Latitude, lng_east: Longitude, lng_west: Longitude, limit: int, offset: int, include_inactive: bool = False, profile_id: int | None = None, price_min: Decimal | None = None, price_max: Decimal | None = None) -> list[Property]:
+    def list_for_map(
+        self,
+        lat_north: Latitude,
+        lat_south: Latitude,
+        lng_east: Longitude,
+        lng_west: Longitude,
+        limit: int,
+        offset: int,
+        include_inactive: bool = False,
+        profile_id: int | None = None,
+        price_min: Decimal | None = None,
+        price_max: Decimal | None = None,
+    ) -> list[Property]:
         pass
 
     @abstractmethod
