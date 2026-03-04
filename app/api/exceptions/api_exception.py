@@ -1,4 +1,3 @@
-
 class APIException(Exception):
     error_code: str = "API_ERROR"
     message: str = "An API error ocurred."
