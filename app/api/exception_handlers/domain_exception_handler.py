@@ -7,6 +7,7 @@ from app.api.exception_handlers.error_mapping import DOMAIN_ERROR_HTTP_MAP
 
 logger = logging.getLogger("app.domain")
 
+
 async def domain_exception_handler(request: Request, exc: DomainException):
 
     status_code = DOMAIN_ERROR_HTTP_MAP.get(
@@ -16,21 +17,13 @@ async def domain_exception_handler(request: Request, exc: DomainException):
 
     logger.warning(
         "Domain error",
-        extra = {
+        extra={
             "error_code": exc.error_code,
             "error_message": exc.message,
             "context": exc.context,
             "method": request.method,
-            "path": request.url.path
+            "path": request.url.path,
         },
     )
 
-    return JSONResponse(
-        status_code = status_code,
-        content = {
-            "error": {
-                "code": exc.error_code,
-                "message": exc.message
-            }
-        }
-    )
+    return JSONResponse(status_code=status_code, content={"error": {"code": exc.error_code, "message": exc.message}})
