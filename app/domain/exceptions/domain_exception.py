@@ -1,4 +1,3 @@
-
 class DomainException(Exception):
     error_code: str = "DOMAIN_ERROR"
     message: str = "A domain error ocurred."
@@ -14,10 +13,7 @@ class AlreadyDeactivated(DomainException):
     message = "This resource is already deactivated."
 
     def __init__(self, entity: str):
-        super().__init__(
-            message = f"This {entity} is already deactivated.",
-            entity = entity
-        )
+        super().__init__(message=f"This {entity} is already deactivated.", entity=entity)
 
 
 class AlreadyActive(DomainException):
@@ -25,10 +21,7 @@ class AlreadyActive(DomainException):
     message = "This resource is already active."
 
     def __init__(self, entity: str):
-        super().__init__(
-            message = f"This {entity} is already active.",
-            entity = entity
-        )
+        super().__init__(message=f"This {entity} is already active.", entity=entity)
 
 
 class CannotBeRestored(DomainException):
@@ -36,10 +29,7 @@ class CannotBeRestored(DomainException):
     message = "Cannot restore a resource that has not been deleted."
 
     def __init__(self, entity: str):
-        super().__init__(
-            message = f"Cannot restore a {entity} that has not been deleted.",
-            entity = entity
-        )
+        super().__init__(message=f"Cannot restore a {entity} that has not been deleted.", entity=entity)
 
 
 class AlreadyDeleted(DomainException):
@@ -47,10 +37,7 @@ class AlreadyDeleted(DomainException):
     message = "This resource was already deleted."
 
     def __init__(self, entity: str):
-        super().__init__(
-            message = f"This {entity} is already deleted.",
-            entity = entity
-        )
+        super().__init__(message=f"This {entity} is already deleted.", entity=entity)
 
 
 class FieldTooLong(DomainException):
@@ -58,7 +45,4 @@ class FieldTooLong(DomainException):
     message = "The field exceeds the maximum allowed length."
 
     def __init__(self, field: str):
-        super().__init__(
-            message = f"The field {field} exceeds the maximum allowed length.",
-            field = field
-        )
+        super().__init__(message=f"The field {field} exceeds the maximum allowed length.", field=field)
