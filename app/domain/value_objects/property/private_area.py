@@ -3,10 +3,11 @@ from decimal import Decimal, ROUND_HALF_UP
 
 from app.domain.exceptions.property_exceptions import InvalidPrivateArea
 
+
 class PrivateArea:
     __slots__ = ("_value",)
 
-    MAX_VALUE = Decimal("9999999999.99") # 10 + 2 digits (9.999.999.999.99)
+    MAX_VALUE = Decimal("9999999999.99")  # 10 + 2 digits (9.999.999.999.99)
 
     def __init__(self, value: Decimal):
         self._value = value
@@ -19,10 +20,7 @@ class PrivateArea:
             except Exception:
                 raise InvalidPrivateArea(f"Cannot convert {value} to Decimal")
 
-        value = value.quantize(
-            Decimal("0.01"),
-            rounding = ROUND_HALF_UP
-        )
+        value = value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
         if value < 0:
             raise InvalidPrivateArea("Private area cannot be negative")
@@ -35,7 +33,6 @@ class PrivateArea:
     @property
     def value(self) -> Decimal:
         return self._value
-
 
     def __eq__(self, other):
         return isinstance(other, PrivateArea) and self.value == other.value

@@ -4,7 +4,8 @@ from app.domain.exceptions.property_exceptions import InvalidPropertyPublicId
 
 ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789"
 PROPERTY_PUBLIC_ID_SIZE = 21
-PROPERTY_PUBLIC_ID_REGEX = re.compile(rf'^[{ALPHABET}]{{{PROPERTY_PUBLIC_ID_SIZE}}}$')
+PROPERTY_PUBLIC_ID_REGEX = re.compile(rf"^[{ALPHABET}]{{{PROPERTY_PUBLIC_ID_SIZE}}}$")
+
 
 class PropertyPublicId(str):
 
@@ -15,13 +16,11 @@ class PropertyPublicId(str):
 
         return cls(normalized)
 
-
     @staticmethod
     def _normalize(value: str) -> str:
         if not isinstance(value, str):
             raise InvalidPropertyPublicId(value)
         return value.strip().lower()
-
 
     @staticmethod
     def _validate(value: str) -> None:

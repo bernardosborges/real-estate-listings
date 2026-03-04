@@ -3,10 +3,11 @@ from decimal import Decimal, ROUND_HALF_UP
 
 from app.domain.exceptions.property_exceptions import InvalidPrice
 
+
 class Price:
     __slots__ = ("_value",)
 
-    MAX_VALUE = Decimal("999999999999.99") # 12 + 2 digits (999.999.999.999.99)
+    MAX_VALUE = Decimal("999999999999.99")  # 12 + 2 digits (999.999.999.999.99)
 
     def __init__(self, value: Decimal):
         self._value = value
@@ -19,10 +20,7 @@ class Price:
             except Exception:
                 raise InvalidPrice(f"Cannot convert {value} to Decimal")
 
-        value = value.quantize(
-            Decimal("0.01"),
-            rounding = ROUND_HALF_UP
-        )
+        value = value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
         if value < 0:
             raise InvalidPrice("Price cannot be negative")
@@ -35,7 +33,6 @@ class Price:
     @property
     def value(self) -> Decimal:
         return self._value
-
 
     def __eq__(self, other):
         return isinstance(other, Price) and self.value == other.value
