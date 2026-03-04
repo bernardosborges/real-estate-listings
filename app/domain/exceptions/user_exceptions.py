@@ -4,15 +4,21 @@ from app.domain.exceptions.domain_exception import DomainException
 # USER
 # -----------------------------------------------
 
+
 class InvalidEmail(DomainException):
     error_code = "INVALID_EMAIL"
     message = "Invalid email."
 
     def __init__(self, email: str):
-        super().__init__(
-            message = f"Email '{email}' is invalid.",
-            email = email
-        )
+        super().__init__(message=f"Email '{email}' is invalid.", email=email)
+
+
+class InvalidUserId(DomainException):
+    error_code = "INVALID_USER_ID"
+    message = "Invalid id."
+
+    def __init__(self):
+        super().__init__(message="Invalid user id.")
 
 
 class EmailAlreadyRegistered(DomainException):
@@ -20,10 +26,7 @@ class EmailAlreadyRegistered(DomainException):
     message = "Email already registered."
 
     def __init__(self, email: str):
-        super().__init__(
-            message = f"Email '{email}' already registered.",
-            email = email
-        )
+        super().__init__(message=f"Email '{email}' already registered.", email=email)
 
 
 class UserNotFound(DomainException):
@@ -31,10 +34,7 @@ class UserNotFound(DomainException):
     message = "User not found."
 
     def __init__(self, public_id: str):
-        super().__init__(
-            message = f"User not found with public id: '{public_id}'.",
-            public_id = public_id
-        )
+        super().__init__(message=f"User not found with public id: '{public_id}'.", public_id=public_id)
 
 
 class InvalidUserPublicId(DomainException):
@@ -43,6 +43,6 @@ class InvalidUserPublicId(DomainException):
 
     def __init__(self, public_id: str):
         super().__init__(
-            message = f"Invalid public id '{public_id}'. Public id must be 4-30 characteres and contain only lowercase letters, numbers, '_' or '.'.",
-            public_id = public_id
+            message=f"Invalid public id '{public_id}'. Public id must be 4-30 characteres and contain only lowercase letters, numbers, '_' or '.'.",
+            public_id=public_id,
         )
