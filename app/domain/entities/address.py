@@ -1,6 +1,5 @@
 from __future__ import annotations
 from datetime import datetime, timezone
-from decimal import Decimal
 
 from app.domain.value_objects.address.latitude import Latitude
 from app.domain.value_objects.address.longitude import Longitude
@@ -20,25 +19,25 @@ from app.domain.constants.address_constants import (
 class Address:
 
     def __init__(
-            self,
-            id: int | None,
-            zip_code: str,
-            country: str,
-            state: str,
-            city: str,
-            neighborhood: str | None,
-            street: str,
-            number: str,
-            complement: str | None,
-            latitude: Decimal | None,
-            longitude: Decimal | None,
-            deleted_at: datetime | None,
+        self,
+        id: int | None,
+        zip_code: ZipCode,
+        country: CountryEnum,
+        state: StateEnum,
+        city: str,
+        neighborhood: str | None,
+        street: str,
+        number: str,
+        complement: str | None,
+        latitude: Latitude | None,
+        longitude: Longitude | None,
+        deleted_at: datetime | None,
     ):
 
         self.id = id
-        self.zip_code = ZipCode.from_raw(zip_code)
-        self.country = CountryEnum.from_raw(country)
-        self.state = StateEnum.from_raw(state)
+        self.zip_code = zip_code
+        self.country = country
+        self.state = state
         self.city = self._validate_text(city, ADDRESS_CITY_MAX_LENGTH, "city")
         self.neighborhood = self._validate_optional_text(neighborhood, ADDRESS_NEIGHBORHOOD_MAX_LENGTH, "neighborhood")
         self.street = self._validate_text(street, ADDRESS_STREET_MAX_LENGTH, "street")
@@ -50,21 +49,18 @@ class Address:
             self.latitude = None
             self.longitude = None
         elif latitude is not None and longitude is not None:
-            self.latitude = Latitude.from_raw(latitude)
-            self.longitude = Longitude.from_raw(longitude)
+            self.latitude = latitude
+            self.longitude = longitude
         else:
             raise InvalidAddressCoordinates()
 
-
-
-# -----------------------------------------------
-# LIFECYCLE
-# -----------------------------------------------
+    # -----------------------------------------------
+    # LIFECYCLE
+    # -----------------------------------------------
 
     @property
     def is_deleted(self) -> bool:
         return self.deleted_at is not None
-
 
     def soft_delete(self) -> None:
         if self.is_deleted:
@@ -76,34 +72,27 @@ class Address:
             raise CannotBeRestored("address")
         self.deleted_at = None
 
-
-# -----------------------------------------------
-# HELPERS
-# -----------------------------------------------
+    # -----------------------------------------------
+    # HELPERS
+    # -----------------------------------------------
 
     def update_basic_info(
-            self,
-            *,
-            complement: str | None = None,
+        self,
+        *,
+        complement: str | None = None,
     ) -> None:
         if complement is not None:
             if len(complement) > ADDRESS_COMPLEMENT_MAX_LENGTH:
                 raise FieldTooLong("complement")
             self.complement = complement
 
-    def update_geocoding(
-            self,
-            *,
-            latitude: Latitude | None,
-            longitude: Longitude | None
-    ) -> None:
+    def update_geocoding(self, *, latitude: Latitude | None, longitude: Longitude | None) -> None:
 
         if (latitude is None) != (longitude is None):
             raise InvalidAddressCoordinates()
 
         self.latitude = latitude
-        self.longitude =  longitude
-
+        self.longitude = longitude
 
     @staticmethod
     def _validate_text(value: str, max_length: int, field: str) -> str:
@@ -117,9 +106,8 @@ class Address:
 
         return value
 
-
     @staticmethod
-    def _validate_optional_text(value: str, max_length: int, field: str) -> str:
+    def _validate_optional_text(value: str | None, max_length: int, field: str) -> str | None:
         if value is None:
             return None
 

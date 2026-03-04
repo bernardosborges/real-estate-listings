@@ -9,24 +9,25 @@ from app.domain.constants.user_profile_constants import (
     PROFILE_BIO_MAX_LENGHT,
     PROFILE_WORK_PHONE_MAX_LENGHT,
     PROFILE_WORK_CITY_MAX_LENGHT,
-    PROFILE_LICENSE_NUMBER_MAX_LENGHT
+    PROFILE_LICENSE_NUMBER_MAX_LENGHT,
 )
+
 
 class UserProfile:
     def __init__(
-            self,
-            id: int | None,
-            public_id: UserProfilePublicId,
-            user_id: int,
-            name: str | None = None,
-            bio: str | None = None,
-            work_phone: str | None = None,
-            work_city: str | None = None,
-            license_number: str | None = None,
-            profile_picture_url: str | None = None,
-            background_image_url: str | None = None,
-            preferences: Dict[str, Any] | None = None,
-            deleted_at: datetime | None = None,
+        self,
+        id: int | None,
+        public_id: UserProfilePublicId,
+        user_id: int,
+        name: str | None = None,
+        bio: str | None = None,
+        work_phone: str | None = None,
+        work_city: str | None = None,
+        license_number: str | None = None,
+        profile_picture_url: str | None = None,
+        background_image_url: str | None = None,
+        preferences: Dict[str, Any] | None = None,
+        deleted_at: datetime | None = None,
     ):
 
         self.id = id
@@ -42,10 +43,9 @@ class UserProfile:
         self.preferences = preferences or {}
         self.deleted_at = deleted_at
 
-
-# -----------------------------------------------
-# LIFECYCLE
-# -----------------------------------------------
+    # -----------------------------------------------
+    # LIFECYCLE
+    # -----------------------------------------------
 
     @property
     def is_deleted(self) -> bool:
@@ -61,19 +61,18 @@ class UserProfile:
             raise CannotBeRestored("user_profile")
         self.deleted_at = None
 
-
-# -----------------------------------------------
-# ?????
-# -----------------------------------------------
+    # -----------------------------------------------
+    # ?????
+    # -----------------------------------------------
 
     def update_basic_info(
-            self,
-            *,
-            name: str | None = None,
-            bio: str | None = None,
-            work_phone: str | None = None,
-            work_city: str | None = None,
-            license_number: str | None = None
+        self,
+        *,
+        name: str | None = None,
+        bio: str | None = None,
+        work_phone: str | None = None,
+        work_city: str | None = None,
+        license_number: str | None = None,
     ) -> None:
         if name is not None:
             if len(name) > PROFILE_NAME_MAX_LENGHT:
