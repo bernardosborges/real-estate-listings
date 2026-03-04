@@ -1,33 +1,35 @@
 from app.domain.entities.user import User
 from app.domain.exceptions.user_profile_exceptions import UserProfileNotFound
 from app.domain.exceptions.property_exceptions import PropertyNotFound, PropertyForbidden
+from app.domain.exceptions.user_exceptions import InvalidUserId
+from app.domain.value_objects.property.property_public_id import PropertyPublicId
 from app.application.dto.property.update_property_input import UpdatePropertyInput
 from app.application.dto.property.property_output import PropertyOutput
 from app.application.unit_of_work.unit_of_work import UnitOfWork
 
 
 class UpdatePropertyUseCase:
-
     """
     Use case responsible for updating a Property.
     """
 
-    def __init__(
-            self,
-            uow: UnitOfWork
-        ):
+    def __init__(self, uow: UnitOfWork):
 
         self.uow = uow
 
+    def execute(self, property_public_id: str, data: UpdatePropertyInput, current_user: User) -> PropertyOutput:
 
-    def execute(self, property_public_id: str, data: UpdatePropertyInput, current_user: User) -> None:
+        property_public_id_vo = PropertyPublicId(property_public_id)
 
         # Check property
-        db_property = self.uow.property_repository.get_by_public_id(property_public_id)
+        db_property = self.uow.property_repository.get_by_public_id(property_public_id_vo)
         if not db_property:
             raise PropertyNotFound()
 
         # Check profile
+        if current_user.id is None:
+            raise InvalidUserId()
+
         db_profile = self.uow.profile_repository.get_by_user_id(current_user.id)
         if not db_profile:
             raise UserProfileNotFound(property_public_id)
@@ -37,11 +39,7 @@ class UpdatePropertyUseCase:
             raise PropertyForbidden()
 
         # Update entity
-        db_property.update_basic_info(
-            description = data.description,
-            price = data.price,
-            private_area = data.private_area
-        )
+        db_property.update_basic_info(description=data.description, price=data.price, private_area=data.private_area)
 
         # Activate and persist all changes
         self.uow.property_repository.save(db_property)
