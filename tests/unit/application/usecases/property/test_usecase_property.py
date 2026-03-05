@@ -9,21 +9,21 @@ from app.domain.exceptions.user_profile_exceptions import UserProfileNotFound
 
 def make_valid_input():
     return CreatePropertyInput(
-        description = "Test home",
-        price = Decimal("100000.00"),
-        private_area = Decimal("120.00"),
-        address = AddressInput(
-            zip_code = "12345678",
-            country = "BR",
-            state = "RS",
-            city = "Porto Alegre",
-            neighborhood = "Centro",
-            street = "Rua A",
-            number = "100",
-            complement = None,
-            latitude = None,
-            longitude = None
-        )
+        description="Test home",
+        price=Decimal("100000.00"),
+        private_area=Decimal("120.00"),
+        address=AddressInput(
+            zip_code="12345678",
+            country="BR",
+            state="RS",
+            city="Porto Alegre",
+            neighborhood="Centro",
+            street="Rua A",
+            number="100",
+            complement=None,
+            latitude=None,
+            longitude=None,
+        ),
     )
 
 
@@ -55,20 +55,22 @@ def test_should_create_new_address_when_not_exists(fake_uow, user_factory_fixtur
     assert output.description == "Test home"
 
 
-def test_should_reuse_existing_address(fake_uow, user_factory_fixture, user_profile_factory_fixture, address_factory_fixture):
+def test_should_reuse_existing_address(
+    fake_uow, user_factory_fixture, user_profile_factory_fixture, address_factory_fixture
+):
     user = user_factory_fixture()
     user_profile = user_profile_factory_fixture(user_id=user.id)
     fake_uow.profile_repository.save(user_profile)
 
     existing_address = address_factory_fixture(
-        zip_code = "12345678",
-        country = "BR",
-        state = "RS",
-        city = "Porto Alegre",
-        neighborhood = "Centro",
-        street = "Rua A",
-        number = "100",
-        complement = None
+        zip_code="12345678",
+        country="BR",
+        state="RS",
+        city="Porto Alegre",
+        neighborhood="Centro",
+        street="Rua A",
+        number="100",
+        complement=None,
     )
 
     fake_uow.address_repository.save(existing_address)

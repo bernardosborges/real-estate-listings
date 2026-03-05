@@ -17,11 +17,12 @@ def address_factory(**overrides):
             "complement": "1101",
             "latitude": Decimal("-29.263545"),
             "longitude": Decimal("-51.736234"),
-            "deleted_at": None
+            "deleted_at": None,
         }
 
         data.update(overrides)
         data.update(kwargs)
 
         return Address(**data)
+
     return _create

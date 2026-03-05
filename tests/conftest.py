@@ -15,7 +15,6 @@ from tests.factories.user_factory import user_factory
 from tests.factories.user_profile_factory import user_profile_factory
 from tests.unit.application.fakes.fake_unit_of_work import FakeUnitOfWork
 
-
 # -----------------------------------------------
 # DB SETTINGS (SQLITE)
 # -----------------------------------------------
@@ -23,14 +22,9 @@ from tests.unit.application.fakes.fake_unit_of_work import FakeUnitOfWork
 # SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    echo=False
-)
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}, echo=False)
 
 TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 
 
 # -----------------------------------------------
@@ -39,17 +33,21 @@ TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # ---------------------- ENTITIES ----------------------
 
+
 @pytest.fixture
 def address_factory_fixture():
     return address_factory()
+
 
 @pytest.fixture
 def property_factory_fixture():
     return property_factory()
 
+
 @pytest.fixture
 def user_factory_fixture():
     return user_factory()
+
 
 @pytest.fixture
 def user_profile_factory_fixture():
@@ -61,6 +59,7 @@ def user_profile_factory_fixture():
 # -----------------------------------------------
 
 # ---------------------- FIXTURES ----------------------
+
 
 @pytest.fixture
 def test_env_guest(db_session):
@@ -107,7 +106,9 @@ def test_env_admin(db_session):
     else:
         app.dependency_overrides.pop(get_current_user, None)
 
+
 # ---------------------- CREATE TEST USER ----------------------
+
 
 def create_test_user(db, **overrides):
     user = user_factory(id=None)(**overrides)
@@ -118,6 +119,7 @@ def create_test_user(db, **overrides):
     user.id = model.id
     return user
 
+
 def create_test_admin(db, **overrides):
     user = user_factory(is_superuser=True)(**overrides)
     model = UserMapper.to_model(user)
@@ -126,6 +128,7 @@ def create_test_admin(db, **overrides):
     db.refresh(model)
     user.id = model.id
     return user
+
 
 def create_test_user_profile(db, user, **overrides):
     profile = user_profile_factory(id=None, user_id=user.id)(**overrides)
@@ -136,14 +139,18 @@ def create_test_user_profile(db, user, **overrides):
     profile.id = model.id
     return profile
 
+
 # ---------------------- UNIT OF WORK ----------------------
+
 
 @pytest.fixture
 def fake_uow():
     uow = FakeUnitOfWork()
     yield uow
 
+
 # ---------------------- DATABASE ----------------------
+
 
 @pytest.fixture(scope="session", autouse=True)
 def create_test_db():
@@ -151,32 +158,34 @@ def create_test_db():
     yield
     Base.metadata.drop_all(bind=engine)
 
+
 @pytest.fixture
 def db_session():
     connection = engine.connect()
     transaction = connection.begin()
     session = TestSessionLocal(bind=connection)
 
-    try: 
+    try:
         yield session
     finally:
         session.close()
         transaction.rollback()
         connection.close()
 
+
 @pytest.fixture
 def override_get_db(db_session):
-    '''Override for integration tests.'''
+    """Override for integration tests."""
     original_override = app.dependency_overrides.get(get_db)
     app.dependency_overrides[get_db] = lambda: db_session
-    
+
     yield db_session
 
     if original_override:
         app.dependency_overrides[get_db] = original_override
     else:
         app.dependency_overrides.pop(get_db, None)
-    
+
 
 #     session = TestSessionLocal()
 #     try:
@@ -188,6 +197,7 @@ def override_get_db(db_session):
 
 
 # ---------------------- FAST API CLIENT ----------------------
+
 
 @pytest.fixture
 def client(override_get_db):

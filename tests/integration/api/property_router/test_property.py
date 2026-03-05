@@ -5,7 +5,7 @@ from app.core.config import settings
 
 @pytest.mark.integration
 def test_create_property_success(client: TestClient, test_env_logged):
-    
+
     payload = {
         "description": "Apartamento incrível",
         "price": 100000.00,
@@ -21,12 +21,12 @@ def test_create_property_success(client: TestClient, test_env_logged):
             "complement": "101",
             "latitude": -30.0,
             "longitude": -51.0,
-        }
+        },
     }
 
     response = client.post(f"{settings.API_PREFIX}/properties/", json=payload)
 
-    assert response.status_code in (200, 201)    
+    assert response.status_code in (200, 201)
     data = response.json()
 
     assert data["description"] == "Apartamento incrível"
@@ -43,13 +43,8 @@ def test_create_property_success(client: TestClient, test_env_logged):
     assert data["address"]["latitude"] == "-30.000000"
     assert data["address"]["longitude"] == "-51.000000"
 
-
     assert "public_id" in data
     assert "profile_public_id" in data
-
-
-
-
 
 
 # def test_list_properties_empty(client, db):

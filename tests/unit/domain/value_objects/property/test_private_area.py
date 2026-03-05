@@ -24,6 +24,7 @@ def test_private_area_rounding_half_up():
     private_area = PrivateArea.from_raw("10.005")
     assert private_area.value == Decimal("10.01")
 
+
 def test_private_area_zero_is_valid():
     private_area = PrivateArea.from_raw("0")
     assert private_area.value == Decimal("0.00")
@@ -31,7 +32,7 @@ def test_private_area_zero_is_valid():
 
 def test_private_area_max_value():
     private_area = PrivateArea.from_raw(PrivateArea.MAX_VALUE)
-    assert private_area.value == PrivateArea.MAX_VALUE 
+    assert private_area.value == PrivateArea.MAX_VALUE
 
 
 def test_private_area_negative_raises_exception():
@@ -57,9 +58,7 @@ def test_private_area_equality():
     assert private_area1 == private_area2
     assert private_area1 != private_area3
 
+
 def test_private_area_repr():
     private_area = PrivateArea.from_raw("75.25")
     assert repr(private_area) == "PrivateArea(75.25)"
-
-
-

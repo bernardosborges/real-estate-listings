@@ -17,4 +17,5 @@ def user_factory(**overrides):
         data.update(kwargs)
 
         return User(**data)
+
     return _create
