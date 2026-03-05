@@ -58,6 +58,23 @@ def user_profile_factory_fixture():
 # TEST ENVIRONMENTS
 # -----------------------------------------------
 
+# ---------------------- VARIABLES ----------------------
+
+
+@pytest.fixture(autouse=True)
+def mock_settings(monkeypatch):
+    monkeypatch.setenv("DB_HOST", "dummy")
+    monkeypatch.setenv("DB_NAME", "dummy")
+    monkeypatch.setenv("DB_USER", "dummy")
+    monkeypatch.setenv("DB_PASSWORD", "dummy")
+    monkeypatch.setenv("SECRET_KEY", "dummy")
+    monkeypatch.setenv("GOOGLE_CODING_API_KEY", "dummy")
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "dummy")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "dummy")
+    monkeypatch.setenv("AWS_REGION", "dummy")
+    monkeypatch.setenv("AWS_S3_BUCKET", "dummy")
+
+
 # ---------------------- FIXTURES ----------------------
 
 
