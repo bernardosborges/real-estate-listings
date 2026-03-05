@@ -12,7 +12,6 @@ class AddressLookupOutput:
         city: str,
         neighborhood: str | None = None,
         street: str | None = None,
-
     ):
         self.zip_code = zip_code
         self.country = country

@@ -1,21 +1,21 @@
 from decimal import Decimal
 
-class AddressInput:
 
+class AddressInput:
     def __init__(
-            self,
-            zip_code: str,
-            country: str,
-            state: str,
-            city: str,
-            neighborhood: str | None,
-            street: str,
-            number: str,
-            complement: str | None = None,
-            latitude: Decimal | None = None,
-            longitude: Decimal | None = None,
-            confidence: float | None = None,
-            provider: str | None = None
+        self,
+        zip_code: str,
+        country: str,
+        state: str,
+        city: str,
+        neighborhood: str | None,
+        street: str,
+        number: str,
+        complement: str | None = None,
+        latitude: Decimal | None = None,
+        longitude: Decimal | None = None,
+        confidence: float | None = None,
+        provider: str | None = None,
     ):
         self.zip_code = zip_code
         self.country = country
