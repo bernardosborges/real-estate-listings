@@ -4,3 +4,9 @@ black==26.1.0
 pre-commit==4.5.1
 ruff==0.15.4
 mypy==1.19.1
+<<<<<<< Updated upstream
+=======
+
+# Tests
+pytest==9.0.2
+>>>>>>> Stashed changes

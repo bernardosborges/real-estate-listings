@@ -1,6 +1,4 @@
 -r requirements.txt
 -r requirements-ci.txt
 
-# Tests
-pytest==9.0.2
 httpx
