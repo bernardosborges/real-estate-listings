@@ -1,13 +1,13 @@
-import os
+# import os
 from typing import List
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 from dataclasses import dataclass
 
-import boto3
-from botocore.exceptions import ClientError
+# import boto3
+# from botocore.exceptions import ClientError
 
-from app.core.config import settings
+# from app.core.config import settings
 from app.domain.image.image_limits import ImageLimits
 from app.core.cache import redis_client
 from app.enums.storage_enum import StorageObjectTypeEnum
@@ -61,13 +61,9 @@ class PhotoService:
 
         PhotoService._validate_presigned_request(content_type, file_size)
 
-        db_property = PropertyService.get_by_public_id_or_404(
-            db, property_public_id, include_deleted=False
-        )
+        db_property = PropertyService.get_by_public_id_or_404(db, property_public_id, include_deleted=False)
 
-        AuthService.ensure_owner_or_admin(
-            db_property.user_id, current_user, "add photos", "property"
-        )
+        AuthService.ensure_owner_or_admin(db_property.user_id, current_user, "add photos", "property")
 
         photo = PhotoService.create(
             db=db,
@@ -95,9 +91,7 @@ class PhotoService:
         return PresignedUploadUrlResult(photo.public_id, presigned_data)
 
     @staticmethod
-    def get_presigned_read_url(
-        db: Session, storage: S3Service, photo: PhotoModel
-    ) -> str:
+    def get_presigned_read_url(db: Session, storage: S3Service, photo: PhotoModel) -> str:
 
         redis_key = f"photo_read_url:{photo.public_id}"
         cached_url = redis_client.get(redis_key)
@@ -106,9 +100,7 @@ class PhotoService:
 
         presigned = storage.generate_presigned_read_url(storage_key=photo.storage_key)
 
-        ttl_seconds = int(
-            (presigned.expires_at - datetime.now(timezone.utc)).total_seconds()
-        )
+        ttl_seconds = int((presigned.expires_at - datetime.now(timezone.utc)).total_seconds())
         redis_client.setex(redis_key, ttl_seconds, presigned.url)
 
         return presigned.url
@@ -162,17 +154,11 @@ class PhotoService:
 
         return photo
 
-    def mark_upload_completed(
-        db: Session, photo_public_id: str, current_user: UserModel
-    ) -> PhotoModel:
+    def mark_upload_completed(db: Session, photo_public_id: str, current_user: UserModel) -> PhotoModel:
 
-        db_photo = PhotoService._get_by_public_id_or_404(
-            db, photo_public_id, is_active=None, include_deleted=False
-        )
+        db_photo = PhotoService._get_by_public_id_or_404(db, photo_public_id, is_active=None, include_deleted=False)
 
-        AuthService.ensure_owner_or_admin(
-            db_photo.property_id, current_user, "mark upload", "photo"
-        )
+        AuthService.ensure_owner_or_admin(db_photo.property_id, current_user, "mark upload", "photo")
 
         db_photo.processing_status = PhotoProcessingStatusEnum.UPLOADED
         db.commit()
@@ -205,9 +191,7 @@ class PhotoService:
         is_active: bool | None = True,
         include_deleted: bool = False,
     ) -> PhotoModel | None:
-        db_photo = PhotoRepository.get_by_public_id(
-            db, public_id, is_active, include_deleted
-        )
+        db_photo = PhotoRepository.get_by_public_id(db, public_id, is_active, include_deleted)
 
         if not db_photo:
             raise PhotoNotFound()
@@ -215,9 +199,7 @@ class PhotoService:
         return db_photo
 
     @staticmethod
-    def list_by_property(
-        db: Session, property_id: int, include_deleted: bool = False
-    ) -> List[PhotoModel]:
+    def list_by_property(db: Session, property_id: int, include_deleted: bool = False) -> List[PhotoModel]:
         return PhotoRepository.list_by_property(db, property_id)
 
     @staticmethod
@@ -249,9 +231,7 @@ class PhotoService:
 
     @staticmethod
     def restore(db: Session, public_id: str) -> PhotoModel | None:
-        db_photo = PhotoService._get_by_public_id_or_404(
-            db, public_id, is_active=None, include_deleted=True
-        )
+        db_photo = PhotoService._get_by_public_id_or_404(db, public_id, is_active=None, include_deleted=True)
 
         if db_photo.deleted_at is None:
             return db_photo
@@ -264,9 +244,7 @@ class PhotoService:
 
     @staticmethod
     def activate(db: Session, public_id: str) -> PhotoModel | None:
-        db_photo = PhotoService._get_by_public_id_or_404(
-            db, public_id, is_active=False, include_deleted=False
-        )
+        db_photo = PhotoService._get_by_public_id_or_404(db, public_id, is_active=False, include_deleted=False)
 
         db_photo.is_active = True
 
@@ -276,9 +254,7 @@ class PhotoService:
 
     @staticmethod
     def deactivate(db: Session, public_id: str) -> PhotoModel | None:
-        db_photo = PhotoService._get_by_public_id_or_404(
-            db, public_id, is_active=True, include_deleted=False
-        )
+        db_photo = PhotoService._get_by_public_id_or_404(db, public_id, is_active=True, include_deleted=False)
 
         db_photo.is_active = False
 
@@ -315,6 +291,7 @@ class PhotoService:
     @staticmethod
     def _get_file_extension(content_type: str) -> str:
         limits = ImageLimits.IMAGE_LIMITS.get(content_type.lower())
+        return limits
 
     @staticmethod
     def _get_extension_from_mime(content_type: str) -> str:
@@ -342,9 +319,7 @@ class PhotoService:
         return f"properties/{property_public_id}/photos/{photo_public_id}/{variant.value.upper()}.{ext.lower()}"
 
     @staticmethod
-    def enrich_with_thumbnails(
-        db: Session, storage: S3Service, photos: List[PhotoModel]
-    ) -> List[PhotoModel]:
+    def enrich_with_thumbnails(db: Session, storage: S3Service, photos: List[PhotoModel]) -> List[PhotoModel]:
         for photo in photos:
             presigned_url = PhotoService.get_presigned_read_url(db, storage, photo)
             photo.thumb_presigned_url = presigned_url
