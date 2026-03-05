@@ -1,23 +1,17 @@
 from app.domain.entities.user import User
 from app.application.unit_of_work.unit_of_work import UnitOfWork
-from app.domain.repositories.property_repository import PropertyRepository
-from app.domain.repositories.user_profile_repository import UserProfileRepository
 from app.domain.exceptions.user_profile_exceptions import UserProfileNotFound
-from app.domain.exceptions.property_exceptions import PropertyNotFound, PropertyForbidden, PropertyAlreadyActive
+from app.domain.exceptions.property_exceptions import PropertyNotFound, PropertyForbidden
+
 
 class ActivatePropertyUseCase:
-
     """
     Use case responsible for activating a Property.
     """
 
-    def __init__(
-            self,
-            uow: UnitOfWork
-        ):
+    def __init__(self, uow: UnitOfWork):
 
         self.uow = uow
-
 
     def execute(self, property_public_id: str, current_user: User) -> None:
 
