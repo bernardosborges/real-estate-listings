@@ -4,7 +4,8 @@ from typing import List
 from app.core.exceptions.domain_exception import TagGroupAlreadyExists, TagGroupNotFound
 from app.repositories.tag_group_repository import TagGroupModel
 from app.repositories.tag_group_repository import TagGroupRepository
-from app.repositories.tag_repository import TagRepository
+
+# from app.repositories.tag_repository import TagRepository
 from app.services.tag_service import TagService
 
 
@@ -15,17 +16,13 @@ class TagGroupService:
     # -----------------------------------------------
 
     @staticmethod
-    def create(
-        db: Session, name: str, slug: str, is_exclusive: bool = False
-    ) -> TagGroupModel:
+    def create(db: Session, name: str, slug: str, is_exclusive: bool = False) -> TagGroupModel:
         existing = TagGroupRepository.get_by_slug(db, slug, include_deleted=True)
 
         if existing:
             raise TagGroupAlreadyExists(f"TagGroup with slug '{slug}' already exists")
 
-        tag_group = TagGroupModel(
-            name=name, slug=slug, is_exclusive=is_exclusive, is_active=True
-        )
+        tag_group = TagGroupModel(name=name, slug=slug, is_exclusive=is_exclusive, is_active=True)
 
         TagGroupRepository.create(db, tag_group)
         db.commit()
@@ -73,13 +70,9 @@ class TagGroupService:
             raise TagGroupNotFound(current_slug)
 
         if new_slug is not None and new_slug != current_slug:
-            existing = TagGroupRepository.get_by_slug(
-                db, new_slug, include_deleted=True
-            )
+            existing = TagGroupRepository.get_by_slug(db, new_slug, include_deleted=True)
             if existing:
-                raise TagGroupAlreadyExists(
-                    f"TagGroup with slug '{new_slug}' already exists"
-                )
+                raise TagGroupAlreadyExists(f"TagGroup with slug '{new_slug}' already exists")
 
         update_data = {}
 
@@ -90,9 +83,7 @@ class TagGroupService:
         if is_exclusive is not None:
             update_data["is_exclusive"] = is_exclusive
 
-        updated_tag_group = TagGroupRepository.update(
-            db, db_tag_group.id, **update_data
-        )
+        updated_tag_group = TagGroupRepository.update(db, db_tag_group.id, **update_data)
         db.commit()
         db.refresh(updated_tag_group)
 

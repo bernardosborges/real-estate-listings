@@ -1,9 +1,10 @@
-import httpx
+# import httpx
 import asyncio
 import logging
 
 from typing import List
-from fastapi import HTTPException, status
+
+# from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from decimal import Decimal
 
@@ -11,18 +12,17 @@ from app.infrastructure.storage.s3_service import S3Service
 from app.repositories.property_repository import PropertyRepository
 from app.models.user_model import UserModel
 from app.models.property_model import PropertyModel
-from app.schemas.property_schema import PropertyCreateSchema, PropertyUpdateSchema
+from app.schemas.property_schema import PropertyCreateSchema
 from app.application.services.auth_service import AuthService
 from app.services.address_service import AddressService
-from app.services.cep_service import resolve_address_input_async
+
+# from app.services.cep_service import resolve_address_input_async
 from app.infrastructure.services.google_geocoding_service import geocode_address
 from app.services.user_profile_service import UserProfileService
 from app.services.photo_service import PhotoService
 from app.schemas.address_schema import AddressCreateSchema
 from app.core.exceptions.domain_exception import (
-    PropertyForbidden,
     PropertyNotFound,
-    ForbiddenAction,
 )
 
 logger = logging.getLogger(__name__)
@@ -35,9 +35,7 @@ class PropertyService:
     # -----------------------------------------------
 
     @staticmethod
-    def create(
-        db: Session, property_data: PropertyCreateSchema, current_user: UserModel
-    ) -> PropertyModel:
+    def create(db: Session, property_data: PropertyCreateSchema, current_user: UserModel) -> PropertyModel:
 
         address_data = property_data.address
 
@@ -58,9 +56,7 @@ class PropertyService:
         address_payload.pop("latitude", None)
         address_payload.pop("longitude", None)
 
-        address_schema = AddressCreateSchema(
-            **address_payload, latitude=lat, longitude=lng
-        )
+        address_schema = AddressCreateSchema(**address_payload, latitude=lat, longitude=lng)
 
         address = AddressService.get_or_create(db, address_schema)
 
@@ -82,18 +78,12 @@ class PropertyService:
     # -----------------------------------------------
 
     @staticmethod
-    def get_with_details_by_public_id(
-        db: Session, storage: S3Service, public_id: str
-    ) -> PropertyModel:
-        db_property = PropertyRepository.get_with_details_by_public_id(
-            db, public_id, is_editing=False
-        )
+    def get_with_details_by_public_id(db: Session, storage: S3Service, public_id: str) -> PropertyModel:
+        db_property = PropertyRepository.get_with_details_by_public_id(db, public_id, is_editing=False)
         if not db_property:
             raise PropertyNotFound()
 
-        enriched_photos = PhotoService.enrich_with_thumbnails(
-            db, storage, db_property.photos
-        )
+        enriched_photos = PhotoService.enrich_with_thumbnails(db, storage, db_property.photos)
         db_property.enriched_photos = enriched_photos
 
         return db_property
@@ -117,9 +107,7 @@ class PropertyService:
         is_active: bool | None = True,
         include_deleted: bool = False,
     ) -> PropertyModel:
-        db_property = PropertyRepository.get_by_public_id(
-            db, public_id, is_active, include_deleted
-        )
+        db_property = PropertyRepository.get_by_public_id(db, public_id, is_active, include_deleted)
         if not db_property:
             raise PropertyNotFound()
         return db_property
@@ -143,12 +131,8 @@ class PropertyService:
         limit: int,
         offset: int,
     ) -> List[PropertyModel]:
-        db_user_profile = UserProfileService.get_by_public_id_or_404(
-            db, user_profile_public_id, include_deleted=False
-        )
-        return PropertyRepository.list_by_user_id(
-            db, db_user_profile.public_id, price_min, price_max, limit, offset
-        )
+        db_user_profile = UserProfileService.get_by_public_id_or_404(db, user_profile_public_id, include_deleted=False)
+        return PropertyRepository.list_by_user_id(db, db_user_profile.public_id, price_min, price_max, limit, offset)
 
     @staticmethod
     def list_for_map(
@@ -171,16 +155,10 @@ class PropertyService:
     # -----------------------------------------------
 
     @staticmethod
-    def update(
-        db: Session, public_id: str, data: dict, current_user: UserModel
-    ) -> PropertyModel:
-        db_property = PropertyService.get_by_public_id_or_404(
-            db, public_id, is_active=None, include_deleted=False
-        )
+    def update(db: Session, public_id: str, data: dict, current_user: UserModel) -> PropertyModel:
+        db_property = PropertyService.get_by_public_id_or_404(db, public_id, is_active=None, include_deleted=False)
 
-        AuthService.ensure_owner_or_admin(
-            db_property.user_id, current_user, "update", "property"
-        )
+        AuthService.ensure_owner_or_admin(db_property.user_id, current_user, "update", "property")
 
         address_data = data.pop("address", None)
         if address_data is not None:
@@ -196,17 +174,11 @@ class PropertyService:
         return db_property
 
     @staticmethod
-    def restore(
-        db: Session, public_id: str, current_user: UserModel | None = None
-    ) -> PropertyModel:
-        db_property = PropertyService.get_by_public_id_or_404(
-            db, public_id, is_active=None, include_deleted=True
-        )
+    def restore(db: Session, public_id: str, current_user: UserModel | None = None) -> PropertyModel:
+        db_property = PropertyService.get_by_public_id_or_404(db, public_id, is_active=None, include_deleted=True)
 
         if current_user is not None:
-            AuthService.ensure_owner_or_admin(
-                db_property.user_id, current_user, "restore", "property"
-            )
+            AuthService.ensure_owner_or_admin(db_property.user_id, current_user, "restore", "property")
 
         if db_property.deleted_at is None:
             return db_property
@@ -222,14 +194,10 @@ class PropertyService:
 
     @staticmethod
     def delete(db: Session, public_id: str, current_user: UserModel | None = None):
-        db_property = PropertyService.get_by_public_id_or_404(
-            db, public_id, is_active=None, include_deleted=False
-        )
+        db_property = PropertyService.get_by_public_id_or_404(db, public_id, is_active=None, include_deleted=False)
 
         if current_user is not None:
-            AuthService.ensure_owner_or_admin(
-                db_property.user_id, current_user, "delete", "property"
-            )
+            AuthService.ensure_owner_or_admin(db_property.user_id, current_user, "delete", "property")
 
         deleted = PropertyRepository.soft_delete(db, db_property.id)
         db.commit()

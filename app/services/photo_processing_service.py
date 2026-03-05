@@ -1,8 +1,8 @@
 import logging
 
-from io import BytesIO
-from dataclasses import dataclass
-from PIL import Image
+# from io import BytesIO
+# from dataclasses import dataclass
+# from PIL import Image
 from sqlalchemy.orm import Session
 
 from app.core.cache import redis_client
@@ -55,9 +55,7 @@ class PhotoProcessingService:
         try:
             ImageValidator.validate_extension(db_photo.storage_key)
             raw_bytes = self.storage.get_object_bytes(db_photo.storage_key)
-            mime = ImageValidator.validate_and_detect_mime(
-                raw_bytes, ImageLimits.IMAGE_LIMITS
-            )
+            mime = ImageValidator.validate_and_detect_mime(raw_bytes, ImageLimits.IMAGE_LIMITS)
             limits: dict = ImageLimits.get_limits_for_mime(mime)
             ImageValidator.validate_file_size(raw_bytes, limits["max_file_size"])
             image = ImageValidator.validate_and_normalize_image_with_pil(raw_bytes)
@@ -67,26 +65,12 @@ class PhotoProcessingService:
             processed = ImageProcessor.create_optimized_and_thumb(image)
 
             # Generate storage keys
-            optimized_key = (
-                db_photo.storage_key.replace("/ORIGINAL", "/OPTIMIZED").rsplit(".", 1)[
-                    0
-                ]
-                + ".webp"
-            )
-            thumb_key = (
-                db_photo.storage_key.replace("/ORIGINAL", "/THUMBNAIL").rsplit(".", 1)[
-                    0
-                ]
-                + ".webp"
-            )
+            optimized_key = db_photo.storage_key.replace("/ORIGINAL", "/OPTIMIZED").rsplit(".", 1)[0] + ".webp"
+            thumb_key = db_photo.storage_key.replace("/ORIGINAL", "/THUMBNAIL").rsplit(".", 1)[0] + ".webp"
 
             # Save optimized photo and thumbnail to storage
-            self.storage.put_object_bytes(
-                optimized_key, processed.optimized, content_type="image/webp"
-            )
-            self.storage.put_object_bytes(
-                thumb_key, processed.thumbnail, content_type="image/webp"
-            )
+            self.storage.put_object_bytes(optimized_key, processed.optimized, content_type="image/webp")
+            self.storage.put_object_bytes(thumb_key, processed.thumbnail, content_type="image/webp")
 
             self._mark_ready(db_photo, optimized_key, thumb_key, width, height)
 
@@ -96,40 +80,30 @@ class PhotoProcessingService:
 
         except ImageExtensionError as exc:
             self.db.rollback()
-            self._mark_failed(
-                db_photo, f"Photo {photo_public_id} failed extension check: {exc}."
-            )
+            self._mark_failed(db_photo, f"Photo {photo_public_id} failed extension check: {exc}.")
             return  # Using return instead of raise to not retry the processes
 
         except ImageMimeError as exc:
             self.db.rollback()
-            self._mark_failed(
-                db_photo, f"Photo {photo_public_id} failed MIME/magic check: {exc}."
-            )
+            self._mark_failed(db_photo, f"Photo {photo_public_id} failed MIME/magic check: {exc}.")
             return  # Using return instead of raise to not retry the processes
 
         except ImageFileSizeError as exc:
             self.db.rollback()
-            self._mark_failed(
-                db_photo, f"Photo {photo_public_id} exceeds max file size: {exc}."
-            )
+            self._mark_failed(db_photo, f"Photo {photo_public_id} exceeds max file size: {exc}.")
             return  # Using return instead of raise to not retry the processes
 
         except ImageVerificationError as exc:
             self.db.rollback()
-            self._mark_failed(
-                db_photo, f"Photo {photo_public_id} failed MIME/magic check: {exc}."
-            )
+            self._mark_failed(db_photo, f"Photo {photo_public_id} failed MIME/magic check: {exc}.")
             return  # Using return instead of raise to not retry the processes
 
         except ImageDimensionsError as exc:
             self.db.rollback()
-            self._mark_failed(
-                db_photo, f"Photo {photo_public_id} failed image dimesion check: {exc}."
-            )
+            self._mark_failed(db_photo, f"Photo {photo_public_id} failed image dimesion check: {exc}.")
             return  # Using return instead of raise to not retry the processes
 
-        except Exception as exc:
+        except Exception:
             self.db.rollback()
             logger.exception(
                 "Unexpected error during photo processing.",
@@ -163,6 +137,4 @@ class PhotoProcessingService:
     def _mark_failed(self, photo: PhotoModel, reason: str) -> None:
         photo.processing_status = PhotoProcessingStatusEnum.FAILED
         self.db.commit()
-        logger.warning(
-            "Photo failed.", extra={"photo": photo.public_id, "reason": reason}
-        )
+        logger.warning("Photo failed.", extra={"photo": photo.public_id, "reason": reason})

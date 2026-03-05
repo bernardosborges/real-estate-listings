@@ -5,7 +5,8 @@ from app.repositories.property_tag_repository import PropertyTagRepository
 from app.repositories.tag_repository import TagRepository
 from app.models.property_tag_model import PropertyTagModel
 from app.models.property_model import PropertyModel
-from app.models.tag_model import TagModel
+
+# from app.models.tag_model import TagModel
 from app.repositories.property_repository import PropertyRepository
 from app.core.exceptions.domain_exception import (
     PropertyNotFound,
@@ -24,9 +25,7 @@ class PropertyTagService:
     # -----------------------------------------------
 
     @staticmethod
-    def add_tags_to_property(
-        db: Session, property_id: int, tags_slug: List[str]
-    ) -> dict:
+    def add_tags_to_property(db: Session, property_id: int, tags_slug: List[str]) -> dict:
         PropertyTagService.validate_property_exists(db, property_id)
 
         db_tags_info = []
@@ -37,13 +36,9 @@ class PropertyTagService:
                 raise TagNotFound(f"Tag {tag_slug} not found")
 
             if db_tag.group and db_tag.group.is_exclusive:
-                PropertyTagRepository.hard_delete_exclusive_group(
-                    db, property_id, db_tag.group_id
-                )
+                PropertyTagRepository.hard_delete_exclusive_group(db, property_id, db_tag.group_id)
 
-            existing = PropertyTagRepository.get_by_property_and_tag(
-                db, property_id, db_tag.id
-            )
+            existing = PropertyTagRepository.get_by_property_and_tag(db, property_id, db_tag.id)
             if existing:
                 continue
 
@@ -51,9 +46,7 @@ class PropertyTagService:
             created_slugs.append(tag_slug)
 
         if db_tags_info:
-            db_property_tags = PropertyTagRepository.create(
-                db, property_id, db_tags_info
-            )
+            db_property_tags = PropertyTagRepository.create(db, property_id, db_tags_info)
             for db_property_tag in db_property_tags:
                 db.refresh(db_property_tag)
 
@@ -141,9 +134,7 @@ class PropertyTagService:
         is_active: bool | None = None,
     ) -> PropertyTagModel:
 
-        db_property_tag = PropertyTagRepository.get_by_property_and_tag(
-            db, property_id, tag_id
-        )
+        db_property_tag = PropertyTagRepository.get_by_property_and_tag(db, property_id, tag_id)
         if not db_property_tag:
             raise PropertyTagNotFound()
 
@@ -152,9 +143,7 @@ class PropertyTagService:
         if is_active is not None:
             update_data["is_active"] = is_active
 
-        updated_property_tag = PropertyTagRepository.update(
-            db, property_id, tag_id, **update_data
-        )
+        updated_property_tag = PropertyTagRepository.update(db, property_id, tag_id, **update_data)
         db.commit()
         db.refresh(updated_property_tag)
 
@@ -182,9 +171,7 @@ class PropertyTagService:
                 db, property_id, db_tag.id, include_deleted=True
             )
             if db_property_tag is not None:
-                db_restored_tag = PropertyTagRepository.restore(
-                    db, property_id, db_tag.id
-                )
+                db_restored_tag = PropertyTagRepository.restore(db, property_id, db_tag.id)
                 db_restored_tags.append(db_restored_tag)
 
         db.commit()
@@ -198,16 +185,12 @@ class PropertyTagService:
     # -----------------------------------------------
 
     @staticmethod
-    def remove_tags_from_property(
-        db: Session, property_id: int, tags_slug: List[str]
-    ) -> dict:
+    def remove_tags_from_property(db: Session, property_id: int, tags_slug: List[str]) -> dict:
         db_property = PropertyTagService.validate_property_exists(db, property_id)
 
         for tag_slug in tags_slug:
             db_tag = TagService.get_by_slug(db, tag_slug)
-            db_property_tag = PropertyTagRepository.get_by_property_and_tag(
-                db, property_id, db_tag.id
-            )
+            db_property_tag = PropertyTagRepository.get_by_property_and_tag(db, property_id, db_tag.id)
             if db_property_tag is not None:
                 PropertyTagRepository.hard_delete(db, property_id, db_tag.id)
 
@@ -218,9 +201,7 @@ class PropertyTagService:
 
     @staticmethod
     def soft_delete(db: Session, property_id: int, tag_id: int) -> PropertyTagModel:
-        db_property_tag = PropertyTagRepository.soft_delete(
-            db, property_id=property_id, tag_id=tag_id
-        )
+        db_property_tag = PropertyTagRepository.soft_delete(db, property_id=property_id, tag_id=tag_id)
 
         db.commit()
         db.refresh(db_property_tag)
