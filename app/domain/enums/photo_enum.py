@@ -1,10 +1,12 @@
 from __future__ import annotations
 import enum
 
+
 class PhotoVisibilityEnum(str, enum.Enum):
-    PUBLIC = "public" # everyone see
-    PRIVATE = "private" # logged see
-    UNLISTED = "unlisted" # owner and superadmin see
+    PUBLIC = "public"  # everyone see
+    PRIVATE = "private"  # logged see
+    UNLISTED = "unlisted"  # owner and superadmin see
+
 
 class PhotoProcessingStatusEnum(str, enum.Enum):
     PENDING = "pending"
@@ -12,6 +14,7 @@ class PhotoProcessingStatusEnum(str, enum.Enum):
     PROCESSING = "processing"
     READY = "ready"
     FAILED = "failed"
+
 
 class PhotoCategoryEnum(str, enum.Enum):
 
@@ -34,14 +37,14 @@ class PhotoCategoryEnum(str, enum.Enum):
 
     # OTHERS
     DOCUMENT = "document"
-    GENERAL ="general"
+    GENERAL = "general"
 
     @classmethod
     def from_str(cls, str: str) -> PhotoCategoryEnum:
         if not isinstance(str, str):
-            raise InvalidPhotoCategory()
+            raise ValueError()  # InvalidPhotoCategory()
 
         try:
             return cls(str.upper())
         except ValueError:
-            raise InvalidPhotoCategory()
+            raise ValueError()  # InvalidPhotoCategory()

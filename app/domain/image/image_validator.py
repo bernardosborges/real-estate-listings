@@ -5,15 +5,22 @@ import magic
 from PIL import Image, UnidentifiedImageError
 
 from app.domain.image.image_limits import ImageLimits
-from app.core.exceptions.domain_exception import ImageExtensionError, ImageMimeError, ImageFileSizeError, ImageVerificationError, ImageDimensionsError
+from app.core.exceptions.domain_exception import (
+    ImageExtensionError,
+    ImageMimeError,
+    ImageFileSizeError,
+    ImageVerificationError,
+    ImageDimensionsError,
+)
 
 ALLOWED_EXTENSIONS: Set[str] = {"jpg", "jpeg", "png", "webp", "heic", "heif"}
+
 
 class ImageValidator:
 
     @staticmethod
     def validate_extension(storage_key: str) -> None:
-        ext = storage_key.lower().split('.')[-1]
+        ext = storage_key.lower().split(".")[-1]
         if ext not in ALLOWED_EXTENSIONS:
             raise ImageExtensionError(f"Invalid file extension: {ext}")
 
@@ -40,11 +47,11 @@ class ImageValidator:
 
             image = Image.open(BytesIO(raw_bytes))
             if image.mode not in ("RGB",):
-                    image = image.convert("RGB")
+                image = image.convert("RGB")
             return image
 
         except UnidentifiedImageError as exc:
-            raise ImageVerificationError(f"Invalid image file.") from exc
+            raise ImageVerificationError("Invalid image file.") from exc
 
     @staticmethod
     def validate_and_extract_image_dimensions(image: Image.Image, max_width: int, max_height: int) -> Tuple[int, int]:
