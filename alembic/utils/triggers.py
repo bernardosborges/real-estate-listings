@@ -1,7 +1,5 @@
-
-
 def create_updated_at_trigger(tables: list[str]) -> str:
-    
+
     sql = """
     CREATE OR REPLACE FUNCTION update_updated_at_column()
     RETURNS TRIGGER AS $$
