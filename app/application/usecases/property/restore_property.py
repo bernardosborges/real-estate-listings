@@ -3,19 +3,15 @@ from app.application.unit_of_work.unit_of_work import UnitOfWork
 from app.domain.exceptions.user_profile_exceptions import UserProfileNotFound
 from app.domain.exceptions.property_exceptions import PropertyNotFound, PropertyForbidden
 
-class RestorePropertyUseCase:
 
+class RestorePropertyUseCase:
     """
     Use case responsible for restoring a soft deleted Property.
     """
 
-    def __init__(
-            self,
-            uow: UnitOfWork
-        ):
+    def __init__(self, uow: UnitOfWork):
 
         self.uow = uow
-
 
     def execute(self, property_public_id: str, current_user: User) -> None:
 

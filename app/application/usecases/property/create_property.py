@@ -12,18 +12,13 @@ from app.domain.enums.address_enum import StateEnum
 
 
 class CreatePropertyUseCase:
-
     """
     Use case responsible for creating a new Property for a Profile.
     """
 
-    def __init__(
-            self,
-            uow: UnitOfWork
-        ):
+    def __init__(self, uow: UnitOfWork):
 
         self.uow = uow
-
 
     def execute(self, data: CreatePropertyInput, current_user: User) -> PropertyOutput:
 
@@ -39,38 +34,38 @@ class CreatePropertyUseCase:
 
         # Check address
         db_address = self.uow.address_repository.get_by_full_address(
-            zip_code = zipcode_vo,
-            country = country_enum,
-            state = state_enum,
-            city = data.address.city,
-            neighborhood = data.address.neighborhood,
-            street = data.address.street,
-            number = data.address.number,
-            complement = data.address.complement
+            zip_code=zipcode_vo,
+            country=country_enum,
+            state=state_enum,
+            city=data.address.city,
+            neighborhood=data.address.neighborhood,
+            street=data.address.street,
+            number=data.address.number,
+            complement=data.address.complement,
         )
 
         if db_address is None:
             db_address = AddressFactory.create(
-                zip_code = data.address.zip_code,
-                country = data.address.country,
-                state = data.address.state,
-                city = data.address.city,
-                neighborhood = data.address.neighborhood,
-                street = data.address.street,
-                number = data.address.number,
-                complement = data.address.complement,
-                latitude = data.address.latitude,
-                longitude = data.address.longitude
+                zip_code=data.address.zip_code,
+                country=data.address.country,
+                state=data.address.state,
+                city=data.address.city,
+                neighborhood=data.address.neighborhood,
+                street=data.address.street,
+                number=data.address.number,
+                complement=data.address.complement,
+                latitude=data.address.latitude,
+                longitude=data.address.longitude,
             )
             self.uow.address_repository.save(db_address)
 
         # Create the property entity
         property_entity = PropertyFactory.create_for_profile(
-            profile_id = db_profile.id,
-            address = db_address,
-            description = data.description,
-            price = data.price,
-            private_area = data.private_area
+            profile_id=db_profile.id,
+            address=db_address,
+            description=data.description,
+            price=data.price,
+            private_area=data.private_area,
         )
         self.uow.property_repository.save(property_entity)
 

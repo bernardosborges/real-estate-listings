@@ -1,21 +1,23 @@
 from typing import Dict, TypedDict
 from app.core.exceptions.domain_exception import ImageLimitsError
 
+
 class ImageLimit(TypedDict):
     max_file_size: int
     max_width: int
     max_height: int
 
+
 class ImageLimits:
 
     IMAGE_LIMITS: Dict[str, ImageLimit] = {
         "image/jpeg": {
-            "max_file_size": 15 * 1024 * 1024, #15 MB
+            "max_file_size": 15 * 1024 * 1024,  # 15 MB
             "max_width": 8000,
             "max_height": 8000,
         },
         "image/png": {
-            "max_file_size": 10 * 1024 * 1024, #10 MB
+            "max_file_size": 10 * 1024 * 1024,  # 10 MB
             "max_width": 6000,
             "max_height": 6000,
         },
@@ -25,12 +27,12 @@ class ImageLimits:
             "max_height": 8000,
         },
         "image/heic": {
-            "max_file_size": 20 * 1024 * 1024, #iPhone
+            "max_file_size": 20 * 1024 * 1024,  # iPhone
             "max_width": 8000,
             "max_height": 8000,
         },
         "image/heif": {
-            "max_file_size": 20 * 1024 * 1024, 
+            "max_file_size": 20 * 1024 * 1024,
             "max_width": 8000,
             "max_height": 8000,
         },
@@ -40,7 +42,6 @@ class ImageLimits:
         "image/jpg": "image/jpeg",
         "image/pjpeg": "image/jpeg",
         "image/x-jpeg": "image/jpeg",
-
         "image/heic-sequence": "image/heic",
         "image/heif-sequence": "image/heif",
     }
@@ -51,7 +52,7 @@ class ImageLimits:
 
         # Strip parameters like "; chatset-binary"
         if ";" in normalized:
-            normalized = normalized.split(";",1)[0]
+            normalized = normalized.split(";", 1)[0]
 
         # Alias map
         if normalized in ImageLimits.MIME_ALIASES:

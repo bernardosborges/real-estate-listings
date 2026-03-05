@@ -21,37 +21,23 @@ class TagRepository:
     # -----------------------------------------------
 
     @staticmethod
-    def get_by_id(
-        db: Session, id: int, include_deleted: bool = False
-    ) -> TagModel | None:
-        query = (
-            db.query(TagModel)
-            .options(joinedload(TagModel.group))
-            .filter(TagModel.id == id)
-        )
+    def get_by_id(db: Session, id: int, include_deleted: bool = False) -> TagModel | None:
+        query = db.query(TagModel).options(joinedload(TagModel.group)).filter(TagModel.id == id)
 
         if not include_deleted:
             query = query.filter(TagModel.deleted_at.is_(None))
         return query.first()
 
     @staticmethod
-    def get_by_slug(
-        db: Session, slug: str, include_deleted: bool = False
-    ) -> TagModel | None:
-        query = (
-            db.query(TagModel)
-            .options(joinedload(TagModel.group))
-            .filter(TagModel.slug == slug)
-        )
+    def get_by_slug(db: Session, slug: str, include_deleted: bool = False) -> TagModel | None:
+        query = db.query(TagModel).options(joinedload(TagModel.group)).filter(TagModel.slug == slug)
 
         if not include_deleted:
             query = query.filter(TagModel.deleted_at.is_(None))
         return query.first()
 
     @staticmethod
-    def list_by_group(
-        db: Session, group_id: int, include_deleted: bool = False
-    ) -> List[TagModel]:
+    def list_by_group(db: Session, group_id: int, include_deleted: bool = False) -> List[TagModel]:
         query = db.query(TagModel).filter(TagModel.group_id == group_id)
 
         if not include_deleted:

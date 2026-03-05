@@ -18,9 +18,7 @@ class PhotoAdminService:
     def reprocess_photo(db: Session, public_id: str, current_user: UserModel) -> None:
         rows = PhotoRepository.atomic_mark_pending_if_failed(db, public_id)
         if rows == 0:
-            raise PhotoProcessConflict(
-                f"Photo cannot be reprocessed. public_id: {public_id}"
-            )
+            raise PhotoProcessConflict(f"Photo cannot be reprocessed. public_id: {public_id}")
 
         db.commit()
         enqueue_photo_processing(public_id)
@@ -33,9 +31,7 @@ class PhotoAdminService:
         )
 
     @staticmethod
-    def list_failed_photos(
-        db: Session, limit: int = 50, offset: int = 0
-    ) -> list[PhotoModel]:
+    def list_failed_photos(db: Session, limit: int = 50, offset: int = 0) -> list[PhotoModel]:
         return PhotoService.list_all(
             db,
             PhotoProcessingStatusEnum.FAILED,

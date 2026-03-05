@@ -5,17 +5,12 @@ from app.application.unit_of_work.unit_of_work import UnitOfWork
 
 
 class SoftDeletePropertyUseCase:
-
     """
     Use case responsible for soft deleting a Property.
     """
 
-    def __init__(
-            self,
-            uow: UnitOfWork
-        ):
+    def __init__(self, uow: UnitOfWork):
         self.uow = uow
-
 
     def execute(self, property_public_id: str, current_user: User) -> None:
 

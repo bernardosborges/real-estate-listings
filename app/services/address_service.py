@@ -8,9 +8,7 @@ from app.schemas.address_schema import AddressCreateSchema
 class AddressService:
 
     @staticmethod
-    def get_or_create(
-        db: Session, address_data: AddressCreateSchema
-    ) -> AddressModel | None:
+    def get_or_create(db: Session, address_data: AddressCreateSchema) -> AddressModel | None:
         """
         Retrieves an existing address or create a new one.
         """

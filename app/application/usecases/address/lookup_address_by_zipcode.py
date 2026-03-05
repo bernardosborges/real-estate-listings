@@ -2,6 +2,7 @@ from app.application.services.address_lookup_service import AddressLookupService
 from app.application.dto.address.address_lookup_output import AddressLookupOutput
 from app.domain.value_objects.address.zipcode import ZipCode
 
+
 class LookupAddressByZipCodeUseCase:
 
     def __init__(self, address_lookup_service: AddressLookupService):

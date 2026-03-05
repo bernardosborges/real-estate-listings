@@ -14,22 +14,20 @@ from app.application.services.password_hasher_service import PasswordHasher
 
 
 class RegisterUserUseCase:
-
     """
     Use case responsible for creating a new User along with its associated UserProfile.
     """
 
     def __init__(
-            self,
-            user_repository: UserRepository,
-            profile_repository: UserProfileRepository,
-            password_hasher: PasswordHasher
-        ):
+        self,
+        user_repository: UserRepository,
+        profile_repository: UserProfileRepository,
+        password_hasher: PasswordHasher,
+    ):
 
         self.user_repository = user_repository
         self.profile_repository = profile_repository
         self.password_hasher = password_hasher
-
 
     def execute(self, data: CreateUserInput, current_user: User | None = None) -> UserOutput:
 
@@ -52,18 +50,11 @@ class RegisterUserUseCase:
 
         # Create the user entity & save to get id from db
         password_hash = self.password_hasher.hash(data.password)
-        user = UserFactory.create(
-            email = email,
-            password_hash = password_hash,
-            is_superuser = data.is_superuser
-        )
+        user = UserFactory.create(email=email, password_hash=password_hash, is_superuser=data.is_superuser)
         self.user_repository.save(user)
 
         # Create the profile entity
-        profile = UserProfileFactory.create_for_user(
-            user_id = user.id,
-            public_id = public_id
-        )
+        profile = UserProfileFactory.create_for_user(user_id=user.id, public_id=public_id)
         self.profile_repository.save(profile)
 
         # Link in memory

@@ -13,9 +13,7 @@ from app.core.exceptions.address_exceptions import (
 REQUIRED_FIELDS = ["state", "city", "neighborhood", "street", "number"]
 
 
-def _build_address(
-    address: AddressCreateSchema, cep_data: Optional[dict]
-) -> AddressBaseSchema:
+def _build_address(address: AddressCreateSchema, cep_data: Optional[dict]) -> AddressBaseSchema:
     data = {
         "zip_code": address.zip_code,
         "country": address.country,
@@ -40,9 +38,7 @@ def _build_address(
 
     missing = [f for f in REQUIRED_FIELDS if not data.get(f)]
     if missing:
-        raise AddressIncomplete(
-            f"Incomplete address. Missing fields. {', '.join(missing)}"
-        )
+        raise AddressIncomplete(f"Incomplete address. Missing fields. {', '.join(missing)}")
 
     return AddressBaseSchema(**data)
 

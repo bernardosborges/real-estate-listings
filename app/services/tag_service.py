@@ -78,9 +78,7 @@ class TagService:
         if new_slug is not None and new_slug != current_slug:
             existing = TagRepository.get_by_slug(db, new_slug, include_deleted=True)
             if existing:
-                raise TagAlreadyExists(
-                    f"TagGroup with slug '{new_slug}' already exists"
-                )
+                raise TagAlreadyExists(f"TagGroup with slug '{new_slug}' already exists")
 
         update_data = {}
 
@@ -109,9 +107,7 @@ class TagService:
         if db_tag.deleted_at is None:
             return db_tag
 
-        db_group = TagGroupRepository.get_by_slug(
-            db, db_tag.group_slug, include_deleted=True
-        )
+        db_group = TagGroupRepository.get_by_slug(db, db_tag.group_slug, include_deleted=True)
         if not db_group or db_group.deleted_at is not None:
             raise TagGroupNotFound(slug=db_tag.group_slug)
 

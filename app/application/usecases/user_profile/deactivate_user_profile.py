@@ -2,6 +2,7 @@ from app.domain.repositories.user_profile_repository import UserProfileRepositor
 from app.domain.exceptions.user_profile_exceptions import UserProfileNotFound
 from app.application.dto.user_profile.user_profile_output import UserProfileOutput
 
+
 class DeactivateUserProfileUseCase:
 
     def __init__(self, user_profile_repository: UserProfileRepository):
