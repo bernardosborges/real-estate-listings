@@ -2,12 +2,10 @@ from app.domain.repositories.user_profile_repository import UserProfileRepositor
 from app.domain.value_objects.user_profile.user_profile_public_id import UserProfilePublicId
 
 
-
 class CheckProfilePublicIdAvailabilityUseCase:
 
     def __init__(self, repository: UserProfileRepository):
         self.repository = repository
-
 
     def execute(self, raw_public_id: str) -> bool:
         public_id = UserProfilePublicId.from_raw(raw_public_id)

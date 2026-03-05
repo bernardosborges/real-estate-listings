@@ -12,9 +12,7 @@ class PropertyTagRepository:
     # -----------------------------------------------
 
     @staticmethod
-    def create(
-        db: Session, property_id: int, tags_info: List[dict]
-    ) -> List[PropertyTagModel]:
+    def create(db: Session, property_id: int, tags_info: List[dict]) -> List[PropertyTagModel]:
         property_tags = []
         for tag_info in tags_info:
             db_property_tag = PropertyTagModel(
@@ -45,21 +43,15 @@ class PropertyTagRepository:
         return query.first()
 
     @staticmethod
-    def list_all_by_property(
-        db: Session, property_id: int, include_deleted: bool = False
-    ) -> List[PropertyTagModel]:
-        query = db.query(PropertyTagModel).filter(
-            PropertyTagModel.property_id == property_id
-        )
+    def list_all_by_property(db: Session, property_id: int, include_deleted: bool = False) -> List[PropertyTagModel]:
+        query = db.query(PropertyTagModel).filter(PropertyTagModel.property_id == property_id)
 
         if not include_deleted:
             query = query.filter(PropertyTagModel.deleted_at.is_(None))
         return query.order_by(PropertyTagModel.tag_id).all()
 
     @staticmethod
-    def list_all_by_tag(
-        db: Session, tag_id: int, include_deleted: bool = False
-    ) -> List[PropertyTagModel]:
+    def list_all_by_tag(db: Session, tag_id: int, include_deleted: bool = False) -> List[PropertyTagModel]:
         query = db.query(PropertyTagModel).filter(PropertyTagModel.tag_id == tag_id)
 
         if not include_deleted:
@@ -71,12 +63,8 @@ class PropertyTagRepository:
     # -----------------------------------------------
 
     @staticmethod
-    def update(
-        db: Session, property_id: int, tag_id: int, **kwargs
-    ) -> PropertyTagModel | None:
-        db_property_tag = PropertyTagRepository.get_by_property_and_tag(
-            db, property_id, tag_id
-        )
+    def update(db: Session, property_id: int, tag_id: int, **kwargs) -> PropertyTagModel | None:
+        db_property_tag = PropertyTagRepository.get_by_property_and_tag(db, property_id, tag_id)
         if not db_property_tag:
             return None
 
@@ -101,24 +89,16 @@ class PropertyTagRepository:
     # -----------------------------------------------
 
     @staticmethod
-    def soft_delete(
-        db: Session, property_id: int, tag_id: int
-    ) -> PropertyTagModel | None:
+    def soft_delete(db: Session, property_id: int, tag_id: int) -> PropertyTagModel | None:
         return PropertyTagRepository.delete(db, property_id, tag_id, hard=False)
 
     @staticmethod
-    def hard_delete(
-        db: Session, property_id: int, tag_id: int
-    ) -> PropertyTagModel | None:
+    def hard_delete(db: Session, property_id: int, tag_id: int) -> PropertyTagModel | None:
         return PropertyTagRepository.delete(db, property_id, tag_id, hard=True)
 
     @staticmethod
-    def delete(
-        db: Session, property_id: int, tag_id: int, hard: bool = True
-    ) -> PropertyTagModel | None:
-        db_property_tag = PropertyTagRepository.get_by_property_and_tag(
-            db, property_id, tag_id
-        )
+    def delete(db: Session, property_id: int, tag_id: int, hard: bool = True) -> PropertyTagModel | None:
+        db_property_tag = PropertyTagRepository.get_by_property_and_tag(db, property_id, tag_id)
         if not db_property_tag:
             return None
 
@@ -130,9 +110,7 @@ class PropertyTagRepository:
         return db_property_tag
 
     @staticmethod
-    def hard_delete_exclusive_group(
-        db: Session, property_id: int, group_id: int
-    ) -> int:
+    def hard_delete_exclusive_group(db: Session, property_id: int, group_id: int) -> int:
         query = (
             db.query(PropertyTagModel)
             .filter(

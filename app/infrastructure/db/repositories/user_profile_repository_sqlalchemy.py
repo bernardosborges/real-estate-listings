@@ -44,9 +44,7 @@ class UserProfileRepositorySQLAlchemy(UserProfileRepository):
         else:
             model = self.db.get(UserProfileModel, profile.id)
             if not model or model.deleted_at is not None:
-                raise UserProfileNotFound(
-                    f"User profile not found or deleted: public id {profile.public_id}."
-                )
+                raise UserProfileNotFound(f"User profile not found or deleted: public id {profile.public_id}.")
             UserProfileMapper.update_model(model, profile)
 
         try:

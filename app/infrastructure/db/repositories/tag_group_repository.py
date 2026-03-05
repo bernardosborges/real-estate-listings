@@ -21,9 +21,7 @@ class TagGroupRepository:
     # -----------------------------------------------
 
     @staticmethod
-    def get_by_id(
-        db: Session, id: int, include_deleted: bool = False
-    ) -> TagGroupModel | None:
+    def get_by_id(db: Session, id: int, include_deleted: bool = False) -> TagGroupModel | None:
         query = db.query(TagGroupModel).filter(TagGroupModel.id == id)
 
         if not include_deleted:
@@ -31,9 +29,7 @@ class TagGroupRepository:
         return query.first()
 
     @staticmethod
-    def get_by_slug(
-        db: Session, slug: str, include_deleted: bool = False
-    ) -> TagGroupModel | None:
+    def get_by_slug(db: Session, slug: str, include_deleted: bool = False) -> TagGroupModel | None:
         query = db.query(TagGroupModel).filter(TagGroupModel.slug == slug)
 
         if not include_deleted:

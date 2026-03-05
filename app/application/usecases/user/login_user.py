@@ -10,16 +10,10 @@ from app.domain.exceptions.auth_exceptions import InvalidCredentials
 
 class LoginUserUseCase:
 
-    def __init__(
-            self,
-            user_repository: UserRepository,
-            token_service: TokenService,
-            password_hasher: PasswordHasher
-    ):
+    def __init__(self, user_repository: UserRepository, token_service: TokenService, password_hasher: PasswordHasher):
         self.user_repository = user_repository
         self.password_hasher = password_hasher
         self.token_service = token_service
-
 
     def execute(self, data: LoginUserInput) -> LoginUserOutput:
 
@@ -38,7 +32,4 @@ class LoginUserUseCase:
 
         access_token = self.token_service.generate(subject=str(db_user.id))
 
-        return LoginUserOutput(
-            access_token = access_token,
-            user = UserOutput.from_entity(db_user)
-        )
+        return LoginUserOutput(access_token=access_token, user=UserOutput.from_entity(db_user))
