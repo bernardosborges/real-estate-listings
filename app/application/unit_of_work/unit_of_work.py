@@ -12,7 +12,6 @@ class UnitOfWork(Protocol):
     property_repository: PropertyRepository
     address_repository: AddressRepository
 
-
     def commit(self) -> None: ...
 
     def rollback(self) -> None: ...
