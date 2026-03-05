@@ -1,5 +1,4 @@
 import logging
-from dataclasses import dataclass
 from redis import Redis
 
 from app.api.deps.general_deps import get_db_session, get_storage_service
@@ -43,9 +42,7 @@ def process_uploaded_photo_job(photo_public_id: str) -> None:
 
     except:
         redis.incr("metrics:photo.jobs.failed")
-        logger.exception(
-            "Photo processing job failed.", extra={"photo": photo_public_id}
-        )
+        logger.exception("Photo processing job failed.", extra={"photo": photo_public_id})
         raise
 
     finally:
