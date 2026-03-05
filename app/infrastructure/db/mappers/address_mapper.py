@@ -1,6 +1,7 @@
 from app.domain.entities.address import Address
 from app.infrastructure.db.models.address_model import AddressModel
 
+
 class AddressMapper:
 
     @staticmethod
@@ -53,7 +54,7 @@ class AddressMapper:
         model.deleted_at = entity.deleted_at
 
     @staticmethod
-    def update_entity(target: Address, source: Address) -> Address:
+    def update_entity(target: Address, source: Address):
         target.id = source.id
         target.zip_code = source.zip_code
         target.country = source.country

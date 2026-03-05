@@ -55,7 +55,7 @@ class UserProfileMapper:
         model.deleted_at = entity.deleted_at
 
     @staticmethod
-    def update_entity(target: UserProfile, source: UserProfile) -> UserProfile:
+    def update_entity(target: UserProfile, source: UserProfile):
         target.name = source.name
         target.bio = source.bio
         target.work_phone = source.work_phone

@@ -1,6 +1,6 @@
 import re
 
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, JSON
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, JSON
 from sqlalchemy.sql import func
 from sqlalchemy.orm import validates, relationship
 
@@ -20,9 +20,7 @@ class UserProfileModel(Base):
     id = Column(Integer, primary_key=True)
     public_id = Column(String(50), unique=True, nullable=False, index=True)
 
-    user_id = Column(
-        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True
-    )
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True)
 
     name = Column(String(PROFILE_NAME_MAX_LENGHT), nullable=True)
     bio = Column(String(PROFILE_BIO_MAX_LENGHT), nullable=True)
@@ -35,9 +33,7 @@ class UserProfileModel(Base):
 
     preferences = Column(JSON, nullable=True)
 
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True, default=None)
 
@@ -47,7 +43,5 @@ class UserProfileModel(Base):
     def validate_public_id(self, key, value):
         pattern = r"^[a-z0-9_.]{4,30}$"
         if not re.fullmatch(pattern, value):
-            raise ValueError(
-                "Public id must be 4-30 characteres and have only lowercase, numbers, - and ."
-            )
+            raise ValueError("Public id must be 4-30 characteres and have only lowercase, numbers, - and .")
         return value

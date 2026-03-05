@@ -13,9 +13,7 @@ class PropertyModel(Base):
     __tablename__ = "properties"
 
     id = Column(Integer, primary_key=True)
-    public_id = Column(
-        String(PROPERTY_PUBLIC_ID_SIZE), unique=True, nullable=False, index=True
-    )
+    public_id = Column(String(PROPERTY_PUBLIC_ID_SIZE), unique=True, nullable=False, index=True)
 
     # user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     profile_id = Column(
@@ -26,9 +24,7 @@ class PropertyModel(Base):
     )
     address_id = Column(
         Integer,
-        ForeignKey(
-            "addresses.id", name="fk_properties_address_id", ondelete="RESTRICT"
-        ),
+        ForeignKey("addresses.id", name="fk_properties_address_id", ondelete="RESTRICT"),
         nullable=False,
         index=True,
     )
@@ -39,9 +35,7 @@ class PropertyModel(Base):
 
     is_active = Column(Boolean, default=True, nullable=False)
 
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True, default=None)
 
@@ -66,9 +60,5 @@ class PropertyModel(Base):
         viewonly=True,
         overlaps="photos",
     )
-    property_tags = relationship(
-        "PropertyTagModel", back_populates="property", cascade="all, delete-orphan"
-    )
-    tags = relationship(
-        "TagModel", secondary="property_tags", viewonly=True, lazy="selectin"
-    )
+    property_tags = relationship("PropertyTagModel", back_populates="property", cascade="all, delete-orphan")
+    tags = relationship("TagModel", secondary="property_tags", viewonly=True, lazy="selectin")
