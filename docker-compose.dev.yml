@@ -1,7 +1,7 @@
 services:
 
   # Local database for development
-      
+
   db:
     build:
       context: .
@@ -23,7 +23,7 @@ services:
       - postgres_data:/var/lib/postgresql/data # persist DB data
 
   backend:
-    build: 
+    build:
       context: . # Dockerfile is in the root of the project
       target: dev
     container_name: relist-backend-dev
@@ -41,7 +41,7 @@ services:
       uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
       "
     restart: always
-  
+
 volumes:
   postgres_data:
 
@@ -54,7 +54,7 @@ volumes:
 #    folder `./db-init` to `/docker-entrypoint-initdb.d/` inside the container.
 # 3. The PostgreSQL entrypoint scans all files in `/docker-entrypoint-initdb.d/`.
 # 4. It executes the files in **alphabetical order**:
-#    - First, 01-setup-env.sh replaces environment variables provided to the 
+#    - First, 01-setup-env.sh replaces environment variables provided to the
 #    container (via env_file) into SQL templates.
 #    - Then, 02-create-db.sql to create the database using pt_BR.utf8
 #
@@ -63,9 +63,9 @@ volumes:
 #   If the volume already exists, these scripts are ignored.
 # - Files are executed in alphabetical order, so numbering them helps control
 #   the initialization sequence.
-# - Shell scripts need to be executable (chmod +x db-init/*sh) to run inside 
+# - Shell scripts need to be executable (chmod +x db-init/*sh) to run inside
 #   the container.
-#   
+#
 #   docker exec -it relist-db-dev bash
 #   chmod +x /docker-entrypoint-initdb.d/01-setup-db.sh
 #   exit

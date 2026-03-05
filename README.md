@@ -224,7 +224,7 @@ The following environment variables are required:
 # ==== POSTGRES DATABASE ====
 DB_HOST=                            # Hostname of the database (e.g. "db" for development)
 DB_PORT=                            # Database port (default: 5432)
-DB_NAME=                            # Database name 
+DB_NAME=                            # Database name
 DB_USER=                            # Database username
 DB_PASSWORD=                        # Database password
 
