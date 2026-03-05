@@ -62,22 +62,16 @@ class S3Service:
                 HttpMethod="PUT",
             )
             expires_at = datetime.now(timezone.utc) + timedelta(seconds=expires_in)
-            return PresignedUpload(
-                upload_url=upload_url, method="PUT", expires_at=expires_at
-            )
+            return PresignedUpload(upload_url=upload_url, method="PUT", expires_at=expires_at)
 
         except ClientError as exc:
-            raise S3PresignedUrlError(
-                f"Failed to generate presigned upload URL for {storage_key}"
-            ) from exc
+            raise S3PresignedUrlError(f"Failed to generate presigned upload URL for {storage_key}") from exc
 
     # -----------------------------------------------
     # PRESIGNED READ
     # -----------------------------------------------
 
-    def generate_presigned_read_url(
-        self, *, storage_key: str, expires_in: int | None = None
-    ) -> PresignedRead:
+    def generate_presigned_read_url(self, *, storage_key: str, expires_in: int | None = None) -> PresignedRead:
 
         expires_in = expires_in or self._read_expires_in
         try:
@@ -91,9 +85,7 @@ class S3Service:
             return PresignedRead(url=read_url, method="GET", expires_at=expires_at)
 
         except ClientError as exc:
-            raise S3PresignedUrlError(
-                f"Failed to generate presigned read URL for {storage_key}"
-            ) from exc
+            raise S3PresignedUrlError(f"Failed to generate presigned read URL for {storage_key}") from exc
 
     def get_object_bytes(self, storage_key: str) -> bytes:
         obj = self._client.get_object(Bucket=self._bucket, Key=storage_key)
@@ -102,7 +94,7 @@ class S3Service:
     def put_object_bytes(self, storage_key: str, data: BytesIO, content_type: str):
         try:
             data.seek(0)
-            obj = self._client.put_object(
+            self._client.put_object(
                 Bucket=self._bucket,
                 Key=storage_key,
                 Body=data,

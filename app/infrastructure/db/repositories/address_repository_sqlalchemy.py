@@ -1,8 +1,6 @@
-from typing import List
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from psycopg.errors import UniqueViolation
 
 from app.domain.entities.address import Address
 from app.domain.repositories.address_repository import AddressRepository
@@ -47,15 +45,13 @@ class AddressRepositorySQLAlchemy(AddressRepository):
         else:
             model = self.db.get(AddressModel, address.id)
             if not model or model.deleted_at is not None:
-                raise AddressNotFound(
-                    f"Address not found or deleted: public id {address.id}."
-                )
+                raise AddressNotFound(f"Address not found or deleted: public id {address.id}.")
             AddressMapper.update_model(model, address)
 
         try:
             self.db.flush()
             return AddressMapper.update_entity(address, AddressMapper.to_entity(model))
-        except IntegrityError as exc:
+        except IntegrityError:
             self.db.rollback()
 
             raise

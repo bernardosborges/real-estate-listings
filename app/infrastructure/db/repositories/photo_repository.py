@@ -1,7 +1,6 @@
 from typing import List
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
 from app.models.photo_model import PhotoModel
 from app.enums.photo_enum import (
@@ -83,12 +82,8 @@ class PhotoRepository:
         return query.first()
 
     @staticmethod
-    def get_cover(
-        db: Session, property_id: int, include_deleted: bool = False
-    ) -> PhotoModel | None:
-        query = db.query(PhotoModel).filter(
-            PhotoModel.property_id == property_id, PhotoModel.is_cover == True
-        )
+    def get_cover(db: Session, property_id: int, include_deleted: bool = False) -> PhotoModel | None:
+        query = db.query(PhotoModel).filter(PhotoModel.property_id == property_id, PhotoModel.is_cover)
 
         if not include_deleted:
             query = query.filter(PhotoModel.deleted_at.is_(None))

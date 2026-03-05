@@ -42,7 +42,7 @@ class UserRepositorySQLAlchemy(UserRepository):
         else:
             model = self.db.get(UserModel, user.id)
             if not model or model.deleted_at is not None:
-                raise UserNotFound(f"User not found or deleted.")
+                raise UserNotFound("User not found or deleted.")
             UserMapper.update_model(model, user)
 
         try:
