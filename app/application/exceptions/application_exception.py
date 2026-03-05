@@ -1,4 +1,3 @@
-
 class ApplicationException(Exception):
     error_code: str = "APPLICATION_ERROR"
     message: str = "An application error ocurred."
