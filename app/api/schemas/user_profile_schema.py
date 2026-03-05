@@ -1,25 +1,24 @@
-from pydantic import BaseModel, field_validator, Field, AnyUrl
-from typing import Any
-import re
+from pydantic import BaseModel
 
-#from app.core.exceptions.domain_exception import InvalidPublicId, InvalidWorkPhone
+# from app.core.exceptions.domain_exception import InvalidPublicId, InvalidWorkPhone
 
 
 class UserProfileResponseSchema(BaseModel):
     public_id: str
     name: str | None
     bio: str | None
-    work_phone: str | None = None,
-    work_city: str | None = None,
-    license_number: str | None = None,
-    profile_picture_url: str | None = None,
-    background_image_url: str | None = None,
+    work_phone: str | None = None
+    work_city: str | None = None
+    license_number: str | None = None
+    profile_picture_url: str | None = None
+    background_image_url: str | None = None
     preferences: dict | None = None
 
     model_config = {
-         "title": "UserProfileResponseSchema",
-         "from_attributes": True,
+        "title": "UserProfileResponseSchema",
+        "from_attributes": True,
     }
+
 
 # # -----------------------------------------------
 # # BASE
@@ -143,14 +142,13 @@ class UserProfileResponseSchema(BaseModel):
 #         pattern = r"^\+\d{1,3}\d{8,14}$"
 #         if not re.fullmatch(pattern,v):
 #             raise InvalidWorkPhone("Work phone must be in the format +[1,3][8,14]")
-        
+
 #         return v
-    
+
 #     @field_validator("name", "bio", "work_city", "license_number")
 #     @classmethod
 #     def strip_strings(cls, v):
 #         return v.strip() if isinstance(v, str) else v
-    
 
 
 # # -----------------------------------------------

@@ -1,7 +1,8 @@
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr
 
 from app.api.schemas.user_profile_schema import UserProfileResponseSchema
 from app.application.dto.user.login_user_output import LoginUserOutput
+
 
 class CreateUserRequestSchema(BaseModel):
     email: EmailStr
@@ -10,9 +11,10 @@ class CreateUserRequestSchema(BaseModel):
     public_id: str
 
     model_config = {
-         "title": "CreateUserRequestSchema",
-         "from_attributes": True,
+        "title": "CreateUserRequestSchema",
+        "from_attributes": True,
     }
+
 
 class UserResponseSchema(BaseModel):
     email: EmailStr
@@ -20,8 +22,8 @@ class UserResponseSchema(BaseModel):
     profile: UserProfileResponseSchema
 
     model_config = {
-         "title": "UserResponseSchema",
-         "from_attributes": True,
+        "title": "UserResponseSchema",
+        "from_attributes": True,
     }
 
 
@@ -30,8 +32,8 @@ class LoginRequestSchema(BaseModel):
     password: str
 
     model_config = {
-         "title": "LoginRequestSchema",
-         "from_attributes": True,
+        "title": "LoginRequestSchema",
+        "from_attributes": True,
     }
 
 
@@ -41,17 +43,13 @@ class LoginResponseSchema(BaseModel):
     user: UserResponseSchema
 
     model_config = {
-         "title": "LoginResponseSchema",
-         "from_attributes": True,
+        "title": "LoginResponseSchema",
+        "from_attributes": True,
     }
 
     @classmethod
     def from_dto(cls, dto: LoginUserOutput):
-        return cls(
-            access_token = dto.access_token,
-            token_type = "bearer",
-            user = dto.user
-        )
+        return cls(access_token=dto.access_token, token_type="bearer", user=dto.user)
 
 
 # class UserBaseSchema(BaseModel):
@@ -83,7 +81,7 @@ class LoginResponseSchema(BaseModel):
 #         if not re.match(pattern, v):
 #             raise ValueError("Password must be at least 8 characteres, a number, a letter and a special character")
 #         return v
-    
+
 # class UserLoginSchema(UserBaseSchema):
 #     password: str
 
