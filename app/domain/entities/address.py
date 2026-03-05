@@ -5,7 +5,13 @@ from app.domain.value_objects.address.latitude import Latitude
 from app.domain.value_objects.address.longitude import Longitude
 from app.domain.value_objects.address.zipcode import ZipCode
 from app.domain.enums.address_enum import CountryEnum, StateEnum
-from app.domain.exceptions.address_exceptions import InvalidAddressField, InvalidAddressCoordinates
+from app.domain.exceptions.address_exceptions import (
+    InvalidAddressField,
+    InvalidAddressCoordinates,
+    InvalidCountry,
+    InvalidState,
+    InvalidZipCode,
+)
 from app.domain.exceptions.domain_exception import AlreadyDeleted, CannotBeRestored, FieldTooLong
 from app.domain.constants.address_constants import (
     ADDRESS_COMPLEMENT_MAX_LENGTH,
@@ -33,6 +39,14 @@ class Address:
         longitude: Longitude | None,
         deleted_at: datetime | None,
     ):
+        if zip_code is None:
+            raise InvalidZipCode("")
+
+        if country is None:
+            raise InvalidCountry("")
+
+        if state is None:
+            raise InvalidState("")
 
         self.id = id
         self.zip_code = zip_code
