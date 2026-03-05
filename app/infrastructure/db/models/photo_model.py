@@ -2,12 +2,9 @@ import uuid
 
 from datetime import datetime
 from sqlalchemy import (
-    Column,
     Integer,
     String,
-    Numeric,
     DateTime,
-    UniqueConstraint,
     CheckConstraint,
     Index,
     ForeignKey,
@@ -31,12 +28,8 @@ class PhotoModel(Base):
     __tablename__ = "photos"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    public_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), unique=True, nullable=False, default=uuid.uuid4
-    )
-    property_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("properties.id"), nullable=False, index=True
-    )
+    public_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), unique=True, nullable=False, default=uuid.uuid4)
+    property_id: Mapped[int] = mapped_column(Integer, ForeignKey("properties.id"), nullable=False, index=True)
 
     storage_key: Mapped[str] = mapped_column(String, nullable=True)
     file_url: Mapped[str] = mapped_column(String, nullable=True)
@@ -75,22 +68,14 @@ class PhotoModel(Base):
     file_size: Mapped[int] = mapped_column(Integer, nullable=True)
     content_hash: Mapped[str] = mapped_column(String(64), nullable=True)
 
-    is_cover: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, server_default=text("false")
-    )
-    is_active: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, server_default=text("true")
-    )
+    is_cover: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("true"))
 
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-    deleted_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=True, default=None
-    )
+    deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True, default=None)
 
     property = relationship("PropertyModel", back_populates="photos_all")
 

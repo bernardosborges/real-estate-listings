@@ -3,19 +3,14 @@ from datetime import datetime, timezone
 
 from sqlalchemy import select, exists, update
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 
 from app.domain.entities.property import Property
 from app.domain.repositories.property_repository import PropertyRepository
 from app.domain.value_objects.property.property_public_id import PropertyPublicId
-from app.domain.value_objects.user_profile.user_profile_public_id import (
-    UserProfilePublicId,
-)
 from app.domain.value_objects.address.latitude import Latitude
 from app.domain.value_objects.address.longitude import Longitude
 from app.infrastructure.db.models.property_model import PropertyModel
 from app.infrastructure.db.models.address_model import AddressModel
-from app.infrastructure.db.models.user_profile_model import UserProfileModel
 from app.infrastructure.db.mappers.property_mapper import PropertyMapper
 from app.domain.exceptions.property_exceptions import PropertyNotFound
 
@@ -51,9 +46,7 @@ class PropertyRepositorySQLAlchemy(PropertyRepository):
         else:
             model = self.db.get(PropertyModel, property.id)
             if not model or model.deleted_at is not None:
-                raise PropertyNotFound(
-                    f"Property not found or deleted: public id {property.public_id}."
-                )
+                raise PropertyNotFound(f"Property not found or deleted: public id {property.public_id}.")
             PropertyMapper.update_model(model, property)
 
         # try:
@@ -124,15 +117,13 @@ class PropertyRepositorySQLAlchemy(PropertyRepository):
         )
 
         if not include_inactive:
-            stmt = stmt.where(PropertyModel.is_active == True)
+            stmt = stmt.where(PropertyModel.is_active)
         if price_min is not None:
             stmt = stmt.where(PropertyModel.price >= price_min)
         if price_max is not None:
             stmt = stmt.where(PropertyModel.price <= price_max)
 
-        stmt = (
-            stmt.order_by(PropertyModel.created_at.desc()).limit(limit).offset(offset)
-        )
+        stmt = stmt.order_by(PropertyModel.created_at.desc()).limit(limit).offset(offset)
 
         result = self.db.execute(stmt).scalars().all()
         return [PropertyMapper.to_entity(model) for model in result]
@@ -166,15 +157,13 @@ class PropertyRepositorySQLAlchemy(PropertyRepository):
         if profile_id is not None:
             stmt = stmt.where(PropertyModel.profile_id == profile_id)
         if not include_inactive:
-            stmt = stmt.where(PropertyModel.is_active == True)
+            stmt = stmt.where(PropertyModel.is_active)
         if price_min is not None:
             stmt = stmt.where(PropertyModel.price >= price_min)
         if price_max is not None:
             stmt = stmt.where(PropertyModel.price <= price_max)
 
-        stmt = (
-            stmt.order_by(PropertyModel.created_at.desc()).limit(limit).offset(offset)
-        )
+        stmt = stmt.order_by(PropertyModel.created_at.desc()).limit(limit).offset(offset)
 
         result = self.db.execute(stmt).scalars().all()
         return [PropertyMapper.to_entity(model) for model in result]
@@ -203,9 +192,7 @@ class PropertyRepositorySQLAlchemy(PropertyRepository):
         stmt = (
             update(PropertyModel)
             .where(PropertyModel.id == id, PropertyModel.deleted_at.is_not(None))
-            .values(
-                deleted_at=None, updated_at=datetime.now(timezone.utc), is_active=True
-            )
+            .values(deleted_at=None, updated_at=datetime.now(timezone.utc), is_active=True)
         )
         self.db.execute(stmt)
 

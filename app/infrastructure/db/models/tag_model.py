@@ -2,7 +2,6 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    Numeric,
     DateTime,
     ForeignKey,
     Boolean,
@@ -31,15 +30,11 @@ class TagModel(Base):
     )
     group = relationship("TagGroupModel", back_populates="tags")
 
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True, default=None)
 
-    property_tags = relationship(
-        "PropertyTagModel", back_populates="tag", cascade="all, delete-orphan"
-    )
+    property_tags = relationship("PropertyTagModel", back_populates="tag", cascade="all, delete-orphan")
 
     __table_args__ = (UniqueConstraint("group_id", "slug", name="uq_tag_group_slug"),)
 
