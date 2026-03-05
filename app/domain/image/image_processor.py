@@ -1,10 +1,10 @@
-import logging
+# import logging
 
 from io import BytesIO
 from dataclasses import dataclass
 from PIL import Image
 
-THUMB_SIZE = (400,400)
+THUMB_SIZE = (400, 400)
 WEBP_QUALITY = 85
 
 
@@ -12,6 +12,7 @@ WEBP_QUALITY = 85
 class ProcessedImages:
     optimized: BytesIO
     thumbnail: BytesIO
+
 
 class ImageProcessor:
 
