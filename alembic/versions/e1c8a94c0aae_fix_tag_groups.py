@@ -5,15 +5,14 @@ Revises: 1110ebca936c
 Create Date: 2026-01-15 09:40:55.822145
 
 """
+
 from typing import Sequence, Union
 
 from alembic import op
-import sqlalchemy as sa
-
 
 # revision identifiers, used by Alembic.
-revision: str = 'e1c8a94c0aae'
-down_revision: Union[str, Sequence[str], None] = '1110ebca936c'
+revision: str = "e1c8a94c0aae"
+down_revision: Union[str, Sequence[str], None] = "1110ebca936c"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -25,7 +24,7 @@ def upgrade() -> None:
     # op.create_unique_constraint(op.f('uq_tag_groups_slug'), 'tag_groups', ['slug'])
     # ### end Alembic commands ###
     op.execute("ALTER TABLE tag_groups DROP CONSTRAINT IF EXISTS uq_tag_groups_slug")
-    op.create_unique_constraint('uq_tag_groups_slug', 'tag_groups', ['slug'])
+    op.create_unique_constraint("uq_tag_groups_slug", "tag_groups", ["slug"])
 
 
 def downgrade() -> None:
@@ -35,4 +34,4 @@ def downgrade() -> None:
     # op.create_unique_constraint(op.f('tag_groups_slug_key'), 'tag_groups', ['slug'], postgresql_nulls_not_distinct=False)
     # ### end Alembic commands ###
     op.execute("ALTER TABLE tag_groups DROP CONSTRAINT IF EXISTS uq_tag_groups_slug")
-    op.create_unique_constraint('uq_tag_groups_slug', 'tag_groups', ['slug'])
+    op.create_unique_constraint("uq_tag_groups_slug", "tag_groups", ["slug"])

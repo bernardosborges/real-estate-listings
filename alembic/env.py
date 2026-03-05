@@ -1,8 +1,20 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+# from sqlalchemy import engine_from_config
+# from sqlalchemy import pool
 
+
+from app.core.database import Base
+from app.infrastructure.db.models import (  # noqa: F401
+    # property_tag_model,
+    user_model,
+    property_model,
+    address_model,
+    # tag_group_model,
+    # tag_model,
+    # photo_model,
+    user_profile_model,
+)
 from app.core.database import engine
 
 from alembic import context
@@ -20,17 +32,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from app.core.database import Base
-from app.infrastructure.db.models import (
-    #property_tag_model,
-    user_model,
-    property_model,
-    address_model,
-    #tag_group_model,
-    #tag_model,
-    #photo_model,
-    user_profile_model
-)
+
 
 target_metadata = Base.metadata
 
@@ -75,12 +77,10 @@ def run_migrations_online() -> None:
     #     config.get_section(config.config_ini_section, {}),
     #    prefix="sqlalchemy.",
     #    poolclass=pool.NullPool,
-    #)
+    # )
 
     with engine.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata, compare_type=True
-        )
+        context.configure(connection=connection, target_metadata=target_metadata, compare_type=True)
 
         with context.begin_transaction():
             context.run_migrations()
