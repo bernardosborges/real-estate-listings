@@ -9,7 +9,7 @@ class ListForMapPropertyInput:
         lat_south: Decimal,
         lng_east: Decimal,
         lng_west: Decimal,
-        profile_public_id: str | None = None
+        profile_public_id: str | None = None,
     ):
 
         self.lat_north = lat_north

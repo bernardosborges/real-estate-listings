@@ -1,4 +1,3 @@
-
 class LoginUserInput:
 
     def __init__(self, email: str, password: str):
