@@ -1,9 +1,9 @@
-
 from app.application.unit_of_work.unit_of_work import UnitOfWork
 from tests.unit.application.fakes.fake_user_repository import FakeUserRepository
 from tests.unit.application.fakes.fake_user_profile_repository import FakeUserProfileRepository
 from tests.unit.application.fakes.fake_property_repository import FakePropertyRepository
 from tests.unit.application.fakes.fake_address_repository import FakeAddressRepository
+
 
 class FakeUnitOfWork(UnitOfWork):
     def __init__(self):

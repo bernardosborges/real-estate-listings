@@ -24,6 +24,7 @@ def test_price_rounding_half_up():
     price = Price.from_raw("10.005")
     assert price.value == Decimal("10.01")
 
+
 def test_price_zero_is_valid():
     price = Price.from_raw("0")
     assert price.value == Decimal("0.00")
@@ -31,7 +32,7 @@ def test_price_zero_is_valid():
 
 def test_price_max_value():
     price = Price.from_raw(Price.MAX_VALUE)
-    assert price.value == Price.MAX_VALUE 
+    assert price.value == Price.MAX_VALUE
 
 
 def test_price_negative_raises_exception():
@@ -57,9 +58,7 @@ def test_price_equality():
     assert price1 == price2
     assert price1 != price3
 
+
 def test_price_repr():
     price = Price.from_raw("12.34")
     assert repr(price) == "Price(12.34)"
-
-
-

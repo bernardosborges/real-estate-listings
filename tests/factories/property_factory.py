@@ -22,4 +22,5 @@ def property_factory(**overrides):
         data.update(kwargs)
 
         return Property(**data)
+
     return _create

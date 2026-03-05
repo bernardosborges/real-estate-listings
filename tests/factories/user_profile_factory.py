@@ -23,4 +23,5 @@ def user_profile_factory(**overrides):
         data.update(kwargs)
 
         return UserProfile(**data)
+
     return _create

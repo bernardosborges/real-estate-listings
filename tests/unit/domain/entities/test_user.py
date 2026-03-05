@@ -24,6 +24,7 @@ def test_deactivate_user(user_factory_fixture):
     user.deactivate()
     assert user.is_active is False
 
+
 def test_attach_profile_to_user(user_factory_fixture):
     user = user_factory_fixture()
     profile = Mock()

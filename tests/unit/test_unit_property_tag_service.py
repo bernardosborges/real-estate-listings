@@ -43,14 +43,14 @@
 #         tags_slug = ["tag-teste"]
 #         mock_db = MagicMock()
 #         mock_tag.group = None
-        
+
 #         with patch("app.services.property_tag_service.PropertyTagService.validate_property_exists", return_value=mock_property) as mock_validate, \
 #              patch("app.services.property_tag_service.TagRepository.get_by_slug", return_value=mock_tag) as mock_get_tag, \
 #              patch("app.services.property_tag_service.PropertyTagRepository.hard_delete_exclusive_group") as mock_hard_delete, \
 #              patch("app.services.property_tag_service.PropertyTagRepository.get_by_property_and_tag", return_value=None) as mock_get_property_tag, \
 #              patch("app.services.property_tag_service.PropertyTagRepository.create", return_value=[MagicMock(tag_id=mock_tag.id)]) as mock_create, \
 #              patch("app.services.property_tag_service.PropertyTagService.list_tags_for_property", return_value={"property_id": property_id, "tags": [{"tag_slug": mock_tag.slug, "tag_name": mock_tag.name}]}) as mock_list_tags:
-            
+
 #             result = PropertyTagService.add_tags_to_property(db=mock_db, property_id=property_id, tags_slug=tags_slug)
 
 #             assert result == {"property_id": property_id, "tags": [{"tag_slug": "tag-teste", "tag_name": "Tag Teste"}]}
