@@ -1,9 +1,11 @@
 from pydantic import BaseModel, field_validator, model_validator
 from decimal import Decimal
+from typing import cast
 
 from app.api.schemas.address.address_schema import AddressBaseSchema
 from app.api.schemas.address.address_schema import AddressUpdateSchema, AddressUpdateResponseSchema
 from app.api.exceptions.schema_exceptions import InvalidMapBounds
+
 # from app.schemas.address_schema import AddressCreateSchema, AddressReadSchema
 # from app.schemas.tag_schema import TagReadSchema
 # from app.schemas.photo_schema import PhotoReadSchema, PhotoThumbnailResponseSchema
@@ -12,6 +14,7 @@ from app.api.exceptions.schema_exceptions import InvalidMapBounds
 # -----------------------------------------------
 # PROPERTY CREATE
 # -----------------------------------------------
+
 
 class PropertyCreateRequestSchema(BaseModel):
     description: str
@@ -27,14 +30,12 @@ class PropertyCreateRequestSchema(BaseModel):
                 "description": "Apartamento padrão",
                 "price": 250000.00,
                 "private_area": 80.00,
-                "address": {
-                    **AddressBaseSchema.model_config["json_schema_extra"]["example"]
-                }
+                "address": {**cast(dict, AddressBaseSchema.model_config)["json_schema_extra"]["example"]},
             }
-        }
+        },
     }
 
-    @field_validator('price')
+    @field_validator("price")
     def price_must_be_positive(cls, v):
         if v is None:
             raise ValueError("Price is required.")
@@ -42,7 +43,7 @@ class PropertyCreateRequestSchema(BaseModel):
             raise ValueError("Price must be greater than 0")
         return v
 
-    @field_validator('private_area')
+    @field_validator("private_area")
     def private_area_must_be_positive(cls, v):
         if v is None:
             raise ValueError("Private area is required.")
@@ -69,17 +70,16 @@ class PropertyCreateResponseSchema(BaseModel):
                 "description": "Apartamento padrão",
                 "price": 250000.00,
                 "private_area": 80.00,
-                "address": {
-                    **AddressBaseSchema.model_config["json_schema_extra"]["example"]
-                }
+                "address": {**cast(dict, AddressBaseSchema.model_config)["json_schema_extra"]["example"]},
             }
-        }
+        },
     }
 
 
 # -----------------------------------------------
 # PROPERTY UPDATE
 # -----------------------------------------------
+
 
 class PropertyUpdateRequestSchema(BaseModel):
     description: str | None = None
@@ -95,14 +95,12 @@ class PropertyUpdateRequestSchema(BaseModel):
                 "description": "Apartamento padrão",
                 "price": 250000.00,
                 "private_area": 80.00,
-                "address": {
-                    **AddressBaseSchema.model_config["json_schema_extra"]["example"]
-                }
+                "address": {**cast(dict, AddressBaseSchema.model_config)["json_schema_extra"]["example"]},
             }
-        }
+        },
     }
 
-    @field_validator('price')
+    @field_validator("price")
     def price_must_be_positive(cls, v):
         if v is None:
             raise ValueError("Price is required.")
@@ -110,7 +108,7 @@ class PropertyUpdateRequestSchema(BaseModel):
             raise ValueError("Price must be greater than 0")
         return v
 
-    @field_validator('private_area')
+    @field_validator("private_area")
     def private_area_must_be_positive(cls, v):
         if v is None:
             raise ValueError("Private area is required.")
@@ -137,16 +135,16 @@ class PropertyUpdateResponseSchema(BaseModel):
                 "description": "Apartamento padrão",
                 "price": 250000.00,
                 "private_area": 80.00,
-                "address": {
-                    **AddressUpdateResponseSchema.model_config["json_schema_extra"]["example"]
-                }
+                "address": {**cast(dict, AddressBaseSchema.model_config)["json_schema_extra"]["example"]},
             }
-        }
+        },
     }
+
 
 # -----------------------------------------------
 # PROPERTY LIST BY PROFILE
 # -----------------------------------------------
+
 
 class PropertyListResponseSchema(BaseModel):
     public_id: str
@@ -167,16 +165,16 @@ class PropertyListResponseSchema(BaseModel):
                 "description": "Apartamento padrão",
                 "price": 250000.00,
                 "private_area": 80.00,
-                "address": {
-                    **AddressBaseSchema.model_config["json_schema_extra"]["example"]
-                }
+                "address": {**cast(dict, AddressBaseSchema.model_config)["json_schema_extra"]["example"]},
             }
-        }
+        },
     }
+
 
 # -----------------------------------------------
 # PROPERTY LIST FOR MAP
 # -----------------------------------------------
+
 
 class PropertyListForMapResponseSchema(BaseModel):
     public_id: str
@@ -197,12 +195,11 @@ class PropertyListForMapResponseSchema(BaseModel):
                 "description": "Apartamento padrão",
                 "price": 250000.00,
                 "private_area": 80.00,
-                "address": {
-                    **AddressBaseSchema.model_config["json_schema_extra"]["example"]
-                }
+                "address": {**cast(dict, AddressBaseSchema.model_config)["json_schema_extra"]["example"]},
             }
-        }
+        },
     }
+
 
 class PropertyListForMapRequestSchema(BaseModel):
     lat_north: Decimal
@@ -222,7 +219,7 @@ class PropertyListForMapRequestSchema(BaseModel):
                 "lng_west": "-30.487932",
                 "profile_public_id": "test_user",
             }
-        }
+        },
     }
 
     @model_validator(mode="after")
@@ -233,7 +230,6 @@ class PropertyListForMapRequestSchema(BaseModel):
             raise InvalidMapBounds()
 
         return self
-
 
 
 # # -----------------------------------------------

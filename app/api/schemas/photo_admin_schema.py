@@ -1,9 +1,8 @@
-from pydantic import BaseModel, HttpUrl, Field
-from datetime import datetime, timezone
-from uuid import UUID
-from typing import Literal
+from pydantic import BaseModel
+from datetime import datetime
 
-from app.enums.photo_enum import PhotoCategoryEnum, PhotoProcessingStatusEnum, PhotoVisibilityEnum
+from app.enums.photo_enum import PhotoProcessingStatusEnum
+
 
 class FailedPhotoResponseSchema(BaseModel):
     public_id: str
@@ -22,7 +21,7 @@ class FailedPhotoResponseSchema(BaseModel):
                 "processing_status": "FAILED",
                 "file_url": "https://www.photolink.com/213123",
                 "thumbnail_url": "https://www.photolink.com/213123",
-                "updated_at": "2026-01-21T13:10:44Z"
+                "updated_at": "2026-01-21T13:10:44Z",
             }
-        }
+        },
     }
