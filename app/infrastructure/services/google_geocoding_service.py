@@ -29,20 +29,10 @@ class GoogleGeocodingService(GeocodingService):
     }
 
     async def geocode(
-        self,
-        *,
-        zip_code: str,
-        country: str,
-        state: str,
-        city: str,
-        neighborhood: str | None,
-        street: str,
-        number: str
+        self, *, zip_code: str, country: str, state: str, city: str, neighborhood: str | None, street: str, number: str
     ) -> GeocodingResult | None:
 
-        full_address = ", ".join(
-            filter(None, [street, number, neighborhood, city, state, zip_code, country])
-        )
+        full_address = ", ".join(filter(None, [street, number, neighborhood, city, state, zip_code, country]))
 
         params = {"address": full_address, "key": settings.GOOGLE_CODING_API_KEY}
 
