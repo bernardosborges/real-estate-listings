@@ -1,7 +1,7 @@
 services:
 
   backend:
-    build: 
+    build:
       context: . # Dockerfile is in the root of the project
       target: prod
     container_name: relist-backend-prod
@@ -10,4 +10,3 @@ services:
     ports:
       - "8000:8000"
     restart: always
-  
