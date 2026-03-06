@@ -41,6 +41,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint
 
+    env:
+      DB_HOST: dummy
+      DB_NAME: dummy
+      DB_USER: dummy
+      DB_PASSWORD: dummy
+      SECRET_KEY: dummy
+      GOOGLE_CODING_API_KEY: dummy
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
+      AWS_REGION: dummy
+      AWS_S3_BUCKET: dummy
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

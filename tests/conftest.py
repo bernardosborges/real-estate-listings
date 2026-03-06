@@ -1,8 +1,3 @@
-# ruff: noqa: E402
-from tests.settings import apply_test_settings
-
-apply_test_settings()
-
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
