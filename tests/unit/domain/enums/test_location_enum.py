@@ -6,12 +6,14 @@ from app.domain.exceptions.address_exceptions import InvalidCountry, InvalidStat
 # -------------------- TEST COUNTRY_ENUM --------------------
 
 
+@pytest.mark.unit
 def test_countryenum_valid():
     assert CountryEnum.from_raw("BR") == CountryEnum.BR
     assert CountryEnum.from_raw("br") == CountryEnum.BR
     assert CountryEnum.from_raw(" br ") == CountryEnum.BR
 
 
+@pytest.mark.unit
 def test_countryenum_invalid_value():
     with pytest.raises(InvalidCountry):
         CountryEnum.from_raw("BRR")
@@ -21,6 +23,7 @@ def test_countryenum_invalid_value():
         CountryEnum.from_raw(" ")
 
 
+@pytest.mark.unit
 def test_countryenum_invalid_type():
     with pytest.raises(InvalidCountry):
         CountryEnum.from_raw(123)
@@ -31,6 +34,7 @@ def test_countryenum_invalid_type():
 # -------------------- TEST STATE_ENUM --------------------
 
 
+@pytest.mark.unit
 def test_stateenum_valid():
     assert StateEnum.from_raw("SP") == StateEnum.SP
     assert StateEnum.from_raw("sp") == StateEnum.SP
@@ -38,6 +42,7 @@ def test_stateenum_valid():
     assert StateEnum.from_raw(" rj ") == StateEnum.RJ
 
 
+@pytest.mark.unit
 def test_stateenum_invalid_value():
     with pytest.raises(InvalidState):
         StateEnum.from_raw("SPP")
@@ -47,6 +52,7 @@ def test_stateenum_invalid_value():
         StateEnum.from_raw(" ")
 
 
+@pytest.mark.unit
 def test_stateenum_invalid_type():
     with pytest.raises(InvalidState):
         StateEnum.from_raw(123)

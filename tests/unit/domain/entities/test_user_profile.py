@@ -13,6 +13,7 @@ from app.domain.constants.user_profile_constants import (
 # -------------------- TEST USER_PROFILE CREATION --------------------
 
 
+@pytest.mark.unit
 def test_create_user_profile_defaults(user_profile_factory_fixture):
     user_profile = user_profile_factory_fixture()
     assert user_profile.name is None
@@ -24,6 +25,7 @@ def test_create_user_profile_defaults(user_profile_factory_fixture):
 # -------------------- TEST IS_DELETED  --------------------
 
 
+@pytest.mark.unit
 def test_is_deleted_reflects_deleted_at(user_profile_factory_fixture):
     user_profile = user_profile_factory_fixture()
     assert user_profile.is_deleted is False
@@ -34,6 +36,7 @@ def test_is_deleted_reflects_deleted_at(user_profile_factory_fixture):
 # -------------------- TEST SOFT_DELETE --------------------
 
 
+@pytest.mark.unit
 def test_soft_delete_sets_deleted_at(user_profile_factory_fixture):
     user_profile = user_profile_factory_fixture()
     user_profile.soft_delete()
@@ -41,6 +44,7 @@ def test_soft_delete_sets_deleted_at(user_profile_factory_fixture):
     assert user_profile.is_deleted is True
 
 
+@pytest.mark.unit
 def test_soft_deleted_twice_raises_exception(user_profile_factory_fixture):
     user_profile = user_profile_factory_fixture()
     user_profile.soft_delete()
@@ -51,6 +55,7 @@ def test_soft_deleted_twice_raises_exception(user_profile_factory_fixture):
 # -------------------- TEST RESTORE --------------------
 
 
+@pytest.mark.unit
 def test_restore_clears_deleted_at(user_profile_factory_fixture):
     user_profile = user_profile_factory_fixture()
     user_profile.soft_delete()
@@ -59,6 +64,7 @@ def test_restore_clears_deleted_at(user_profile_factory_fixture):
     assert user_profile.is_deleted is False
 
 
+@pytest.mark.unit
 def test_restore_without_delete_raises_exception(user_profile_factory_fixture):
     user_profile = user_profile_factory_fixture()
     with pytest.raises(CannotBeRestored):
@@ -68,6 +74,7 @@ def test_restore_without_delete_raises_exception(user_profile_factory_fixture):
 # -------------------- TEST UPDATE_BASIC_INFO --------------------
 
 
+@pytest.mark.unit
 def test_update_basic_info_updates_fields(user_profile_factory_fixture):
     user_profile = user_profile_factory_fixture()
     user_profile.update_basic_info(name="John Doe", bio="Real estate agent", work_city="Porto Alegre")
@@ -76,6 +83,7 @@ def test_update_basic_info_updates_fields(user_profile_factory_fixture):
     assert user_profile.work_city == "Porto Alegre"
 
 
+@pytest.mark.unit
 def test_update_basic_info_partial_update(user_profile_factory_fixture):
     user_profile = user_profile_factory_fixture(name="Old name")
     user_profile.update_basic_info(name="New name")
@@ -86,6 +94,7 @@ def test_update_basic_info_partial_update(user_profile_factory_fixture):
 # -------------------- TEST FIELDS --------------------
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize(
     "field_name,max_length",
     [

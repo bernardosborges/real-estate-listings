@@ -27,6 +27,7 @@ def make_valid_input():
     )
 
 
+@pytest.mark.unit
 def test_should_raise_when_profile_not_found(fake_uow, user_factory_fixture):
     user = user_factory_fixture()
     input_dto = make_valid_input()
@@ -39,6 +40,7 @@ def test_should_raise_when_profile_not_found(fake_uow, user_factory_fixture):
     assert fake_uow.committed is False
 
 
+@pytest.mark.unit
 def test_should_create_new_address_when_not_exists(fake_uow, user_factory_fixture, user_profile_factory_fixture):
     user = user_factory_fixture()
     user_profile = user_profile_factory_fixture(user_id=user.id)
@@ -55,6 +57,7 @@ def test_should_create_new_address_when_not_exists(fake_uow, user_factory_fixtur
     assert output.description == "Test home"
 
 
+@pytest.mark.unit
 def test_should_reuse_existing_address(
     fake_uow, user_factory_fixture, user_profile_factory_fixture, address_factory_fixture
 ):
@@ -85,6 +88,7 @@ def test_should_reuse_existing_address(
     assert fake_uow.committed is True
 
 
+@pytest.mark.unit
 def test_should_associate_property_with_profile(fake_uow, user_factory_fixture, user_profile_factory_fixture):
     user = user_factory_fixture()
     profile = user_profile_factory_fixture(user_id=user.id)
