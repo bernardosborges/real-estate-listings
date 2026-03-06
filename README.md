@@ -4,8 +4,7 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-v0.99-green)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Build](https://img.shields.io/badge/Build-Passing-brightgreen)
-![Tests](https://img.shields.io/badge/Tests-PyTest-orange)
+[![CI](https://github.com/bernardosborges/real-estate-listings/actions/workflows/ci.yml/badge.svg)](https://github.com/bernardosborges/real-estate-listings/actions/workflows/ci.yml)
 
 ## 📌 Overview
 
