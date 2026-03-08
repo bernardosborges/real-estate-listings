@@ -18,7 +18,7 @@ pydantic-settings>=2.0,<3.0
 python-dotenv==1.2.2
 
 # Auth and security
-bcrypt==4.0.1
+bcrypt==5.0.0
 passlib[bcrypt]
 nanoid
 
