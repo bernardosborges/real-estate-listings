@@ -15,7 +15,7 @@ pydantic[email]
 pydantic-settings>=2.0,<3.0
 
 # Environment
-python-dotenv==1.2.1
+python-dotenv==1.2.2
 
 # Auth and security
 bcrypt==5.0.0
