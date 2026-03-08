@@ -1,4 +1,5 @@
 from decimal import Decimal
+from app.domain.entities.address import Address
 
 
 class AddressOutput:
@@ -28,7 +29,7 @@ class AddressOutput:
         self.longitude = longitude
 
     @classmethod
-    def from_entity(cls, address):
+    def from_entity(cls, address: Address) -> "AddressOutput":
         return cls(
             zip_code=address.zip_code.value,
             country=address.country.value,
