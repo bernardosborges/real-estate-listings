@@ -1,6 +1,6 @@
 # Lint & Formatting
 pylint==4.0.5
-black==26.1.0
+black==26.3.0
 pre-commit==4.5.1
 ruff==0.15.5
 mypy==1.19.1
