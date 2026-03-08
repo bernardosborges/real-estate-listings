@@ -4,7 +4,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.main import app
-from app.core.database import Base, get_db
+from app.core.database import Base
+from app.api.deps.general_deps import get_db_session
 from app.api.deps.oauth2 import get_current_user
 from app.infrastructure.db.mappers.user_mapper import UserMapper
 from app.infrastructure.db.mappers.user_profile_mapper import UserProfileMapper
@@ -176,15 +177,15 @@ def db_session():
 @pytest.fixture
 def override_get_db(db_session):
     """Override for integration tests."""
-    original_override = app.dependency_overrides.get(get_db)
-    app.dependency_overrides[get_db] = lambda: db_session
+    original_override = app.dependency_overrides.get(get_db_session)
+    app.dependency_overrides[get_db_session] = lambda: db_session
 
     yield db_session
 
     if original_override:
-        app.dependency_overrides[get_db] = original_override
+        app.dependency_overrides[get_db_session] = original_override
     else:
-        app.dependency_overrides.pop(get_db, None)
+        app.dependency_overrides.pop(get_db_session, None)
 
 
 #     session = TestSessionLocal()
