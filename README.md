@@ -132,6 +132,29 @@ The API layer translates these exceptions into appropriate HTTP responses withou
 
 
 
+## 📊 Metrics
+
+The API exposes operational metrics for observability using
+[Prometheus FastAPI Instrumentator](https://github.com/trallnag/prometheus-fastapi-instrumentator).
+
+Metrics are available at: `/metrics`
+
+When the application is running locally: `http:localhost:8000/metrics`
+
+
+These metrics follow the Prometheus exposition format and can be scraped by a Prometheus server for monitoring and alerting.
+
+Typical metrics include:
+
+- HTTP request count
+- Request latency
+- Response status codes
+- Process metrics (CPU, memory)
+
+This endpoint is intended for monitoring systems and not for direct human consumption.
+
+
+
 ## 🧰 Tech Stack
 
 - **Language**: [Python](https://docs.python.org/3.13/)
