@@ -22,7 +22,10 @@ jobs:
         with:
           python-version: "3.13"
           cache: "pip"
-          cache-dependency-path: requirements-dev.txt
+          cache-dependency-path: |
+            requirements.txt
+            requirements-ci.txt
+            requirements-dev.txt
 
       - name: Install dependencies
         run: |
@@ -67,24 +70,32 @@ jobs:
         with:
           python-version: "3.13"
           cache: "pip"
-          cache-dependency-path: requirements-dev.txt
+          cache-dependency-path: |
+            requirements.txt
+            requirements-ci.txt
+            requirements-dev.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install -r requirements-dev.txt
 
-      - name: Run unit tests
+      - name: Run tests
         run: |
           pytest \
             -m "unit or integration" \
             --cov-report=xml \
             --cov-fail-under=15
 
-      - name: Upload coverage
-        uses: actions/upload-artifact@v4
+      - name: Upload coverage to Codecov
+        uses: codecod/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          fail_ci_if_error: true
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v
         with:
           name: coverage-report
-          path: |
-            htmlcov
-            coverage.xml
+          path: htmlcov
