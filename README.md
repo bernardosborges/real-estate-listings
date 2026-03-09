@@ -5,6 +5,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 [![CI](https://github.com/bernardosborges/real-estate-listings/actions/workflows/ci.yml/badge.svg)](https://github.com/bernardosborges/real-estate-listings/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/bernardosborges/real-estate-listings/graph/badge.svg?token=2PVYRSKY50)](https://codecov.io/github/bernardosborges/real-estate-listings)
 
 ## 📌 Overview
 

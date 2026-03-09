@@ -1,4 +1,8 @@
 from app.domain.entities.address import Address
+from app.domain.value_objects.address.zipcode import ZipCode
+from app.domain.value_objects.address.latitude import Latitude
+from app.domain.value_objects.address.longitude import Longitude
+from app.domain.enums.address_enum import CountryEnum, StateEnum
 from app.infrastructure.db.models.address_model import AddressModel
 
 
@@ -8,16 +12,16 @@ class AddressMapper:
     def to_entity(model: AddressModel) -> Address:
         return Address(
             id=model.id,
-            zip_code=model.zip_code,
-            country=model.country,
-            state=model.state,
+            zip_code=ZipCode.from_raw(model.zip_code),
+            country=CountryEnum.from_raw(model.country),
+            state=StateEnum.from_raw(model.state),
             city=model.city,
             neighborhood=model.neighborhood,
             street=model.street,
             number=model.number,
             complement=model.complement,
-            latitude=model.latitude,
-            longitude=model.longitude,
+            latitude=Latitude.from_raw(model.latitude) if model.latitude else None,
+            longitude=Longitude.from_raw(model.longitude) if model.longitude else None,
             deleted_at=model.deleted_at,
         )
 
