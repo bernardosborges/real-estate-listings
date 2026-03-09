@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from prometheus_fastapi_instrumentator import Instrumentator
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.logging import setup_logging
@@ -19,6 +20,7 @@ from app.api.exceptions.api_exception import APIException
 setup_logging()
 
 app = FastAPI(title="Real Estate Listing API", version="0.1.0")
+Instrumentator().instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
 
 app.include_router(property_router.router)
 app.include_router(auth_router.router)

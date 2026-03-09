@@ -42,3 +42,6 @@ requests>=2.31.0
 # CLI / Logging helper
 rich
 # rqdoc; # Not necessary, because FastAPI already shows docs on swagger
+
+# Observability
+prometheus-fastapi-instrumentator==7.1.0

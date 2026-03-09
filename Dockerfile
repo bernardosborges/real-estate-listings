@@ -18,10 +18,10 @@ RUN apt-get update && apt-get install -y \
 RUN pip install --upgrade pip
 
 # Copy only requirements first to leverage Docker cache
-COPY requirements-dev.txt requirements.txt ./
+COPY requirements-dev.txt requirements-ci.txt requirements.txt ./
 
 # Create pre-compiled wheels
-RUN pip wheel --no-cache-dir --wheel-dir=/wheels -r requirements.txt -r requirements-dev.txt
+RUN pip wheel --no-cache-dir --wheel-dir=/wheels -r requirements-dev.txt
 
 # ----------------------------------------------------
 # Runtime base
@@ -49,7 +49,7 @@ COPY --from=builder /wheels /wheels
 # ----------------------------------------------------
 FROM runtime AS dev
 
-COPY requirements.txt requirements-dev.txt ./
+COPY requirements.txt requirements-ci.txt requirements-dev.txt ./
 
 # Install Python dependencies
 RUN pip install --no-cache-dir --no-index --find-links=/wheels -r requirements-dev.txt
