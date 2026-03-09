@@ -1,0 +1,65 @@
+{
+    "id": null,
+    "title": "Backend Metrics / APM",
+    "uid": "backend-apm",
+    "timezone": "browser",
+    "schemaVersion": 37,
+    "version": 1,
+    "panels": [
+        {
+            "title": "Requests per Second",
+            "type": "graph",
+            "gridPos": {"x":0, "y":0, "w": 12, "h":6},
+            "targets": [
+                {
+                    "expr": "rate(http_requests_total[1m])",
+                    "legendFormat": "{{endpoint}}",
+                    "refId": "A"
+                }
+            ],
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Latency (95th percentile)",
+            "type": "graph",
+            "gridPos": {"x":12, "y":0, "w": 12, "h":6},
+            "targets": [
+                {
+                    "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[1m])) by (le, endpoint))",
+                    "legendFormat": "{{endpoint}}",
+                    "refId": "B"
+                }
+            ],
+            "legend": {"show": true, "placement": "right"}
+        },
+        {
+            "title": "5xx Errors per Endpoint",
+            "type": "graph",
+            "gridPos": {"x":0, "y":6, "w": 12, "h":6},
+            "targets": [
+                {
+                    "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m])) by (endpoint)",
+                    "legendFormat": "{{endpoint}}",
+                    "refId": "C"
+                }
+            ],
+            "legend": {"show": true, "placement": "right"}
+        },
+        {
+            "title": "Uptime",
+            "type": "graph",
+            "gridPos": {"x":12, "y":6, "w": 12, "h":6},
+            "targets": [
+                {
+                    "expr": "up{job=\"fastapi-app\"}",
+                    "legendFormat": "{{instance}}",
+                    "refId": "D"
+                }
+            ],
+            "legend": {"show": true, "placement": "right"}
+        }
+    ]
+}

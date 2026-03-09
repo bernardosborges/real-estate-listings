@@ -1,0 +1,26 @@
+{
+    "id": null,
+    "title": "Business / Product",
+    "uid": "business-product",
+    "timezone": "browser",
+    "schemaVersion": 37,
+    "version": 1,
+    "panels": [
+        {
+            "title": "Active Users",
+            "type": "graph",
+            "gridPos": {"x":0, "y":0, "w": 12, "h":6},
+            "targets": [
+                {
+                    "expr": "count(active_users_total)",
+                    "legendFormat": "Users",
+                    "refId": "A"
+                }
+            ],
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        }
+    ]
+}

@@ -1,0 +1,58 @@
+{
+    "id": null,
+    "title": "Infra / Hosts / Containers",
+    "uid": "infra-hosts",
+    "timezone": "browser",
+    "schemaVersion": 37,
+    "version": 1,
+    "panels": [
+        {
+            "title": "CPU Usage",
+            "type": "graph",
+            "gridPos": {"x":0, "y":0, "w": 12, "h":6},
+            "targets": [
+                {
+                    "expr": "rate(node_cpu_seconds_total{mode!=\"idle\"}[1m])",
+                    "legendFormat": "{{instance}}",
+                    "refId": "A"
+                }
+            ],
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Memory Usage",
+            "type": "graph",
+            "gridPos": {"x":12, "y":0, "w": 12, "h":6},
+            "targets": [
+                {
+                    "expr": "1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
+                    "legendFormat": "{{instance}}",
+                    "refId": "B"
+                }
+            ],
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Disk Usage",
+            "type": "graph",
+            "gridPos": {"x":0, "y":6, "w": 12, "h":6},
+            "targets": [
+                {
+                    "expr": "1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)",
+                    "legendFormat": "{{mountpoint}}",
+                    "refId": "C"
+                }
+            ],
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        }
+    ]
+}
