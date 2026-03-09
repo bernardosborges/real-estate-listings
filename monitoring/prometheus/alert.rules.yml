@@ -1,0 +1,20 @@
+groups:
+  - name: backend-alerts
+    rules:
+      - alert: BackendDown
+        expr: up{job="fastapi-app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backend is down"
+          description: "The backend service has not been reachable for more than 1 minute."
+
+      - alert: HighRequestRate
+        expr: rate(http_requests_total[1m]) > 50
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High request rate"
+          description: "The backend is receiving more than 50 requests per minute"
