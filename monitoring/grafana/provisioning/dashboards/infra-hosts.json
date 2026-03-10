@@ -1,20 +1,60 @@
 {
     "id": null,
-    "title": "Infra / Hosts / Containers",
+    "title": "Infra / Hosts",
     "uid": "infra-hosts",
     "timezone": "browser",
     "schemaVersion": 37,
     "version": 1,
     "panels": [
         {
-            "title": "CPU Usage",
-            "type": "graph",
-            "gridPos": {"x":0, "y":0, "w": 12, "h":6},
+            "title": "CPU Usage (Total)",
+            "type": "timeseries",
+            "gridPos": {"x":0, "y":0, "w": 12, "h":5},
             "targets": [
                 {
-                    "expr": "rate(node_cpu_seconds_total{mode!=\"idle\"}[1m])",
+                    "expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
                     "legendFormat": "{{instance}}",
                     "refId": "A"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+                {
+            "title": "CPU Usage (per Core)",
+            "type": "timeseries",
+            "gridPos": {"x":0, "y":5, "w": 12, "h":5},
+            "targets": [
+                {
+                    "expr": "100 * (1 - avg by (instance, cpu) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
+                    "legendFormat": "{{instance}} CPU {{cpu}}",
+                    "refId": "B"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent"
+                }
+            },
+            "transformations": [
+                {
+                    "id": "sortBy",
+                    "options": {
+                        "fields": {},
+                        "sort": [
+                            {
+                                "field": "cpu",
+                                "desc": false
+                            }
+                        ]
+                    }
                 }
             ],
             "legend": {
@@ -23,16 +63,111 @@
             }
         },
         {
-            "title": "Memory Usage",
-            "type": "graph",
-            "gridPos": {"x":12, "y":0, "w": 12, "h":6},
+            "title": "CPU Usage Heatmap",
+            "type": "heatmap",
+            "gridPos": { "x": 12, "y": 0, "w": 12, "h": 10 },
             "targets": [
                 {
-                    "expr": "1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
-                    "legendFormat": "{{instance}}",
-                    "refId": "B"
+                    "expr": "100 * (1 - rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))",
+                    "legendFormat": "{{instance}} CPU {{cpu}}",
+                    "refId": "C",
+                    "format": "time_series"
                 }
             ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent",
+                    "min": 0,
+                    "max": 100
+                },
+                "overrides": []
+            },
+            "options": {
+                "calculate": false,
+                "yAxis": {
+                    "axisPlacement": "left"
+                }
+            }
+        },
+        {
+            "title": "CPU Saturation",
+            "type": "timeseries",
+            "gridPos": {"x":0, "y":10, "w": 12, "h":5},
+            "targets": [
+                {
+                    "expr": "node_load1 / on (instance) count by (instance) (node_cpu_seconds_total{mode=\"system\"})",
+                    "legendFormat": "{{instance}}",
+                    "refId": "D"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "short"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Load Average",
+            "type": "timeseries",
+            "gridPos": {"x":12, "y":10, "w": 12, "h":5},
+            "targets": [
+                {
+                    "expr": "node_load1",
+                    "legendFormat": "{{instance}}",
+                    "refId": "E"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "none"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Memory Pressure",
+            "type": "timeseries",
+            "gridPos": {"x":0, "y":15, "w": 12, "h":5},
+            "targets": [
+                {
+                    "expr": "100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))",
+                    "legendFormat": "{{instance}}",
+                    "refId": "F"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Available Memory",
+            "type": "timeseries",
+            "gridPos": {"x":12, "y":15, "w": 12, "h":5},
+            "targets": [
+                {
+                    "expr": "node_memory_MemAvailable_bytes",
+                    "legendFormat": "{{instance}}",
+                    "refId": "G"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "bytes"
+                }
+            },
             "legend": {
                 "show": true,
                 "placement": "right"
@@ -40,15 +175,46 @@
         },
         {
             "title": "Disk Usage",
-            "type": "graph",
-            "gridPos": {"x":0, "y":6, "w": 12, "h":6},
+            "type": "timeseries",
+            "gridPos": {"x":0, "y":20, "w": 12, "h":5},
             "targets": [
                 {
-                    "expr": "1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)",
-                    "legendFormat": "{{mountpoint}}",
-                    "refId": "C"
+                    "expr": "100 * (1 - (node_filesystem_avail_bytes{fstype!~'tmpfs|overlay'} / node_filesystem_size_bytes{fstype!~'tmpfs|overlay'}))",
+                    "legendFormat": "{{instance}} {{mountpoint}}",
+                    "refId": "H"
                 }
             ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Disk IO",
+            "type": "timeseries",
+            "gridPos": {"x":12, "y":20, "w": 12, "h":5},
+            "targets": [
+                {
+                    "expr": "sum by (instance) rate(node_disk_read_bytes_total[5m])",
+                    "legendFormat": "read {{instance}}",
+                    "refId": "I"
+                },
+                {
+                    "expr": "sum by (instance) rate(node_disk_written_bytes_total[5m])",
+                    "legendFormat": "write {{instance}}",
+                    "refId": "J"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "Bps"
+                }
+            },
             "legend": {
                 "show": true,
                 "placement": "right"
