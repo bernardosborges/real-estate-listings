@@ -50,11 +50,11 @@
         },
         {
             "title": "Uptime",
-            "type": "graph",
+            "type": "graph",s
             "gridPos": {"x":12, "y":6, "w": 12, "h":6},
             "targets": [
                 {
-                    "expr": "up{job=\"fastapi-app\"}",
+                    "expr": "up{job=\"backend\"}",
                     "legendFormat": "{{instance}}",
                     "refId": "D"
                 }
