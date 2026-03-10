@@ -29,7 +29,7 @@
             "gridPos": {"x":6, "y":0, "w": 6, "h":6},
             "targets": [
                 {
-                    "expr": "100 * sum(rate(http_requests_total{job=\"backend\",status=\"5xx\"}[5m])) / sum(rate(http_requests_total{job=\"backend\"}[5m])) or vector(0)",
+                    "expr": "100 * sum(rate(http_requests_total{status=~\"5..\", job=\"backend\"}[5m])) / sum(rate(http_requests_total{job=\"backend\"}[5m])) or vector(0)",
                     "legendFormat": "{{name}}",
                     "refId": "B"
                 }
