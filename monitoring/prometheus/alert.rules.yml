@@ -1,20 +1,126 @@
 groups:
   - name: backend-alerts
+    interval: 1m
     rules:
       - alert: BackendDown
-        expr: up{job="fastapi-app"} == 0
+        expr: up{job="backend"} == 0
         for: 1m
         labels:
           severity: critical
         annotations:
-          summary: "Backend is down"
-          description: "The backend service has not been reachable for more than 1 minute."
+          summary: "Backend server is down"
+          description: "The backend service is not responding and has been down for more than 1 minute."
 
-      - alert: HighRequestRate
-        expr: rate(http_requests_total[1m]) > 50
+      - alert: HighErrorRate5xx
+        expr: rate(http_requests_total{job="backend", status=~"5.."}[1m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High 5xx error rate"
+          description: "The backend is returning 5xx errors at a rate higher than 5% of all requests in the last minute."
+
+      - alert: HighLatency95th
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="backend"}[1m])) by (le, endpoint)) > 1
         for: 2m
         labels:
           severity: warning
         annotations:
+          summary: "High latency (95th percentile)"
+          description: "The 95th percentile of request latency exceeds 1 second on one or more backend endpoints."
+
+      - alert: HighLatency99th
+        expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job="backend"}[1m])) by (le, endpoint)) > 2
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High latency (99th percentile)"
+          description: "The 99th percentile of request latency exceeds 2 seconds on one or more backend endpoints."
+
+      - alert: JobFailures
+        expr: increase(job_failures_total{job="backend"}[5m]) > 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backend jobs failing"
+          description: "One or more scheduled backend jobs or asynchronous tasks have failed in the last 5 minutes."
+
+      - alert: HighRequestRate
+        expr: sum(rate(http_requests_total{job="backend"}[1m])) > 500
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
           summary: "High request rate"
-          description: "The backend is receiving more than 50 requests per minute"
+          description: "The backend is receiving more than 500 requests per minute, which could indicate increased load."
+
+  - name: infra-host-alerts
+    interval: 1m
+    rules:
+      - alert: HostDown
+        expr: up{job="node"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Host machine is down"
+          description: "The physical host or virtual machine is not responding."
+
+      - alert: HighCPUUsageHost
+        expr: 100 - (avg by (instance)(irate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on host"
+          description: "CPU usage on the host exceeds 85%, which may impact application performance."
+
+      - alert: HighMemoryUsageHost
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.15
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on host"
+          description: "Available memory on the host is less than 15%, which could lead to system instability."
+
+      - alert: HighDiskUsageHost
+        expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_free_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk usage on host"
+          description: "Disk usage on the root filesystem exceeds 85%, which may cause issues with writes and logs."
+
+  - name: infra-container-alerts
+    interval: 1m
+    rules:
+      - alert: ContainerDown
+        expr: up{job="container"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container is down"
+          description: "The monitored container is not responding."
+
+      - alert: HighCPUUsageContainer
+        expr: sum(rate(container_cpu_usage_seconds_total{job="container"}[1m])) by (instance) / sum(container_spec_cpu_period{job="container"}) by (instance) > 0.85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on container"
+          description: "CPU usage on the container exceeds 85% of the allocated CPU quota."
+
+      - alert: HighMemoryUsageContainer
+        expr: container_memory_usage_bytes{job="container"} / container_spec_memory_limit_bytes{job="container"} > 0.85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on container"
+          description: "Memory usage of the container exceeds 85% of the allocated memory limit."

@@ -1,25 +1,25 @@
 {
     "id": null,
-    "title": "Infra / Hosts",
-    "uid": "infra-hosts",
+    "title": "Infra / Containers",
+    "uid": "infra-containers",
     "timezone": "browser",
     "schemaVersion": 37,
     "version": 1,
     "panels": [
         {
-            "title": "CPU Usage (Total)",
+            "title": "CPU Usage by Container",
             "type": "timeseries",
-            "gridPos": {"x":0, "y":0, "w": 12, "h":5},
+            "gridPos": {"x":0, "y":0, "w": 12, "h":10},
             "targets": [
                 {
-                    "expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
-                    "legendFormat": "{{instance}}",
+                    "expr": "sum by (name) (rate(container_cpu_usage_seconds_total{id=~\"/docker/.*\"}[5m]))",
+                    "legendFormat": "{{name}}",
                     "refId": "A"
                 }
             ],
             "fieldConfig": {
                 "defaults": {
-                    "unit": "percent"
+                    "unit": "cores"
                 }
             },
             "legend": {
@@ -27,82 +27,20 @@
                 "placement": "right"
             }
         },
-                {
-            "title": "CPU Usage (per Core)",
+        {
+            "title": "CPU Throttling",
             "type": "timeseries",
-            "gridPos": {"x":0, "y":5, "w": 12, "h":5},
+            "gridPos": {"x":12, "y":0, "w": 12, "h":5},
             "targets": [
                 {
-                    "expr": "100 * (1 - avg by (instance, cpu) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
-                    "legendFormat": "{{instance}} CPU {{cpu}}",
+                    "expr": "sum by (name) (rate(container_cpu_cfs_throttled_seconds_total{name!=\"\",name!=\"POD\"}[5m]))",
+                    "legendFormat": "{{name}}",
                     "refId": "B"
                 }
             ],
             "fieldConfig": {
                 "defaults": {
-                    "unit": "percent"
-                }
-            },
-            "transformations": [
-                {
-                    "id": "sortBy",
-                    "options": {
-                        "fields": {},
-                        "sort": [
-                            {
-                                "field": "cpu",
-                                "desc": false
-                            }
-                        ]
-                    }
-                }
-            ],
-            "legend": {
-                "show": true,
-                "placement": "right"
-            }
-        },
-        {
-            "title": "CPU Usage Heatmap",
-            "type": "heatmap",
-            "gridPos": { "x": 12, "y": 0, "w": 12, "h": 10 },
-            "targets": [
-                {
-                    "expr": "100 * (1 - rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))",
-                    "legendFormat": "{{instance}} CPU {{cpu}}",
-                    "refId": "C",
-                    "format": "time_series"
-                }
-            ],
-            "fieldConfig": {
-                "defaults": {
-                    "unit": "percent",
-                    "min": 0,
-                    "max": 100
-                },
-                "overrides": []
-            },
-            "options": {
-                "calculate": false,
-                "yAxis": {
-                    "axisPlacement": "left"
-                }
-            }
-        },
-        {
-            "title": "CPU Saturation",
-            "type": "timeseries",
-            "gridPos": {"x":0, "y":10, "w": 12, "h":5},
-            "targets": [
-                {
-                    "expr": "node_load1 / on (instance) count by (instance) (node_cpu_seconds_total{mode=\"system\"})",
-                    "legendFormat": "{{instance}}",
-                    "refId": "D"
-                }
-            ],
-            "fieldConfig": {
-                "defaults": {
-                    "unit": "short"
+                    "unit": "s"
                 }
             },
             "legend": {
@@ -111,56 +49,14 @@
             }
         },
         {
-            "title": "Load Average",
+            "title": "Memory Usage",
             "type": "timeseries",
-            "gridPos": {"x":12, "y":10, "w": 12, "h":5},
+            "gridPos": {"x":12, "y":5, "w": 12, "h":5},
             "targets": [
                 {
-                    "expr": "node_load1",
-                    "legendFormat": "{{instance}}",
-                    "refId": "E"
-                }
-            ],
-            "fieldConfig": {
-                "defaults": {
-                    "unit": "none"
-                }
-            },
-            "legend": {
-                "show": true,
-                "placement": "right"
-            }
-        },
-        {
-            "title": "Memory Pressure",
-            "type": "timeseries",
-            "gridPos": {"x":0, "y":15, "w": 12, "h":5},
-            "targets": [
-                {
-                    "expr": "100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))",
-                    "legendFormat": "{{instance}}",
-                    "refId": "F"
-                }
-            ],
-            "fieldConfig": {
-                "defaults": {
-                    "unit": "percent"
-                }
-            },
-            "legend": {
-                "show": true,
-                "placement": "right"
-            }
-        },
-        {
-            "title": "Available Memory",
-            "type": "timeseries",
-            "gridPos": {"x":12, "y":15, "w": 12, "h":5},
-            "targets": [
-                {
-                    "expr": "node_memory_MemAvailable_bytes",
-                    "legendFormat": "{{instance}}",
-                    "refId": "G"
+                    "expr": "sum by (name) (container_memory_usage_bytes{name!=\"\",name!=\"POD\"})",
+                    "legendFormat": "{{name}}",
+                    "refId": "C"
                 }
             ],
             "fieldConfig": {
@@ -174,14 +70,35 @@
             }
         },
         {
-            "title": "Disk Usage",
+            "title": "Memory Working Set",
             "type": "timeseries",
-            "gridPos": {"x":0, "y":20, "w": 12, "h":5},
+            "gridPos": {"x":0, "y":10, "w": 12, "h":5},
             "targets": [
                 {
-                    "expr": "100 * (1 - (node_filesystem_avail_bytes{fstype!~'tmpfs|overlay'} / node_filesystem_size_bytes{fstype!~'tmpfs|overlay'}))",
-                    "legendFormat": "{{instance}} {{mountpoint}}",
-                    "refId": "H"
+                    "expr": "sum by (name) (container_memory_working_set_bytes{name!=\"\",name!=\"POD\"})",
+                    "legendFormat": "{{name}}",
+                    "refId": "D"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "bytes"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Memory Pressure",
+            "type": "timeseries",
+            "gridPos": {"x":12, "y":10, "w": 12, "h":5},
+            "targets": [
+                {
+                    "expr": "100 * sum by (name) (container_memory_working_set_bytes{name!=\"\",name!=\"POD\"}) / sum by (name) (container_spec_memory_limit_bytes{name!=\"\",name!=\"POD\"})",
+                    "legendFormat": "{{name}}",
+                    "refId": "E"
                 }
             ],
             "fieldConfig": {
@@ -195,24 +112,82 @@
             }
         },
         {
-            "title": "Disk IO",
+            "title": "Network Receive",
             "type": "timeseries",
-            "gridPos": {"x":12, "y":20, "w": 12, "h":5},
+            "gridPos": {"x":0, "y":15, "w": 12, "h":5},
             "targets": [
                 {
-                    "expr": "rate(node_disk_read_bytes_total[5m])",
-                    "legendFormat": "Read {{device}}",
-                    "refId": "I"
-                },
-                {
-                    "expr": "rate(node_disk_written_bytes_total[5m])",
-                    "legendFormat": "Write {{device}}",
-                    "refId": "J"
+                    "expr": "sum by (name) (rate(container_network_receive_bytes_total{name!=\"\"}[5m]))",
+                    "legendFormat": "{{name}}",
+                    "refId": "F"
                 }
             ],
             "fieldConfig": {
                 "defaults": {
                     "unit": "Bps"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Network Transmit",
+            "type": "timeseries",
+            "gridPos": {"x":12, "y":15, "w": 12, "h":5},
+            "targets": [
+                {
+                    "expr": "sum by (name) (rate(container_network_transmit_bytes_total{name!=\"\"}[5m]))",
+                    "legendFormat": "{{name}}",
+                    "refId": "G"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "Bps"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Filesystem Usage",
+            "type": "timeseries",
+            "gridPos": {"x":0, "y":20, "w": 12, "h":5},
+            "targets": [
+                {
+                    "expr": "sum by (name) (container_fs_usage_bytes{id=~\"/docker/.*\"})",
+                    "legendFormat": "{{name}}",
+                    "refId": "H"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "bytes"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Container Restarts",
+            "type": "timeseries",
+            "gridPos": {"x":12, "y":20, "w": 12, "h":5},
+            "targets": [
+                {
+                    "expr": "changes(container_start_time_seconds{name!=\"\",name!=\"POD\"}[1h])",
+                    "legendFormat": "{{name}}",
+                    "refId": "I"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "short"
                 }
             },
             "legend": {
