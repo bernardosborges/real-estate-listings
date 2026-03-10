@@ -42,3 +42,8 @@ app.add_exception_handler(Exception, unhandled_exception_handler)
 @app.get("/")
 def healthcheck():
     return {"status": "ok"}
+
+
+@app.get("/force-error")
+def force_error():
+    raise HTTPException(status_code=500, detail="Test Error")
