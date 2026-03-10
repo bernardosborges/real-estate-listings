@@ -1,22 +1,90 @@
 {
     "id": null,
-    "title": "Backend Metrics / APM",
+    "title": "Backend / APM",
     "uid": "backend-apm",
     "timezone": "browser",
     "schemaVersion": 37,
     "version": 1,
     "panels": [
         {
-            "title": "Requests per Second",
-            "type": "graph",
+            "title": "Uptime",
+            "type": "timeseries",
             "gridPos": {"x":0, "y":0, "w": 12, "h":6},
             "targets": [
                 {
-                    "expr": "rate(http_requests_total[1m])",
-                    "legendFormat": "{{endpoint}}",
+                    "expr": "up{job=\"backend\"}",
+                    "legendFormat": "{{instance}}",
                     "refId": "A"
                 }
             ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "short"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Requests per Second (Total)",
+            "type": "timeseries",
+            "gridPos": {"x":12, "y":0, "w": 12, "h":6},
+            "targets": [
+                {
+                    "expr": "sum(rate(http_requests_total{job=\"backend\"}[1m]))",
+                    "legendFormat": "Total",
+                    "refId": "B"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "rps"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Requests per Second (Per Endpoint)",
+            "type": "timeseries",
+            "gridPos": {"x":12, "y":6, "w": 12, "h":18},
+            "targets": [
+                {
+                    "expr": "rate(http_requests_total{job=\"backend\"}[1m])",
+                    "legendFormat": "{{endpoint}}",
+                    "refId": "C"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "rps"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Latency (50th percentile)",
+            "type": "timeseries",
+            "gridPos": {"x":0, "y":6, "w": 12, "h":6},
+            "targets": [
+                {
+                    "expr": "histogram_quantile(0.5, sum(rate(http_request_duration_seconds_bucket{job=\"backend\"}[1m])) by (le, endpoint))",
+                    "legendFormat": "{{endpoint}}",
+                    "refId": "D"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "s"
+                }
+            },
             "legend": {
                 "show": true,
                 "placement": "right"
@@ -24,42 +92,87 @@
         },
         {
             "title": "Latency (95th percentile)",
-            "type": "graph",
-            "gridPos": {"x":12, "y":0, "w": 12, "h":6},
+            "type": "timeseries",
+            "gridPos": {"x":0, "y":12, "w": 12, "h":6},
             "targets": [
                 {
-                    "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[1m])) by (le, endpoint))",
+                    "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"backend\"}[1m])) by (le, endpoint))",
                     "legendFormat": "{{endpoint}}",
-                    "refId": "B"
+                    "refId": "E"
                 }
             ],
-            "legend": {"show": true, "placement": "right"}
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "s"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
         },
         {
-            "title": "5xx Errors per Endpoint",
-            "type": "graph",
-            "gridPos": {"x":0, "y":6, "w": 12, "h":6},
+            "title": "Latency (99th percentile)",
+            "type": "timeseries",
+            "gridPos": {"x":0, "y":18, "w": 12, "h":6},
             "targets": [
                 {
-                    "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m])) by (endpoint)",
+                    "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=\"backend\"}[1m])) by (le, endpoint))",
                     "legendFormat": "{{endpoint}}",
-                    "refId": "C"
+                    "refId": "F"
                 }
             ],
-            "legend": {"show": true, "placement": "right"}
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "s"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
         },
         {
-            "title": "Uptime",
-            "type": "graph",s
-            "gridPos": {"x":12, "y":6, "w": 12, "h":6},
+            "title": "5xx Errors per Endpoint (RPS)",
+            "type": "timeseries",
+            "gridPos": {"x":0, "y":24, "w": 12, "h":6},
             "targets": [
                 {
-                    "expr": "up{job=\"backend\"}",
-                    "legendFormat": "{{instance}}",
-                    "refId": "D"
+                    "expr": "sum(rate(http_requests_total{status=~\"5..\", job=\"backend\"}[1m])) by (endpoint) or vector(0)",
+                    "legendFormat": "{{endpoint}}",
+                    "refId": "G"
                 }
             ],
-            "legend": {"show": true, "placement": "right"}
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "rps"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
+        },
+        {
+            "title": "Error Rate (%) per Endpoint",
+            "type": "timeseries",
+            "gridPos": {"x":12, "y":24, "w": 12, "h":6},
+            "targets": [
+                {
+                    "expr": "100 * sum(rate(http_requests_total{status=~\"5..\", job=\"backend\"}[1m])) by (endpoint) / sum(rate(http_requests_total{job=\"backend\"}[1m])) by (endpoint) or vector(0)",
+                    "legendFormat": "{{endpoint}}",
+                    "refId": "H"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent"
+                }
+            },
+            "legend": {
+                "show": true,
+                "placement": "right"
+            }
         }
     ]
 }
