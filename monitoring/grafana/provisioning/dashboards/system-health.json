@@ -1,0 +1,108 @@
+{
+    "id": null,
+    "title": "System Health",
+    "uid": "system-health",
+    "timezone": "browser",
+    "schemaVersion": 37,
+    "version": 1,
+    "panels": [
+        {
+            "title": "API Up",
+            "type": "stat",
+            "gridPos": {"x":0, "y":0, "w": 6, "h":6},
+            "targets": [
+                {
+                    "expr": "up{job=\"backend\"}",
+                    "legendFormat": "{{name}}",
+                    "refId": "A"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "short"
+                }
+            }
+        },
+        {
+            "title": "Error Rate",
+            "type": "stat",
+            "gridPos": {"x":6, "y":0, "w": 6, "h":6},
+            "targets": [
+                {
+                    "expr": "100 * sum(rate(http_requests_total{job=\"backend\",status=\"5xx\"}[5m])) / sum(rate(http_requests_total{job=\"backend\"}[5m])) or vector(0)",
+                    "legendFormat": "{{name}}",
+                    "refId": "B"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percent"
+                }
+            }
+        },
+        {
+            "title": "Requests / sec",
+            "type": "stat",
+            "gridPos": {"x":12, "y":0, "w": 12, "h":6},
+            "targets": [
+                {
+                    "expr": "sum(rate(http_requests_total[1m]))",
+                    "refId": "C"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "reqps"
+                }
+            }
+        },
+        {
+            "title": "Latency P95",
+            "type": "stat",
+            "gridPos": {"x":0, "y":6, "w": 6, "h":6},
+            "targets": [
+                {
+                    "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+                    "refId": "D"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "s"
+                }
+            }
+        },
+        {
+            "title": "CPU Usage (Total)",
+            "type": "timeseries",
+            "gridPos": {"x":6, "y":6, "w": 9, "h":6},
+            "targets": [
+                {
+                    "expr": "sum(rate(container_cpu_usage_seconds_total[5m]))",
+                    "refId": "E"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "cores"
+                }
+            }
+        },
+        {
+            "title": "Memory Usage (Total)",
+            "type": "timeseries",
+            "gridPos": {"x":15, "y":6, "w": 9, "h":6},
+            "targets": [
+                {
+                    "expr": "sum(container_memory_usage_bytes)",
+                    "refId": "F"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "bytes"
+                }
+            }
+        }
+    ]
+}
