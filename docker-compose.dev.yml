@@ -1,7 +1,51 @@
+networks:
+  public-network:
+  private-network:
+
 services:
 
-  # Local database for development
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.nginx
+    container_name: relist-nginx-dev
+    depends_on:
+      - backend
+      - grafana
+    networks:
+      - public-network
+      - private-network
+    ports:
+      - "8080:80"
+      - "433:433"
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - certs:/etc/letsencrypt:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
+  certbot:
+    build:
+      context: ./certbot
+      dockerfile: Dockerfile.certbot
+    container_name: relist-certbot-dev
+    env_file:
+      - .env.local
+    environment:
+      GODADDY_API_KEY: ${GODADDY_API_KEY}
+      GODADDY_SECRET_KEY: ${GODADDY_SECRET_KEY}
+      CERTBOT_EMAIL: ${CERTBOT_EMAIL}
+      DOMAINS: ${DOMAINS}
+    volumes:
+      - certs:/etc/letsencrypt
+    entrypoint: tail -f /dev/null
+    command: tail -f /dev/null
+
+  # Local database for development
   db:
     build:
       context: .
@@ -15,6 +59,8 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=pt_BR.UTF-8"
+    networks:
+      - private-network
     ports:
       - "5434:5432" # <host_port>:<container_port> (for acessing DB from host, e.g., pgAdmin)
     volumes:
@@ -31,6 +77,8 @@ services:
       - .env.local
     depends_on:
       - db # Ensure DB starts before backend
+    networks:
+      - private-network
     ports:
       - "8000:8000"
     volumes:
@@ -41,6 +89,11 @@ services:
       uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
       "
     restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   prometheus:
     image: prom/prometheus:latest
@@ -48,15 +101,24 @@ services:
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./monitoring/prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
+    networks:
+      - private-network
     ports:
       - "9090:9090"
     depends_on:
       - backend
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   grafana:
     image: grafana/grafana:latest
     container_name: relist-grafana-dev
+    networks:
+      - private-network
     ports:
       - "3000:3000"
     volumes:
@@ -69,29 +131,49 @@ services:
     depends_on:
       - prometheus
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: relist-cadvisor-dev
+    networks:
+      - private-network
     ports:
-      - "8080:8080"
+      - "8081:8080"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   node-exporter:
     image: prom/node-exporter:latest
     container_name: relist-node-exporter-dev
+    networks:
+      - private-network
     ports:
       - "9100:9100"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9100/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
 volumes:
   postgres_data:
   grafana_data:
+  certs:
 
 
 # ==============================================================
