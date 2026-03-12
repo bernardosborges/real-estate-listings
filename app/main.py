@@ -39,7 +39,7 @@ app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(Exception, unhandled_exception_handler)
 
 
-@app.get("/")
+@app.get("/health")
 def healthcheck():
     return {"status": "ok"}
 
