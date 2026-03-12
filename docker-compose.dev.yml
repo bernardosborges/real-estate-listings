@@ -2,6 +2,7 @@ networks:
   public-network:
   private-network:
 
+
 services:
 
   nginx:
@@ -17,7 +18,7 @@ services:
       - private-network
     ports:
       - "8080:80"
-      - "433:433"
+      - "443:443"
     restart: unless-stopped
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
@@ -40,10 +41,11 @@ services:
       GODADDY_SECRET_KEY: ${GODADDY_SECRET_KEY}
       CERTBOT_EMAIL: ${CERTBOT_EMAIL}
       DOMAINS: ${DOMAINS}
+    networks:
+      - private-network
     volumes:
       - certs:/etc/letsencrypt
-    entrypoint: tail -f /dev/null
-    command: tail -f /dev/null
+    entrypoint: ["/bin/sh", "/certbot/certbot-entrypoint.sh"]
 
   # Local database for development
   db:
