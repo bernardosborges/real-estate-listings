@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     AWS_S3_PRESIGNED_UPLOAD_EXPIRES_IN: int = 300
     AWS_S3_PRESIGNED_READ_EXPIRES_IN: int = 3600
 
-    API_PREFIX: str = "/api/v0"
+    API_PREFIX: str = "/v0"  # "/api/v0"
 
     model_config = SettingsConfigDict(env_file=(".env", ".env.local"), env_file_encoding="utf-8", extra="ignore")
 

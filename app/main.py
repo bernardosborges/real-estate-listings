@@ -19,7 +19,7 @@ from app.api.exceptions.api_exception import APIException
 
 setup_logging()
 
-app = FastAPI(title="Real Estate Listing API", version="0.1.0")
+app = FastAPI(title="Real Estate Listing API", version="0.1.0", root_path="/api")
 Instrumentator().instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
 
 app.include_router(property_router.router)
