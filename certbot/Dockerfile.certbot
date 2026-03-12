@@ -1,0 +1,13 @@
+# Use official certbot image
+FROM certbot/certbot:v2.8.0
+
+RUN pip install certbot-dns-godaddy==2.8.0
+
+WORKDIR /certbot
+
+COPY certbot-entrypoint.sh .
+RUN chmod +x /certbot/certbot-entrypoint.sh
+
+VOLUME ["/etc/letsencrypt"]
+
+ENTRYPOINT ["/bin/sh", "/certbot/certbot-entrypoint.sh"]
