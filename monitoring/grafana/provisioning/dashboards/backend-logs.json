@@ -1,0 +1,77 @@
+{
+   "title":"Backend Logs",
+   "uid":"backend-logs",
+   "timezone":"browser",
+   "panels":[
+        {
+            "type":"logs",
+            "title":"Logs Backend / ALL",
+            "datasource":"Loki",
+            "targets":[
+                {
+                "expr":"{service=\"backend\"}"
+                }
+            ],
+            "gridPos": {"x":0, "y":6, "w":12, "h":10},
+            "options":{
+                "showLabels":true,
+                "showTime":true,
+                "wrapLogMessage":true
+            }
+        },
+        {
+            "type":"logs",
+            "title":"Logs Backend / ERROR",
+            "datasource":"Loki",
+            "targets":[
+                {
+                "expr":"{service=\"nginx\"} |~ \" 5[0-9][0-9] \""
+                }
+            ],
+            "gridPos": {"x":12, "y":6, "w":12, "h":10},
+            "options":{
+                "showLabels":true,
+                "showTime":true,
+                "wrapLogMessage":true
+            }
+        },
+        {
+            "type":"timeseries",
+            "title":"Requests Per Minute",
+            "datasource":"Loki",
+            "targets":[
+                {
+                "expr":"count_over_time({service=\"nginx\"}[1m])"
+                }
+            ],
+            "gridPos": {"x":0, "y":16, "w":12, "h":6},
+            "options":{
+                "legend":{
+                "displayMode":"list"
+                }
+            },
+            "time": {
+                "from": "now-60m",
+                "to": "now"
+            }
+        },
+        {
+            "type":"logs",
+            "title":"Logs Backend / FATAL",
+            "datasource":"Loki",
+            "targets":[
+                {
+                "expr":"{service=\"nginx\"} |= \"FATAL\""
+                }
+            ],
+            "gridPos": {"x":12, "y":16, "w":12, "h":6},
+            "options":{
+                "showLabels":true,
+                "showTime":true,
+                "wrapLogMessage":true
+            }
+        }
+    ],
+    "schemaVersion":37,
+    "version":1
+}
