@@ -20,6 +20,8 @@ services:
       - "8080:80"
       - "443:443"
     restart: unless-stopped
+    environment:
+      - TZ=UTC
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - certs:/etc/letsencrypt:ro
@@ -28,6 +30,11 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   certbot:
     build:
@@ -37,6 +44,7 @@ services:
     env_file:
       - .env.local
     environment:
+      TZ: UTC
       GODADDY_API_KEY: ${GODADDY_API_KEY}
       GODADDY_SECRET_KEY: ${GODADDY_SECRET_KEY}
       CERTBOT_EMAIL: ${CERTBOT_EMAIL}
@@ -46,6 +54,11 @@ services:
     volumes:
       - certs:/etc/letsencrypt
     entrypoint: ["/bin/sh", "/certbot/certbot-entrypoint.sh"]
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   # Local database for development
   db:
@@ -57,6 +70,7 @@ services:
     env_file:
       - .env.local # load environment variables from .env.local
     environment:
+      TZ: UTC
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
@@ -69,6 +83,11 @@ services:
       - ./db-init:/docker-entrypoint-initdb.d # Map project folder to docker entrypoint
       - ./db-templates:/db-templates # Map templates folder to docker
       - postgres_data:/var/lib/postgresql/data # persist DB data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   backend:
     build:
@@ -91,11 +110,18 @@ services:
       uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
       "
     restart: always
+    environment:
+      - TZ=UTC
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 5s
       retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   prometheus:
     image: prom/prometheus:latest
@@ -110,11 +136,18 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    environment:
+      - TZ=UTC
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090/-/healthy"]
       interval: 30s
       timeout: 5s
       retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   grafana:
     image: grafana/grafana:latest
@@ -125,8 +158,9 @@ services:
       - "3000:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
     environment:
+      - TZ=UTC
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
       - GF_USERS_ALLOW_SIGN_UP=false
@@ -138,6 +172,11 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
@@ -152,11 +191,18 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
     restart: unless-stopped
+    environment:
+      - TZ=UTC
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/healthz"]
       interval: 30s
       timeout: 5s
       retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   node-exporter:
     image: prom/node-exporter:latest
@@ -166,16 +212,82 @@ services:
     ports:
       - "9100:9100"
     restart: unless-stopped
+    environment:
+      - TZ=UTC
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:9100/metrics"]
       interval: 30s
       timeout: 5s
       retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
+
+  promtail:
+    image: grafana/promtail:3.6.7
+    container_name: relist-promtail-dev
+    networks:
+      - private-network
+    ports:
+      - "9080:9080"
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/promtail/promtail-config.yml:/etc/promtail/config.yml:ro # Promtail configuration file
+      - promtail-positions:/position                                          # Persistent storage for Promtail read position (prevents log duplication after restart)
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro              # Access to Docker json-log files generated from container stdout/stderr
+      - /var/run/docker.sock:/var/run/docker.sock:ro                          # Docker socket for potential container discovery
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+      - nginx
+      - backend
+    environment:
+      - TZ=UTC
+    logging:
+        driver: json-file
+        options:
+          max-size: "10m"
+          max-file: "10"
+
+  loki:
+    image: grafana/loki:3.2.0
+    container_name: relist-loki-dev
+    networks:
+      - private-network
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
+    volumes:
+      - loki-data:/loki
+      - ./monitoring/loki/loki-config.yaml:/etc/loki/loki-config.yaml:ro
+    command:
+      - -config.file=/etc/loki/loki-config.yaml
+      - -print-config-stderr=true
+    environment:
+      - TZ=UTC
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3100/ready"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
+
+
 
 volumes:
   postgres_data:
   grafana_data:
   certs:
+  loki-data:
+  promtail-positions:
+
+
 
 
 # ==============================================================
