@@ -134,49 +134,20 @@ The API layer translates these exceptions into appropriate HTTP responses withou
 
 ## 📊 Observability
 
-This project includes a full observability stack to monitor the backend, infrastructure, and business metrics. It provides insight into performance, reliability, and system health.
+This project includes a full observability stack for metrics and logs. It provides insight into business event, performance, reliability, and system health.
 
-### Prometheus
-- Purpose: Scrapes metrics from the backend, containers, and host.
-- Endpoint: `/metric` (FastAPI Intrumentator)
-- Metrics collected:
-    - HTTP request county and latency
-    - Response status codes
-    - Process metrics (CPU, memory)
-    - Container-level metrics (via cAdvisor)
-    - Host-level (via Node Exporter)
-- Usage: Run prometheus in development with Docker:
-`docker compose --env-file .env.local -f docker-composer.dev.yml up -d prometheus`
-- Access Prometheus UI at: `http://localhost:9090`
+### Metrics
+- **Prometheus**: Scraps metrics from the backend, containers, and host (`/metric` via FastAPI Instrumentator, cAdvisor, Node Exporter).
+- **Grafana**: Visualizes metrics and alerts in dashboards. Default dashboards include backend APM metrics, containers and host infrastructure metrics, business metrics, and active alerts.
 
-### Grafana
-- Purpose: Visualize metrics and alerts collected by Prometheus.
-- Dashboards included:
-    - Backend / APM Metrics: HTTP requests, latency, status codes, exceptions.
-    - Infrastructure Metrics: CPU, memory, disk, network usage of containers and host.
-    - Business Metrics: Custom metrics from backend reflecting user behaviour or business events.
-    - Active Alerts: Displays firing alerts from Prometheus rules (e.g. service down, high request rate).
-- Usage: Run Grafana in development with Docker:
-`docker compose --env-file .env.local -f docker-composer.dev.yml up -d grafana`
-- Access Grafana UI at: `http://localhost:3000`
-- Default credentials configured via `.env`: `GRAFANA_USER` / `GRAFANA_PASSWORD`.
+### Logs
+- **Loki**: Centralized log aggregation for Docker services (`backend`, `nginx`, `db`).
+- **Promtail**: Collects stdout/strerr from Docker containers and forwards them to Loki. Applies relabeling for service, container, image, and log level.
 
-### Container & Host Metrics
-- cAdvisor: Collects per-container metrics (CPU, memory, network, filesystem)
-    - Endpoint: `http://localhost:8080/metrics`
-- Node Exporter: Collects host-level metrics (CPU, memory, network, disk).
-    - Endpoint: `http://localhost:9100/metrics`
-
-Prometheus integration: both cAdvisor and Node Exporter are scraped automatically and visualized in Grafana dashboards.
-
-### Alerts
-Prometheus rules provide real-time notifications:
-    - BackendDown
-    - HighRequestRate
-
-Alerts are visible in Grafana dashboards under Active Alerts panel.
-
-
+**Usage (all observability services via Docker Compose):**
+```bash
+docker-compose --env-file .env.local -f docker-compose.dev.yml up -d prometheus grafana loki promtail
+```
 
 ## 🧰 Tech Stack
 
@@ -207,7 +178,9 @@ Alerts are visible in Grafana dashboards under Active Alerts panel.
 - Prometheus ([docs](https://prometheus.io/docs/)) - Metrics scraping
 - Grafana ([docs](https://grafana.com/docs/)) - Dashboard & alerts
 - cAdvisor & Node Exporter for infra metrics - Infra metrics
-- Prometheus FastAPI Instrumentator ([GitHub](https://github.com/trallnag/prometheus-fastapi-instrumentator)) - Application metricsKs
+- Loki ([docs](https://grafana.com/docs/loki/latest/)) - Centralized log storage
+- Promtail ([docs](https://grafana.com/docs/loki/latest/clients/promtail/)) - Log collector
+- Prometheus FastAPI Instrumentator ([GitHub](https://github.com/trallnag/prometheus-fastapi-instrumentator)) - Application metrics
 
 
 
